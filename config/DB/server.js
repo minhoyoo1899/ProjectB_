@@ -12,11 +12,11 @@ const dbconfig = {
   database: 'hi_five'
 }
 
-const conn = mysql.createConnection(dbconfig);
-conn.query('SELECT * FROM test_table;', (error, rows) => {
-  if (error) throw error;
-  console.log(rows);
-});
+// const conn = mysql.createConnection(dbconfig);
+// conn.query('SELECT * FROM test_table;', (error, rows) => {
+//   if (error) throw error;
+//   console.log(rows);
+// });
 
 
 // http 모듈로 서버연결
