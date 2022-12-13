@@ -12,7 +12,7 @@ const dbconfig = {
   database: 'hi_five'
 }
 
-// const conn = mysql.createConnection(dbconfig);
+const conn = mysql.createConnection(dbconfig);
 // conn.query('SELECT * FROM test_table;', (error, rows) => {
 //   if (error) throw error;
 //   console.log(rows);
@@ -32,6 +32,9 @@ const server = http.createServer((req, res) => {
         conn.query('SELECT * FROM test_table;', (error, rows) => {
           if (error) throw error;
           console.log(rows);
+          res.statusCode = 200;
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.end("데이터 테스트");
         });
     }
   } else if (req.url === "POST") {
