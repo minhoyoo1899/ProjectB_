@@ -3,6 +3,23 @@ const http = require('http');
 const mysql = require('mysql');
 
 // console.log(http);
+
+const dbconfig = {
+  host: 'localhost',
+  user: 'root',
+  password: 'password',
+  port:'3306',
+  database: 'hi_five'
+}
+
+const conn = mysql.createConnection(dbconfig);
+conn.query('SELECT * FROM test_table;', (error, rows) => {
+  if (error) throw error;
+  console.log(rows);
+});
+
+
+// http 모듈로 서버연결
 const server = http.createServer((req, res) => {
   if (req.method === "GET") {
     switch (req.url) {
@@ -10,6 +27,12 @@ const server = http.createServer((req, res) => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         res.end("인덱스");
+        break;
+      case '/db':
+        conn.query('SELECT * FROM test_table;', (error, rows) => {
+          if (error) throw error;
+          console.log(rows);
+        });
     }
   } else if (req.url === "POST") {
     console.log('this is POST')
