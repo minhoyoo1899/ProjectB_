@@ -32,10 +32,12 @@ const server = http.createServer((req, res) => {
         conn.query('SELECT * FROM test_table;', (error, rows) => {
           if (error) throw error;
           console.log(rows);
+          console.log(typeof rows);
           res.statusCode = 200;
-        res.setHeader('Content-Type', 'text/html; charset=utf-8');
-        res.end("데이터 테스트");
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          res.end(`데이터 테스트 : ${rows}`);
         });
+        break;
     }
   } else if (req.url === "POST") {
     console.log('this is POST')
