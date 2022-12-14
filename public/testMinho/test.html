@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"
+    />
+    <title>네이버 지도 TEST</title>
+    <script
+      type="text/javascript"
+      src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=i3adj30j3s"
+    ></script>
+  </head>
+  <body>
+    <div id="map" style="width: 100%; height: 100vh"></div>
+    <script>
+      function test(obj1, obj2) {
+        let 위도_차이 = obj1["위도"] - obj2["위도"];
+        let 경도_차이 = obj1["경도"] - obj2["경도"];
+        // console.log("위도 차이 : " + 위도_차이);
+        // console.log("경도 차이 : " + 경도_차이);
+        let 위도 = (obj1["위도"] + obj2["위도"]) / 2;
+        let 위도반지름 = Math.cos((Math.PI * 위도) / 180) * 6400;
+        let 위도둘레 = 위도반지름 * 2 * Math.PI;
+        //? 위도마다 경도 1도당 거리가 달라지기때문에 따로 위도반지름을 설정함.
+        let 위도_거리 = (위도_차이 * 40000) / 360;
+        let 경도_거리 = (경도_차이 * 위도둘레) / 360;
+        //? 전체 360도중 위도 차이만큼의 거리를 계산해야하니 * 차이 / 360
+        let 거리 = Math.sqrt(위도_거리 ** 2 + 경도_거리 ** 2);
+        //? 대각선길이(전체 거리) = 루트(가로**2 + 세로**2)
+        console.log(`거리 : ${거리.toFixed(2)}km`);
+        return 거리;
+      }
+      //두 장소의 거리 계산하는 함수
+      //geolocation 현재 위치 위도 경도 추출 ( 오차가 있어서 실제 좌표는 직접 입력했음)
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        // const latitude = pos.coords.latitude;
+        // const longitude = pos.coords.longitude;
+        // console.log("현재 위치는 : " + latitude + ", "+ longitude);
+        console.log(pos);
+        //지도 옵션 정의
+        const mapOptions = {
+          //초기 위도 경도 지정
+          center: new naver.maps.LatLng(36.35193849156777, 127.37843690491263),
+          zoom: 16,
+        };
+        //map 생성
+        const map = new naver.maps.Map("map", mapOptions);
+        //마커 생성 (클릭한 곳의 마커 생성 및 위도,경도 추출)
+        const marker = new naver.maps.Marker({
+          position: new naver.maps.LatLng(
+            36.35193849156777,
+            127.37843690491263
+          ),
+          map: map,
+        });
+        let arr = [];
+        //클릭시 레이어에 현재 위도 경도 출력하도록 설정함
+        naver.maps.Event.addListener(map, "click", function (e) {
+          marker.setPosition(e.latlng);
+          // console.log("위도: "+e.latlng._lat, "경도: "+e.latlng._lng)
+          var HOME_PATH = window.HOME_PATH || ".";
+          //화면에 출력할 정보창 내용
+          var contentString = [
+            '<div class="iw_inner">',
+            "<h3>현재 위치</h3>",
+            `<p>위도: ${e.latlng._lat}</p>`,
+            `<p>경도: ${e.latlng._lng}</p>`,
+            "</div>",
+          ].join("");
+          //위치 정보창 생성 => html 작성후 content 옵션에 대입함
+          const infowindow = new naver.maps.InfoWindow({
+            content: contentString,
+          });
+          if (infowindow.getMap()) {
+            infowindow.close();
+          } else {
+            infowindow.open(map, marker);
+          }
+          infowindow.open(map, marker);
+          arr.push({ 위도: e.latlng._lat, 경도: e.latlng._lng });
+          if (arr.length === 2) {
+            test(arr[0], arr[1]);
+            arr.shift();
+          }
+          //누르면 배열에 위도 경도 입력, 2번 이상 누를시 최근 2번의 거리 계산해서 콘솔에 출력
+        });
+      });
+    </script>
+  </body>
+</html>
