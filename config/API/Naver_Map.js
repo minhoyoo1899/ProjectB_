@@ -2,15 +2,21 @@
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
-//네이버 api 키 
-const id = "rw8kfxnmol"
-const secret = "KLcIjNMP9IXvoxSEQmdcNjip3b5oj0agPyQmIQ30"
+const dotenv = require("dotenv"); // .env 설정 추가
+
+//네이버 api 키
+// const id = "rw8kfxnmol"
+// const secret = "KLcIjNMP9IXvoxSEQmdcNjip3b5oj0agPyQmIQ30"
+
+
+
 //집주소
 const address = "대전 서구 대덕대로 182"
+
 //api 요청시 헤더에 넣을 기본 정보 
 const header = {
-  "X-NCP-APIGW-API-KEY-ID" :  id,
-  "X-NCP-APIGW-API-KEY" : secret
+  "X-NCP-APIGW-API-KEY-ID" :  process.env.naverMapApi,
+  "X-NCP-APIGW-API-KEY" : process.env.naverMapSecret
 }
 const app = express()
 
