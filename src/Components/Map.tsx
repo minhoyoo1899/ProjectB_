@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import axios from "axios"
 import "../CSS/map.css"
 
@@ -17,14 +17,16 @@ function Map() {
   //경로 그리기용 state
   const [routePathArr, setRoutePathArr] = useState<any>([])
   // console.log(routePathArr)
+  const [wayData, setWayData] = useState<any>()
   
   //서버에 요청 
   useEffect(()=> {
     const getDatas = async()=>{
       const datas = await axios.get("http://localhost:6565/")
       const routePath = datas.data.route.traoptimal[0].path
-      // console.log(routePath)
+      console.log(routePath)
       setRoutePathArr(routePath)
+      setWayData(datas.data.route.traoptimal[0])
       // console.log(datas.data.addresses[0].roadAddress)
       // let myhome = datas.data.addresses[0].roadAddress
       // setHome(myhome)
@@ -46,15 +48,54 @@ function Map() {
       window.alert("현재위치를 알수 없습니다.");
     }
   },[])
-  console.log(location)
+  // console.log(location)
 
   //경로 그리기용 path 담을 배열 
-  let polylinePath:Number[] = []
-  routePathArr.map((data:any)=> {
-    // console.log(data)
-    polylinePath.push(data)
+  let polylinePath:any[] = []
+
+  routePathArr.map((pathdata:any)=> {
+    // console.log(pathdata)
+    polylinePath.push(new naver.maps.LatLng(pathdata[1],pathdata[0]));
   })
-  // console.log(polylinePath)
+  
+  const polyline = new naver.maps.Polyline({
+    path: polylinePath, //좌표배열
+    strokeColor: "#0384fc", //선의 색 빨강 
+    strokeOpacity: 1, //선의 투명도
+    strokeWeight: 6, //선의 두께,
+    clickable:true,
+    map: mapRef.current, //만들어 놓은 지도
+  })
+  console.log(polylinePath)
+  naver.maps.Event.addListener(polyline,"mouseover",(e)=>{
+    // console.log(wayData.summary.distance)
+    const distance = (Math.floor(wayData.summary.distance/1000)+"KM")
+    // console.log(distance)
+    //마우스 오버시 보여줄 컨텐츠
+    let distanceInfo = new naver.maps.InfoWindow({
+      content: [
+        '<div>',
+        `<h3>전체 거리</h3>`,
+        `<p>${distance}</p>`,
+        '</div>'
+      ].join('')
+    });
+    //마우스 오버한 위치에 마커 생성 
+    let distanceMarker = new naver.maps.Marker({
+      position:e.coord,
+    })
+    if(distanceInfo.getMap()) {
+      distanceInfo.close()
+    } else {
+      distanceInfo.open(mapRef.current,distanceMarker)
+      console.log(distanceInfo)
+    }
+  })
+
+  const lineMarker = new naver.maps.Marker({
+    position : polylinePath[polylinePath.length-1],
+    map: mapRef.current
+  })
 
   // 지도
   useEffect(()=>{
@@ -64,20 +105,20 @@ function Map() {
     mapRef.current = new naver.maps.Map("map", {
       // center: new naver.maps.LatLng(location.latitude, location.longitude),
       center: new naver.maps.LatLng(36.34925,127.377575),
-      zoom:17,
+      zoom:15,
       mapTypeControl: true,
       zoomControl: true,  
     });
-    console.log(mapRef.current)
+    // console.log(mapRef.current)
     trafficLayer.setMap(mapRef.current)
 
     naver.maps.Event.once(mapRef.current,"init",(e)=>{
       trafficLayer.setMap(mapRef.current)
     })
   },[mapRef])
+
   //현재위치 마커 
   useEffect(()=> {
-    // if(typeof location !== "string"){
       const currentPosition = [location.latitude, location.longitude];
       //마커관련
       markRef.current = new naver.maps.Marker({
@@ -101,7 +142,6 @@ function Map() {
         // console.log(e)
         console.log("마우스빠짐")
       })
-    // }
   },[location])
   
   useEffect(() => {

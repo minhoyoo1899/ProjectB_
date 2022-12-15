@@ -14,17 +14,25 @@ const header = {
 }
 const app = express()
 
+const totalWay = {
+  start:['127.392416','36.343457'],
+  goal:['127.377575','36.34925'],
+  waypoint:['127.398217','36.423233']// 현대아울렛
+}
+
 app.use(cors({
   origin : '*'
 }))
 
 // 입력한 주소의 좌표등 기본값 요청 
+// 경로 :집>현대아울렛>학원
 app.get("/", async(req,res)=> {
   try {
     let result = await axios({
       method : "get",
       // url : `https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=${address}`,
-      url: "https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=127.392416,36.343457&goal=127.377575,36.34925&cartype=4",
+      url: `https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=${totalWay.start[0]},${totalWay.start[1]}&goal=${totalWay.goal[0]},${totalWay.goal[1]}&waypoints=${totalWay.waypoint[0]},${totalWay.waypoint[1]}`,
+      // url :"https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=127.392416,36.343457&goal=127.377575,36.34925&cartype=4&waypoints=127.398217,36.423233",
       headers: header 
     });
 
@@ -37,6 +45,7 @@ app.get("/", async(req,res)=> {
   }
 })    
 
+// 포트 넘버는 네이버에 본인이 등록한 애플리케이션 주소로 변경  
 app.listen(6565, ()=> {
   console.log("server on")
 })
