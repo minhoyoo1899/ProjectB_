@@ -3,8 +3,15 @@ import axios from "axios"
 import "../CSS/map.css"
 
 function Map() {
-  //마커용
+  //현위치 마커
   const markRef = useRef<any>()
+  //출발지 마커 
+  const startMarkRef = useRef<any>()
+  //경유지 마커 
+  const layMarkkRef = useRef<any>()
+  //도착지 마커
+  const endMarkRef = useRef<any>()
+
   //지도용
   const mapRef = useRef<any>()
   //서버로 부터 받은 주소 저장할 스테이트 
@@ -27,6 +34,15 @@ function Map() {
       console.log(routePath)
       setRoutePathArr(routePath)
       setWayData(datas.data.route.traoptimal[0])
+      // 출발지 좌표
+      // console.log(datas.data.route.traoptimal[0].summary.start.location)
+      startMarkRef.current = datas.data.route.traoptimal[0].summary.start.location
+      // 경유지 좌표
+      // console.log(datas.data.route.traoptimal[0].summary.waypoints[0].location)
+      layMarkkRef.current = datas.data.route.traoptimal[0].summary.waypoints[0].location
+      // 도착지 좌표
+      // console.log(datas.data.route.traoptimal[0].summary.goal.location)
+      endMarkRef.current = datas.data.route.traoptimal[0].summary.goal.location
       // console.log(datas.data.addresses[0].roadAddress)
       // let myhome = datas.data.addresses[0].roadAddress
       // setHome(myhome)
@@ -48,8 +64,6 @@ function Map() {
       window.alert("현재위치를 알수 없습니다.");
     }
   },[])
-  // console.log(location)
-
   //경로 그리기용 path 담을 배열 
   let polylinePath:any[] = []
 
@@ -60,13 +74,14 @@ function Map() {
   
   const polyline = new naver.maps.Polyline({
     path: polylinePath, //좌표배열
-    strokeColor: "#0384fc", //선의 색 빨강 
+    strokeColor: "#333", //선의 색 
     strokeOpacity: 1, //선의 투명도
     strokeWeight: 6, //선의 두께,
     clickable:true,
     map: mapRef.current, //만들어 놓은 지도
   })
-  console.log(polylinePath)
+
+  // console.log(polylinePath)
   naver.maps.Event.addListener(polyline,"mouseover",(e)=>{
     // console.log(wayData.summary.distance)
     const distance = (Math.floor(wayData.summary.distance/1000)+"KM")
@@ -92,9 +107,23 @@ function Map() {
     }
   })
 
-  const lineMarker = new naver.maps.Marker({
-    position : polylinePath[polylinePath.length-1],
-    map: mapRef.current
+  // const lineMarker = new naver.maps.Marker({
+  //   position : polylinePath[polylinePath.length-1],
+  //   map: mapRef.current
+  // })
+  useEffect(()=>{
+    startMarkRef.current = new naver.maps.Marker({
+      position : new naver.maps.LatLng(startMarkRef.current),
+      map : mapRef.current
+    })
+    layMarkkRef.current = new naver.maps.Marker({
+      position : new naver.maps.LatLng(layMarkkRef.current),
+      map : mapRef.current
+    })
+    endMarkRef.current = new naver.maps.Marker({
+      position : new naver.maps.LatLng(endMarkRef.current),
+      map : mapRef.current
+    })
   })
 
   // 지도
@@ -124,7 +153,7 @@ function Map() {
       markRef.current = new naver.maps.Marker({
         position : new naver.maps.LatLng(currentPosition[0],currentPosition[1]),
         map : mapRef.current,
-        //아이콘 커스텀
+        // 아이콘 커스텀
         icon: {
           url: "https://mblogthumb-phinf.pstatic.net/MjAyMTA4MDRfMjk0/MDAxNjI4MDg2MDEwNTY4.TTh8QJAkzwBZZpKSw8OpIK83JQ8dBBI5qBu9uWvgrKUg.X2keaCQ5fJkyx05OOlVYwKPi3ynq0_oqHv-UFqLyGsQg.PNG.cha-cha97/%EC%B6%98%EC%8B%9D%EC%9D%B4%EF%BC%BF001.png?type=w800", 
           scaledSize : new naver.maps.Size(80,80),
