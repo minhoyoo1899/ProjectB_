@@ -18,7 +18,7 @@ function Map() {
   const [routePathArr, setRoutePathArr] = useState<any>([])
   // console.log(routePathArr)
   
-  //서버에 요청후 주소를 스테이트에 대입  
+  //서버에 요청 
   useEffect(()=> {
     const getDatas = async()=>{
       const datas = await axios.get("http://localhost:6565/")
@@ -56,41 +56,21 @@ function Map() {
   })
   // console.log(polylinePath)
 
-  // 현재 위도 경도 값 요청 
-  useEffect(()=>{
-      // let trafficLayer = new naver.maps.TrafficLayer({
-      //   interval: 300000 // 5분마다 새로고침 (최소값 5분)
-      // });
-      console.log(location)
-
-      mapRef.current = new naver.maps.Map("map", {
-        center: new naver.maps.LatLng(location.latitude, location.longitude),
-        // center: new naver.maps.LatLng(36.343457, 127.392416),
-        zoom:18,
-        mapTypeControl: true,
-        zoomControl: true,  
-      });
-      console.log(mapRef.current)
-      // trafficLayer.setMap(mapRef.current)
-  
-      // naver.maps.Event.once(mapRef.current,"init",(e)=>{
-      //     trafficLayer.setMap(mapRef.current)
-      //   })
-  },[location])
-
   // 지도
   useEffect(()=>{
     let trafficLayer = new naver.maps.TrafficLayer({
       interval: 300000 // 5분마다 새로고침 (최소값 5분)
     });
     mapRef.current = new naver.maps.Map("map", {
-      center: new naver.maps.LatLng(location.latitude, location.longitude),
-      zoom:18,
+      // center: new naver.maps.LatLng(location.latitude, location.longitude),
+      center: new naver.maps.LatLng(36.34925,127.377575),
+      zoom:17,
       mapTypeControl: true,
       zoomControl: true,  
     });
     console.log(mapRef.current)
     trafficLayer.setMap(mapRef.current)
+
     naver.maps.Event.once(mapRef.current,"init",(e)=>{
       trafficLayer.setMap(mapRef.current)
     })
