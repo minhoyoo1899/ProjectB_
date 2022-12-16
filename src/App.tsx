@@ -1,4 +1,9 @@
+import Minho from "./Components/Minho";
 const App = () => {
-  return <div>Hello Hojin</div>;
+  return (
+    <>
+      <Minho />
+    </>
+  );
 }
 export default App;
