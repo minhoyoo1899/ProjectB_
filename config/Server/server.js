@@ -2,24 +2,30 @@
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
+const mysql = require('mysql');
 const dotenv = require("dotenv"); // .env 설정 추가
-
 dotenv.config();
 
 //네이버 api 키
 // const id = "rw8kfxnmol"
 // const secret = "KLcIjNMP9IXvoxSEQmdcNjip3b5oj0agPyQmIQ30"
 
-console.log(dotenv);
-
-console.log(process.env);
-console.log(process.env.naverMapApi);
+// console.log(dotenv);
+// console.log(process.env);
+// console.log(process.env.naverMapApi);
 
 // console.log(htmlWebpackPlugin.options.env.naverMapApi);
 // console.log(htmlWebpackPlugin.options.env.naverMapSecret);
 
+const dbconfig = {
+  host: 'localhost',
+  user: 'root',
+  password: 'password',
+  port:'3306',
+  database: 'hi_five'
+}
 
-
+const conn = mysql.createConnection(dbconfig);
 
 //집주소
 const address = "대전 서구 대덕대로 182"
@@ -52,7 +58,18 @@ app.get("/", async(req,res)=> {
   }catch(err){
     console.log(err)
   }
-})    
+})
+
+app.get('/db', async (req, res) => {
+  conn.query('SELECT * FROM test_table;', (error, rows) => {
+          if (error) throw error;
+          console.log(rows);
+          console.log(typeof rows);
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          res.end(`데이터 테스트 : ${rows}`);
+        });
+});
 
 app.listen(6565, ()=> {
   console.log("server on")
