@@ -16,6 +16,18 @@ module.exports = {
         use: "babel-loader",
         exclude: /node_modules/,
       },
+      {
+        test: /\.(jpe?g|png|gif)$/i,
+        use: [
+          {
+            loader: "url-loader",
+            options: {
+              limit: 8192,
+              
+            },
+          },
+        ],
+      },
     ],
   },
   plugins: [

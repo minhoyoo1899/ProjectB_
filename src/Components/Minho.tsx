@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import express from "express";
 import axios from "axios";
-import cors from "cors";
-import { resourceUsage } from "process";
+import cors from 'cors';
+console.log(cors);
 
 const Minho = () => {
+  axios.defaults.withCredentials = true;
   const address = "대전 서구 대덕대로 182";
   const header = {
     "X-NCP-APIGW-API-KEY-ID": process.env.naverMapApi,
-    "X-NCP-APIGW-API-KEY": process.env.naverMapSecret,
+    "X-NCP-APIGW-API-KEY": process.env.naverMapSecret, 
+    withCredentials: true,    
   };
   const [Data, setData] = useState([]);
   // const app = express();
@@ -39,13 +41,12 @@ const Minho = () => {
     apiDat();
   }, []);
 
-  
-
 
   return (
     <div>
       <p>naverMapApi: {process.env.naverMapApi}</p>
       <p>naverMapSecret: {process.env.naverMapSecret}</p>
+      <img src="/img/3.png" alt="logo" />
     </div>
   );
 };
