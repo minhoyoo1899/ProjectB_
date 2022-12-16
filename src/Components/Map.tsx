@@ -14,12 +14,22 @@ function Map() {
 
   //지도용
   const mapRef = useRef<any>()
+  
+  //cctv 정보
+  const cctvI = useRef<any>()
+  
   //서버로 부터 받은 주소 저장할 스테이트 
   const [home, setHome] = useState<string>("")
   //현재 좌표의 위도 경도 담을 스테이트
   const [location, setLocation] = useState<any>({
     latitude: "",
     longitude : ""
+  })
+  
+  //cctv 좌표 담을 스테이트
+  const [cctv, setCctv] = useState<any>({
+    lat: "",
+    lng : ""
   })
   //경로 그리기용 state
   const [routePathArr, setRoutePathArr] = useState<any>([])
@@ -29,19 +39,25 @@ function Map() {
   //서버에 요청 
   useEffect(()=> {
     const getDatas = async()=>{
-      const datas = await axios.get("http://localhost:6565/")
+      const datas = await axios.get("http://localhost:6565/route")
+      // console.log(datas)
+      const cctvData = await axios.get("http://localhost:6565/cctv")
+      console.log(cctvData.data.response.data[0])
+      cctvI.current = cctvData.data.response.data[0]
+      let cctvCoord = cctvData.data.response.data[0]
+      setCctv({
+        lat : Number(cctvCoord.coordy),
+        lng : Number(cctvCoord.coordx)
+      })
       const routePath = datas.data.route.traoptimal[0].path
-      console.log(routePath)
+      // console.log(routePath)
       setRoutePathArr(routePath)
       setWayData(datas.data.route.traoptimal[0])
       // 출발지 좌표
-      // console.log(datas.data.route.traoptimal[0].summary.start.location)
       startMarkRef.current = datas.data.route.traoptimal[0].summary.start.location
       // 경유지 좌표
-      // console.log(datas.data.route.traoptimal[0].summary.waypoints[0].location)
       layMarkkRef.current = datas.data.route.traoptimal[0].summary.waypoints[0].location
       // 도착지 좌표
-      // console.log(datas.data.route.traoptimal[0].summary.goal.location)
       endMarkRef.current = datas.data.route.traoptimal[0].summary.goal.location
       // console.log(datas.data.addresses[0].roadAddress)
       // let myhome = datas.data.addresses[0].roadAddress
@@ -49,12 +65,37 @@ function Map() {
     }
     getDatas();
   },[])
-  
+
+  let cctvMarker = new naver.maps.Marker({
+    position : new naver.maps.LatLng(cctv.lat, cctv.lng),
+    // position : new naver.maps.LatLng(endMarkRef.current),
+    map : mapRef.current
+  })
+  console.log(cctvMarker)
+  naver.maps.Event.addListener(cctvMarker,"click",(e)=>{
+    console.log(e)
+    let cctvInfo = new naver.maps.InfoWindow({
+      content : [
+        '<div>',
+        `<h2>${cctvI.current.cctvname}</h2>`,
+        `<p>${cctv.lat},${cctv.lng}`,
+        '</p>',
+        `<video src=${cctvI.current.cctvurl} width="400px" height="300px" controls autoplay playsinline muted type="application/x-mpegURL"></video>`,
+        '</div>'
+      ].join('')
+    })
+    if(cctvInfo.getMap()){
+      cctvInfo.close()
+    } else {
+      cctvInfo.open(mapRef.current, cctvMarker)
+    }
+  })
+  // y: 37.42889, _lat: 37.42889, x: 127.12361, _lng: 127.12361
   // 현재위치의 위도값과 경도값을 받아서 state 저장 
   useEffect(()=> {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
-        console.log(position)
+        // console.log(position)
         setLocation({
           latitude: Number(position.coords.latitude),
           longitude: Number(position.coords.longitude),
@@ -134,7 +175,7 @@ function Map() {
     mapRef.current = new naver.maps.Map("map", {
       // center: new naver.maps.LatLng(location.latitude, location.longitude),
       center: new naver.maps.LatLng(36.34925,127.377575),
-      zoom:15,
+      zoom:8,
       mapTypeControl: true,
       zoomControl: true,  
     });
