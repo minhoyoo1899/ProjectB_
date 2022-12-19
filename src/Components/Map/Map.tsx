@@ -106,7 +106,11 @@ function Map({ children }: Main) {
       // console.log(el.coordx, el.coordy)
       cctvMarkRef.current = new naver.maps.Marker({
         position: new naver.maps.LatLng(el.coordy,el.coordx),
-        map : mapRef.current
+        map : mapRef.current,
+        icon: {
+          url: "Img/cctv.png", 
+          scaledSize : new naver.maps.Size(32,32),
+        }
       })
       // console.log(cctvMarkRef.current)
       naver.maps.Event.addListener(cctvMarkRef.current,"click",(e)=>{
@@ -115,7 +119,7 @@ function Map({ children }: Main) {
         console.log(e)
         let cctvWindow = new naver.maps.InfoWindow({
           content: [
-            '<div style="display:flex; flex-direction:column; align-items:center";}}>',
+            '<div style="width:400px; height:400px; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:10px;"}}>',
             `<h3>${cctv[id].cctvname}</h3>`,
             `<video src=${cctv[id].cctvurl} width="400px" height="300px" controls autoplay playsinline muted type="application/x-mpegURL"></video>`,
             '</div>'
