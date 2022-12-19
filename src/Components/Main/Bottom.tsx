@@ -20,22 +20,26 @@ export default Bottom;
 const Container = styled.div`
   display:flex;
   justify-content:space-between;
-  width:50%;
+  width:max-content;
   height:40px;
   position:absolute;
   bottom:5%;
   z-index:1;
+  gap:5%;
 `
 
 const Item = styled.div`
+  
   display:flex;
   justify-content:center;
   align-items:center;
-  width:10vw;
+  width:120px;
+  min-width:max-content;
   height:100%;
   background-color:#333;
   border-radius:5px;
   color:${props=>props.color || "white"};
   font-weight:bold;
   font-size:.8em;
+  padding:10px;
 `
