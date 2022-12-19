@@ -1,12 +1,17 @@
 import styled from "styled-components";
+import { FaCarAlt } from "react-icons/fa"
+import {FaExclamationTriangle} from "react-icons/fa"
+import {FaCarCrash} from "react-icons/fa"
+import {FaCamera} from "react-icons/fa"
+import {BsFillCameraVideoFill} from "react-icons/bs"
 
 const Bottom = () =>{
   return(
     <Container>
-      <Item>CCTV</Item>
-      <Item color="lightblue">도로흐름</Item>
-      <Item color="#FFC314">돌발상황</Item>
-      <Item color="tomato">사고정보</Item>
+      <Item><BsFillCameraVideoFill/>&nbsp;&nbsp;CCTV</Item>
+      <Item color="lightblue"><FaCarAlt/>&nbsp;&nbsp;도로흐름</Item>
+      <Item color="#FFC314"><FaExclamationTriangle/>&nbsp;&nbsp;돌발상황</Item>
+      <Item color="tomato"><FaCarCrash/>&nbsp;&nbsp;사고정보</Item>
     </Container>
   )
 }
