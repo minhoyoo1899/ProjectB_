@@ -45,8 +45,7 @@ const Minho = () => {
   return (
     <div>
       <p>naverMapApi: {process.env.naverMapApi}</p>
-      <p>naverMapSecret: {process.env.naverMapSecret}</p>
-      <img src="/img/3.png" alt="logo" />
+      <p>naverMapSecret: {process.env.naverMapSecret}</p>      
     </div>
   );
 };
