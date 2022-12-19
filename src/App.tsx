@@ -1,8 +1,11 @@
 import Minho from "./Components/Minho";
+import Map from "./Components/Map/Map"
 const App = () => {
   return (
-    <>
-      <Minho />
+    <>      
+      {/* <div>
+        <Map />
+      </div> */}
     </>
   );
 }

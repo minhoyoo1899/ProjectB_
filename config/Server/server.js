@@ -100,7 +100,8 @@ app.get("/apiMap", async (req, res) => {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Document</title>
       <script type="text/javascript"
-      src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId='jio9z2ehit'"></script>
+      src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${encodeURI(ymhApi)
+    }"></script>
       </head>
       <body>
       <div id="map" style="width:100%; height:800px;"></div>
@@ -116,7 +117,7 @@ app.get("/apiMap", async (req, res) => {
       console.log('현재위치');
       console.log('위도 : ' + crd.latitude);
       console.log('경도: ' + crd.longitude);
-      console.log('오차범위 ' + crd.accuracy + ‘m’);
+      // console.log('오차범위 ' + crd.accuracy + ‘m’);
       //지도 그릴 div
       let map = new naver.maps.Map(document.getElementById('map'), {
       center: new naver.maps.LatLng(crd.latitude, crd.longitude),
@@ -142,6 +143,8 @@ app.get("/apiMap", async (req, res) => {
     console.log(err);
   }
 });
+
+
 // 입력한 주소의 좌표등 기본값 요청
 // app.get("/home", async(req,res)=> {
 // try {
