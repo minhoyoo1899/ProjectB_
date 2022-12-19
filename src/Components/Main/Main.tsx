@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import React from 'react';
+
 import styled from 'styled-components';
 import Side from './side';
 
@@ -37,7 +37,6 @@ function Main() {
   )
 }
 
-
 export default Main;
 
 const Container = styled.div`
@@ -48,5 +47,5 @@ const Container = styled.div`
 const Map = styled.div`
   width:100vw;
   height:100vh;
-  padding:1%;
+  padding:10px;
 `
