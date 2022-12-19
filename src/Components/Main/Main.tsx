@@ -1,9 +1,10 @@
 import Map from "../Map/Map";
+import Weather from "../Map/Weather";
 const Main = () => {
-  console.log("a");
   return (
     <>
       <Map/>
+      <Weather></Weather>
     </>
   );
 }
