@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import axios from "axios"
 import styled from 'styled-components'
+import Side from '../Main/Side'
 
 function Map() {
   //현위치 마커
@@ -131,7 +132,9 @@ function Map() {
 
   return (
     <Bg>
-      <MapBox id="map"></MapBox>
+      <MapBox id="map">
+        <Side/>
+      </MapBox> 
     </Bg>
   )
 }
@@ -145,6 +148,7 @@ function Map() {
   const MapBox = styled.div`
     width: 100vw;
     height: 100vh;
+    padding:2%;
   `
 
 export default Map
