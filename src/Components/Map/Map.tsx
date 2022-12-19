@@ -24,7 +24,8 @@ function Map({ children }: Main) {
   
   //cctv 좌표 담을 스테이트
   const [cctv, setCctv] = useState<any>([])
-  
+  //cctv 기본정보 담을 스테이트 
+  const [cctvInfo, setCctvInfo] = useState<any>()
   //서버에 요청 
   useEffect(()=> {
     const getDatas = async()=>{
@@ -32,7 +33,7 @@ function Map({ children }: Main) {
       // console.log(datas)
       const cctvData = await axios.get("http://localhost:6565/cctv")
       console.log(cctvData.data.response.data)
-      // console.log(cctvData.data.response.data[0])
+      console.log(cctvData.data.response.data)
       cctvPos.current = cctvData.data.response.data
       let cctvCoord = cctvData.data.response.data
       console.log(cctvCoord)
@@ -101,8 +102,7 @@ function Map({ children }: Main) {
   },[location,centerX])
 
   useEffect(()=>{
-    console.log(cctv)
-    cctv.map((el:any)=>{
+    cctv.map((el:any,id:number)=>{
       // console.log(el.coordx, el.coordy)
       cctvMarkRef.current = new naver.maps.Marker({
         position: new naver.maps.LatLng(el.coordy,el.coordx),
@@ -110,7 +110,26 @@ function Map({ children }: Main) {
       })
       // console.log(cctvMarkRef.current)
       naver.maps.Event.addListener(cctvMarkRef.current,"click",(e)=>{
+        console.log(cctv[id])
+        console.log(id)
         console.log(e)
+        let cctvWindow = new naver.maps.InfoWindow({
+          content: [
+            '<div style="display:flex; flex-direction:column; align-items:center";}}>',
+            `<h3>${cctv[id].cctvname}</h3>`,
+            `<video src=${cctv[id].cctvurl} width="400px" height="300px" controls autoplay playsinline muted type="application/x-mpegURL"></video>`,
+            '</div>'
+          ].join('') 
+        });
+        let newMarker = new naver.maps.Marker({
+          position:e.coord,
+          map:mapRef.current
+        })
+        if(cctvWindow.getMap()) {
+          cctvWindow.close()
+        } else {
+          cctvWindow.open(mapRef.current,newMarker)
+        }
       })
     })
   },[cctv])
