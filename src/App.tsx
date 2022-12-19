@@ -1,10 +1,9 @@
 import Minho from "./Components/Minho";
-import Main from "./Components/Main/Main";
+import Map from "./Components/Map/Map"
 const App = () => {
   return (
     <>
-      {/* <Minho /> */}
-      <Main/>
+      <Map />
     </>
   );
 }
