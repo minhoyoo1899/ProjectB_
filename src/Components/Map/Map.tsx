@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import axios from "axios"
 import styled from 'styled-components'
 import Side from '../Main/Side'
+import Bottom from '../Main/Bottom'
 
 function Map() {
   //현위치 마커
@@ -134,6 +135,7 @@ function Map() {
     <Bg>
       <MapBox id="map">
         <Side/>
+        <Bottom/>
       </MapBox> 
     </Bg>
   )
