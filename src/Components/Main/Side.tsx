@@ -1,9 +1,12 @@
-import React from "react";
+
 import styled from "styled-components";
+import Event from "./evnet";
 
 const Side = () =>{
   return(
-    <Container>사이드 박스</Container>
+    <Container>
+      <Event/>
+    </Container>
   )
 }
 
@@ -11,10 +14,12 @@ export default Side
 
 const Container = styled.div`
   width:20%;
-  height:50%;
-  background-color:gray;
+  height:70%;
+  background-color:rgba(160,160,160,0.4);
   position:absolute;
   top:20%;
   z-index:1;
-  opacity:0.5
+  border-radius:2px;
+  padding:10px;
+  
 `
