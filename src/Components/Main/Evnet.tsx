@@ -5,11 +5,11 @@ const Event = () =>{
   return(
     <Container>
       <div>
-        <Title>사고정보</Title>
+        <Title color="tomato">사고정보</Title>
         <Content>00 구간 정체중</Content>
       </div>
       <div>
-        <Title color="yellow">돌발정보</Title>
+        <Title color="#FFC314">돌발정보</Title>
         <Content>00 구간 화물차 사고</Content>
       </div>
       
@@ -21,7 +21,7 @@ export default Event;
 const Container = styled.div`
   width:100%;
   height:max-content;
-  font-size:.8em;
+  font-size:.7em;
   display:flex;
   flex-direction:column;
   gap:50px;
