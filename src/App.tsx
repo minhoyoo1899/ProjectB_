@@ -3,9 +3,9 @@ import Map from "./Components/Map/Map"
 const App = () => {
   return (
     <>      
-      {/* <div>
+      <div>
         <Map />
-      </div> */}
+      </div>
     </>
   );
 }

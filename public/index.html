@@ -5,49 +5,12 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=jio9z2ehit"></script>
-  <!-- <script src="../build/map.js" defer></script> -->
+  <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=jio9z2ehit"></script>  
   <title>Welcome!</title>
 </head>
 
 <body>
   <div id="root"></div>
-  <script>
-    // var mapOptions = {
-    //   center: new naver.maps.LatLng(37.3595704, 127.105399),
-    //   zoom: 10,
-    // };
-
-    // var root = new naver.maps.Map("root", mapOptions);
-
-    var options = {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0
-      };
-      function success(pos) {
-      var crd = pos.coords;
-      console.log('현재위치');
-      console.log('위도 : ' + crd.latitude);
-      console.log('경도: ' + crd.longitude);
-      // console.log('오차범위 ' + crd.accuracy + ‘m’);
-      //지도 그릴 div
-      let root = new naver.maps.Map(document.getElementById('root'), {
-      center: new naver.maps.LatLng(crd.latitude, crd.longitude),
-      //확대값 옵션(실행시에 삭제)
-      zoom: 15
-      });
-      //마커 표시
-      let marker = new naver.maps.Marker({
-      position: new naver.maps.LatLng(crd.latitude, crd.longitude),
-      map: root
-      });
-      };
-      function error(err) {
-      console.warn('ERROR(' + err.code + '): ' + err.message);
-      };
-      navigator.geolocation.getCurrentPosition(success, error, options);
-  </script>
 </body>
 
 </html>
