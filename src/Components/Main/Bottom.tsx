@@ -2,7 +2,6 @@ import styled from "styled-components";
 import { FaCarAlt } from "react-icons/fa"
 import {FaExclamationTriangle} from "react-icons/fa"
 import {FaCarCrash} from "react-icons/fa"
-import {FaCamera} from "react-icons/fa"
 import {BsFillCameraVideoFill} from "react-icons/bs"
 
 const Bottom = () =>{
