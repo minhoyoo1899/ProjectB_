@@ -1,10 +1,14 @@
-import React from 'react'
+import React, {ReactNode} from 'react'
+import Destination from '../Destination/Destination'
 import Map from '../Map/Map'
+
 
 function Main() {
   return (
     <div>
-      <Map></Map>
+      <Map>
+        {/* <Destination></Destination> */}
+      </Map>
     </div>
   )
 }

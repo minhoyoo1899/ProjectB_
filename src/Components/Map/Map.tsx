@@ -1,15 +1,21 @@
-import React, { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import React, { useEffect, useRef, useState, ReactNode } from 'react'
 import axios from "axios"
 import styled from 'styled-components'
+import Destination from '../Destination/Destination'
 
-function Map() {
+interface Main {
+  children: ReactNode;
+}
+
+function Map({ children }: Main) {
   //현위치 마커
   const markRef = useRef<any>()
-
+  //cctv 마커 
+  const cctvMarkRef = useRef<any>()
   //지도용
   const mapRef = useRef<any>()
   //cctv 정보
-  const cctvI = useRef<any>()
+  const cctvPos = useRef<any>()
   //현재 좌표의 위도 경도 담을 스테이트
   const [location, setLocation] = useState<any>({
     latitude: "",
@@ -17,10 +23,7 @@ function Map() {
   })
   
   //cctv 좌표 담을 스테이트
-  const [cctv, setCctv] = useState<any>({
-    lat: "",
-    lng : ""
-  })
+  const [cctv, setCctv] = useState<any>([])
   
   //서버에 요청 
   useEffect(()=> {
@@ -28,13 +31,18 @@ function Map() {
       const datas = await axios.get("http://localhost:6565/route")
       // console.log(datas)
       const cctvData = await axios.get("http://localhost:6565/cctv")
-      console.log(cctvData.data.response.data[0])
-      cctvI.current = cctvData.data.response.data[0]
-      let cctvCoord = cctvData.data.response.data[0]
-      setCctv({
-        lat : Number(cctvCoord.coordy),
-        lng : Number(cctvCoord.coordx)
-      })
+      console.log(cctvData.data.response.data)
+      // console.log(cctvData.data.response.data[0])
+      cctvPos.current = cctvData.data.response.data
+      let cctvCoord = cctvData.data.response.data
+      console.log(cctvCoord)
+      setCctv(cctvCoord)
+      
+
+      // setCctv({
+      //   lat : Number(cctvCoord.coordy),
+      //   lng : Number(cctvCoord.coordx)
+      // })
       const routePath = datas.data.route.traoptimal[0].path
     }
     getDatas();
@@ -58,24 +66,19 @@ function Map() {
   const [centerX, setCenterX] = useState<number>(127.3845475)
   const [centerY, setCenterY] = useState<number>(36.3504119)
   // 지도 줌 값 
-  const [zoom, setZoom] = useState<number>(15)
+  const [zoom, setZoom] = useState<number>(12)
   // 지도
   useEffect(()=>{
     let trafficLayer = new naver.maps.TrafficLayer({
       interval: 300000 // 5분마다 새로고침 (최소값 5분)
     });
     mapRef.current = new naver.maps.Map("map", {
-      // center: new naver.maps.LatLng(location.latitude, location.longitude),
       center: new naver.maps.LatLng(centerY,centerX),
       zoom:zoom,
       mapTypeControl: true,
       // zoomControl: true,  
     });
-    // console.log(mapRef.current.center)
     trafficLayer.setMap(mapRef.current)
-    // setCenterX(mapRef.current.center.x)
-    // setCenterY(mapRef.current.center.y)
-    
     naver.maps.Event.once(mapRef.current,"init",(e)=>{
       trafficLayer.setMap(mapRef.current)
     })
@@ -95,7 +98,22 @@ function Map() {
           scaledSize : new naver.maps.Size(80,80),
         }
       })
-  },[location])
+  },[location,centerX])
+
+  useEffect(()=>{
+    console.log(cctv)
+    cctv.map((el:any)=>{
+      // console.log(el.coordx, el.coordy)
+      cctvMarkRef.current = new naver.maps.Marker({
+        position: new naver.maps.LatLng(el.coordy,el.coordx),
+        map : mapRef.current
+      })
+      // console.log(cctvMarkRef.current)
+      naver.maps.Event.addListener(cctvMarkRef.current,"click",(e)=>{
+        console.log(e)
+      })
+    })
+  },[cctv])
   
   useEffect(() => {
     if (typeof location !== "string") {
@@ -126,12 +144,13 @@ function Map() {
         }
       })
     }
-  }, [location, centerX]);
+  }, [ centerX]);
 
 
   return (
     <Bg>
-      <MapBox id="map"></MapBox>
+      <MapBox id="map">
+      </MapBox>
     </Bg>
   )
 }
@@ -145,6 +164,7 @@ function Map() {
   const MapBox = styled.div`
     width: 100vw;
     height: 100vh;
+    z-index:0;
   `
 
 export default Map

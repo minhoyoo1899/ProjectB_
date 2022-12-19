@@ -44,20 +44,23 @@ app.get("/route", async(req,res,next)=> {
   }
 })    
 
+
 app.get("/cctv", async(req,res)=> {
-    try {
-  let cctvResult = await axios({
-    method : "get",
-    url: 'https://openapi.its.go.kr:9443/cctvInfo?apiKey=4537498ac13e4a3a9e10f66e3984c96a&type=ex&cctvType=2&minX=127.100000&maxX=128.890000&minY=34.100000&maxY=39.100000&getType=json',
-  });
-  const cctvMsg = cctvResult.data
-  console.log(cctvMsg)
-  res.send(cctvMsg)
-          
-  }catch(err){
-    console.log(err)
-  }
+  try {
+let cctvResult = await axios({
+  method : "get",
+  url: 'https://openapi.its.go.kr:9443/cctvInfo?apiKey=4537498ac13e4a3a9e10f66e3984c96a&type=ex&cctvType=2&minX=127.234227&maxX=127.570949&minY=36.192958&maxY=36.488949&getType=json',
+});
+const cctvMsg = cctvResult.data
+// console.log(cctvMsg)
+res.send(cctvMsg)
+        
+}catch(err){
+  console.log(err)
+}
 }) 
+
+
 
 // 포트 넘버는 네이버에 본인이 등록한 애플리케이션 주소로 변경  
 app.listen(6565, ()=> {
