@@ -57,8 +57,7 @@ app.get("/", async (req, res) => {
     });
 
     const resultMsg = result.data;
-    console.log(typeof resultMsg)
-    conn.query
+    console.log(typeof resultMsg)    
     res.send(resultMsg);
   } catch (err) {
     console.log(err);
@@ -77,7 +76,16 @@ app.get("/db", async (req, res) => {
 });
 
 app.get("/direction15", async (req, res) => { 
-  // try{}
+  try {
+    const result = await axios({
+      method: "get",
+      url: "https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=127.377579,36.349252&goal=127.408952,36.321161&cartype=4",
+      headers: header,
+    })
+    const resultMsg = result.data;
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 
