@@ -151,7 +151,7 @@ const Event = () =>{
       },
       {
           "type": "국도",
-          "eventType": "공사",
+          "eventType": "교통사고",
           "eventDetailType": "시설물보수작업",
           "startDate": "20221220000000",
           "coordX": "127.27543",
@@ -162,7 +162,7 @@ const Event = () =>{
           "roadDrcType": "시점방향",
           "lanesBlockType": "",
           "lanesBlocked": "1 차로",
-          "message": "",
+          "message": "교통사고",
           "endDate": ""
       },
       {
@@ -183,19 +183,18 @@ const Event = () =>{
       }
   ]
   
-
   const [check,setCheck] = useState(false)
   const [eventView,setEventView] = useState([])
-    useEffect(()=>{
-      fetch(`https://openapi.its.go.kr:9443/eventInfo?apiKey=${process.env.REACT_APP_ItsKey}&type=all&eventType=all&minX=127.234227&maxX=127.570949&minY=36.192958 &maxY=36.488949&getType=json`)
-        .then((response)=>response.json())
-        .then((response)=>{
-          console.log(response.body.items)
-          setEventView(response.body.items)
-        }).catch((err)=>{
-          console.log(err)
-        })
-    },[])
+    // useEffect(()=>{
+    //   fetch(`https://openapi.its.go.kr:9443/eventInfo?apiKey=9e76fe76e732482fa9e68860dc39c0ce&type=all&eventType=all&minX=127.234227&maxX=127.570949&minY=36.192958&maxY=36.488949&getType=json`)
+    //     .then((response)=>response.json())
+    //     .then((response)=>{
+    //       //console.log(response.body.items)
+    //       setEventView(response.body.tems)
+    //     }).catch((err)=>{
+    //       console.log(err)
+    //     })
+    // },[])
     
 
   let count1 = 0; //사고정보
@@ -207,12 +206,12 @@ const Event = () =>{
         <Title color="tomato">사고정보</Title>
         <Content>
         {
-          eventView.map((item:any)=>{
+          test.map((item:any)=>{
             if(item.eventType === '교통사고'){
               count1++;
               return (
                 <div key={item.linkId}>
-                  <div>{item.roadName}</div>
+                  <div style={{fontWeight:'bold'}}>{item.roadName}</div>
                   <div>{item.message}</div>
                 </div>
               )
@@ -232,7 +231,7 @@ const Event = () =>{
         <Title color="#FFC314">돌발정보</Title>
         <Content>
         {
-          eventView.map((item:any)=>{
+          test.map((item:any)=>{
             if(item.eventType !== '교통사고'){
               count2++;
               return (
