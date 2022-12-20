@@ -3,6 +3,7 @@ import axios from "axios"
 import styled from 'styled-components'
 import Side from '../Main/Side'
 import Bottom from '../Main/Bottom'
+import Weather from '../Main/Weather'
 
 function Map() {
   //현위치 마커
@@ -134,6 +135,7 @@ function Map() {
   return (
     <Bg>
       <MapBox id="map">
+        <Weather/>
         <Side/>
         <Bottom/>
       </MapBox> 

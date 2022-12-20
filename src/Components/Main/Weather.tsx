@@ -20,6 +20,8 @@ const Weather = () => {
     //오늘과 어제 날짜 8자리 text로 바꾸기
     setDateText(`${today.getFullYear()}년 ${today.getMonth()+1}월 ${today.getDate()}일 [${week[today.getDay()]}]`)
     //오늘 날짜 text
+    let timeText = `0${today.getHours()}00`.slice(-4);
+    //현재 시각 text
     let serviceKey = 'V7OxcW%2F080Fdwrj0pJIRnO%2FcTyn%2FGt4LuDb5FMAycSMwmAGQ1uk3TkqjIpf0UiQTVgrnsRjf9%2FPgbEsl2r4avw%3D%3D';
     let nx = '32'//위도
     let ny = '126'//경도
@@ -32,12 +34,15 @@ const Weather = () => {
       a.map((item:any)=>{
         if(item.category === 'TMX' && item.fcstDate === todayText){
           setTMX(`${Number(item.fcstValue)}°C`)
+          console.log(item.fcstValue)
         }
         if(item.category === 'TMN' && item.fcstDate === todayText){
           setTMN(`${Number(item.fcstValue)}°C`)
+          console.log(item.fcstValue)
         }
-        if(item.category === 'SKY' && item.fcstDate === todayText && item.fcstTime === `${today.getHours()}00`){
+        if(item.category === 'SKY' && item.fcstDate === todayText && item.fcstTime === timeText){
           setSKY(`${SKYdata[item.fcstValue]} (${today.getHours()}시 00분 기준)`)
+          console.log(item);
         }
       })
     })
@@ -55,7 +60,7 @@ const Weather = () => {
         </div>
       </TextBox>
       <ImgBox>
-        이미지
+        
       </ImgBox>
     </WeatherBox>
   );
@@ -63,11 +68,11 @@ const Weather = () => {
 const WeatherBox = styled.div`
   width: 250px;
   height: 105px;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(40,40,40,0.5);
   display:flex;
   position: absolute;
-  top:10px;
-  left:10px;
+  top:3%;
+  z-index:1;
 `
 
 const TextBox = styled.div`
@@ -85,9 +90,6 @@ const TextBox = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: center;
-    >p{
-      margin: 0px;
-    }
   }
 `
 
