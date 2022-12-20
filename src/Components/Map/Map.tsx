@@ -1,19 +1,19 @@
-import React, { useEffect, useRef, useState, ReactNode } from 'react'
+import React, { useEffect, useRef, useState, ReactNode, forwardRef } from 'react'
 import axios from "axios"
 import styled from 'styled-components'
 import Side from '../Main/Side'
 import Bottom from '../Main/Bottom'
-import {BsFillCameraVideoFill} from "react-icons/bs"
 
 interface Main {
   children: ReactNode;
 }
+let testArr:any[] = [];
 
-function Map({ children }: Main ) {
+function Map() {
   //현위치 마커
   const markRef = useRef<any>()
   //cctv 마커 
-  const cctvMarkRef = useRef<any>()
+  const cctvMarkRef = useRef<any>([])
   //지도용
   const mapRef = useRef<any>()
   //cctv 정보
@@ -40,6 +40,8 @@ function Map({ children }: Main ) {
       let cctvCoord = cctvData.data.response.data
       // console.log(cctvCoord)
       setCctv(cctvCoord)
+      testArr.push(cctvCoord)
+      // console.log(testArr[0])
       
 
       // setCctv({
@@ -91,6 +93,7 @@ function Map({ children }: Main ) {
   //현재위치 마커 
   useEffect(()=> {
       const currentPosition = [location.latitude, location.longitude];
+      
       //마커관련
       markRef.current = new naver.maps.Marker({
         position : new naver.maps.LatLng(currentPosition[0],currentPosition[1]),
@@ -102,13 +105,13 @@ function Map({ children }: Main ) {
         }
       })
   },[location,centerX])
-
+  
   //cctv 띄우는 코드 
   useEffect(()=>{
     cctv.map((el:any,id:number)=>{
       // console.log(el.coordx, el.coordy)
       //cctv 마커 
-      cctvMarkRef.current = new naver.maps.Marker({
+      let cctvM = new naver.maps.Marker({
         position: new naver.maps.LatLng(el.coordy,el.coordx),
         map : mapRef.current,
         icon: {
@@ -116,12 +119,14 @@ function Map({ children }: Main ) {
           scaledSize : new naver.maps.Size(32,32),
         }
       })
+      cctvMarkRef.current.push(cctvM)
       // console.log(cctvMarkRef.current)
+
       //Cctv 마커클릭 했을때 
-      naver.maps.Event.addListener(cctvMarkRef.current,"click",(e)=>{
+      naver.maps.Event.addListener(cctvMarkRef.current[id],"click",(e)=>{
         // console.log(cctv[id])
         // console.log(mapRef.current)
-        // console.log(e)
+        // console.log("e")
         let cctvWindow = new naver.maps.InfoWindow({
           //cctv 아이콘 클릭시 나타날 컨텐츠
           content: [
@@ -145,16 +150,23 @@ function Map({ children }: Main ) {
         else {
           cctvWindow.open(mapRef.current,newMarker)
           newMarker.setMap(null)
+          console.log(cctvMarkRef.current.visible)
           //cctv 창이 뜬 상태에서 지도 클릭시 cctv 창 닫기
           naver.maps.Event.addListener(mapRef.current,"click",()=>{
-              if(e.domEvent.type === "click"){
-                cctvWindow.close()
+            if(e.domEvent.type === "click"){
+              // setCctv([])
+              // // cctvMarkRef.current = []
+              // cctvMarkRef.current.map((el:any,id:number)=>{
+              //     cctvMarkRef.current[id].setMap(null)
+              // })
+              cctvWindow.close()
               }
             })
-        }
+          }
+        })
       })
-    })
-  },[cctv])
+    },[cctv,cctvMarkRef])
+  // console.log(testArr)
   
   // useEffect(() => {
   //   if (typeof location !== "string") {
@@ -190,9 +202,9 @@ function Map({ children }: Main ) {
 
   return (
     <Bg>
-      <MapBox id="map">
+      <MapBox id="map" >
         <Side/>
-        <Bottom test={mapRef}/>
+        <Bottom ref={cctvMarkRef}/>
       </MapBox>
     </Bg>
   )

@@ -19,7 +19,7 @@ const Event = () =>{
     <Container>
       <div>
         <Title color="tomato">사고정보</Title>
-        {
+        {/* {
           eventView.map((item:any)=>{
             return(
               
@@ -39,13 +39,13 @@ const Event = () =>{
               </Content>
             )
           })
-        }
+        } */}
         
       </div>
       {/* 돌발정보 데이터 반복 삽입 */}
       <div>
         <Title color="#FFC314">돌발정보</Title>
-        {
+        {/* {
           eventView.map((item:any)=>{
             return(
               <Content key={item.linkId}>
@@ -61,7 +61,7 @@ const Event = () =>{
             )
             
           })
-        }
+        } */}
       </div>
     </Container>
   )
