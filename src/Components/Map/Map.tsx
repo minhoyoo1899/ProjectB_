@@ -128,6 +128,13 @@ function Map() {
         }
       })
     }
+
+    
+    let eventMarker = new naver.maps.Marker({
+      position: new naver.maps.LatLng(36.3547667, 127.3897511),
+      map:mapRef.current
+    })
+
   }, [location, centerX]);
 
 
