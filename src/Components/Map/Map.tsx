@@ -38,12 +38,6 @@ function Map({ children }: Main) {
       let cctvCoord = cctvData.data.response.data
       console.log(cctvCoord)
       setCctv(cctvCoord)
-      
-
-      // setCctv({
-      //   lat : Number(cctvCoord.coordy),
-      //   lng : Number(cctvCoord.coordx)
-      // })
       const routePath = datas.data.route.traoptimal[0].path
     }
     getDatas();
@@ -68,7 +62,7 @@ function Map({ children }: Main) {
   const [centerY, setCenterY] = useState<number>(36.3504119)
   // 지도 줌 값 
   const [zoom, setZoom] = useState<number>(12)
-  // 지도
+  // 교통흐름지도
   useEffect(()=>{
     let trafficLayer = new naver.maps.TrafficLayer({
       interval: 300000 // 5분마다 새로고침 (최소값 5분)
@@ -137,38 +131,6 @@ function Map({ children }: Main) {
       })
     })
   },[cctv])
-  
-  useEffect(() => {
-    if (typeof location !== "string") {
-        //클릭한 위치에 마커 생성
-      naver.maps.Event.addListener(mapRef.current,"click",(e)=> {
-        // console.log(e)
-        setCenterX(e.coord._lng)
-        setCenterY(e.coord._lat)
-        setZoom(17)
-        let infoWindow = new naver.maps.InfoWindow({
-          content: [
-            '<div class="iw_inner">',
-            `<h2>선택한 좌표값</h2>`,
-            `<p>${e.coord._lat}<br>
-            ${e.coord._lng}`,
-            '</p>',
-            '</div>'
-          ].join('')
-        });
-        let newMarker = new naver.maps.Marker({
-          position:e.coord,
-          map:mapRef.current
-        })
-        if(infoWindow.getMap()) {
-          infoWindow.close()
-        } else {
-          infoWindow.open(mapRef.current,newMarker)
-        }
-      })
-    }
-  }, [ centerX]);
-
 
   return (
     <Bg>
