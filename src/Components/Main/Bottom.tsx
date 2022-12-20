@@ -34,7 +34,8 @@ const Bottom = (props:any,ref:any) =>{
     </Container>
   )
 }
-
+// BFBFBF
+// E6E6E6
 export default forwardRef(Bottom);
 
 const Container = styled.div`
