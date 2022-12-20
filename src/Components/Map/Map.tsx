@@ -153,4 +153,4 @@ function Map() {
     padding:2%;
   `
 
-export default Map
+export default Map;
