@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components'
 
-import {TiWeatherSunny, TiWeatherPartlySunny, TiWeatherCloudy} from 'react-icons/ti'
+import {TiWeatherSunny, TiWeatherPartlySunny, TiWeatherCloudy, TiWeatherSnow, TiWeatherShower} from 'react-icons/ti'
 
 const Weather = (props:any) => {
   const week = ['일','월','화','수','목','금','토']
@@ -43,6 +43,15 @@ const Weather = (props:any) => {
           setSKY(`${SKYdata[item.fcstValue]} (${timeText.slice(0,2)}시 00분 기준)`)
           setIMG(item.fcstValue)
         }
+        if(item.category === 'PTY' && item.fcstDate === todayText && item.fcstTime === timeText){
+          // 없음(0), 비(1), 비/눈(2), 눈(3), 소나기(4)
+          if(item.fcstValue === '1' || item.fcstValue === '2'|| item.fcstValue === '4'){
+            setIMG('RAIN')
+          }
+          if(item.fcstValue === '3'){
+            setIMG('SNOW')
+          }
+        }
       })
     })
   },[props])
@@ -70,6 +79,12 @@ const Weather = (props:any) => {
         }
         {
           IMG === '4' && <TiWeatherCloudy/>
+        }
+        {
+          IMG === 'RAIN' && <TiWeatherShower/>
+        }
+        {
+          IMG === 'SNOW' && <TiWeatherSnow/>
         }
         </ImgBox>
       </WeatherBox>
