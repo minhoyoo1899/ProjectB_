@@ -57,7 +57,8 @@ app.get("/", async (req, res) => {
     });
 
     const resultMsg = result.data;
-    // console.log(resultMsg)
+    console.log(typeof resultMsg)
+    conn.query
     res.send(resultMsg);
   } catch (err) {
     console.log(err);
@@ -67,12 +68,16 @@ app.get("/", async (req, res) => {
 app.get("/db", async (req, res) => {
   conn.query("SELECT * FROM test_table;", (error, rows) => {
     if (error) throw error;
-    console.log(rows);
-    console.log(typeof rows);
+    // console.log(rows);
+    // console.log(typeof rows);
     res.statusCode = 200;
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.end(`데이터 테스트 : ${rows}`);
   });
+});
+
+app.get("/direction15", async (req, res) => { 
+  // try{}
 });
 
 
