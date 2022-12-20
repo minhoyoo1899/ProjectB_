@@ -135,7 +135,7 @@ function Map() {
   return (
     <Bg>
       <MapBox id="map">
-        <Weather/>
+        <Weather props={{centerX,centerY}}/>
         <Side/>
         <Bottom/>
       </MapBox> 

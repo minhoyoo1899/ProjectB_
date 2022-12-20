@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 import {TiWeatherSunny, TiWeatherPartlySunny, TiWeatherCloudy} from 'react-icons/ti'
 
-const Weather = () => {
+const Weather = (props:any) => {
   const week = ['일','월','화','수','목','금','토']
   const SKYdata = ['0','맑음','2','구름 많음','흐림']
   //SKY로 받아오는 값 1: 맑음 3: 구름많음 4: 흐림
@@ -25,30 +25,27 @@ const Weather = () => {
     let timeText = `0${today.getHours()}00`.slice(-4);
     //현재 시각 text
     let serviceKey = 'V7OxcW%2F080Fdwrj0pJIRnO%2FcTyn%2FGt4LuDb5FMAycSMwmAGQ1uk3TkqjIpf0UiQTVgrnsRjf9%2FPgbEsl2r4avw%3D%3D';
-    let nx = '32'//위도
-    let ny = '126'//경도
+    let nx = String(props.props.centerY).split('.')[0] //위도
+    let ny = String(props.props.centerX).split('.')[0] //경도
     let baseTime = '0200' // 새벽 2시부터 3시간 단위로 제공.
     fetch(`https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${serviceKey}&numOfRows=700&base_date=${yesterdayText}&base_time=${baseTime}&nx=${nx}&ny=${ny}&dataType=JSON`)
     .then((res)=>res.json())
     .then((res)=>{
-      console.log(res)
       let a = res.response.body.items.item
       a.map((item:any)=>{
         if(item.category === 'TMX' && item.fcstDate === todayText){
           setTMX(`${Number(item.fcstValue)}`)
-          console.log(item.fcstValue)
         }
         if(item.category === 'TMN' && item.fcstDate === todayText){
           setTMN(`${Number(item.fcstValue)}`)
-          console.log(item.fcstValue)
         }
         if(item.category === 'SKY' && item.fcstDate === todayText && item.fcstTime === timeText){
-          setSKY(`${SKYdata[item.fcstValue]} (${today.getHours()}시 00분 기준)`)
+          setSKY(`${SKYdata[item.fcstValue]} (${timeText.slice(0,2)}시 00분 기준)`)
           setIMG(item.fcstValue)
         }
       })
     })
-  },[])
+  },[props])
   return (
     <Container>
       <Home>
