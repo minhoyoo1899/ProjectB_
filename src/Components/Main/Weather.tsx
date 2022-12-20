@@ -50,40 +50,64 @@ const Weather = () => {
     })
   },[])
   return (
-    <WeatherBox>
-      <TextBox>
-        <div>
-          <p>{DateText}</p>
-        </div>
-        <div>
-          <p>{SKY}</p>
-          <p>최고: {TMX}°C 최저: {TMN}°C</p>
-        </div>
-      </TextBox>
-      <ImgBox>
-      {
-        IMG === '1' && <TiWeatherSunny/>
-      }
-      {
-        IMG === '3' && <TiWeatherPartlySunny/>
-      }
-      {
-        IMG === '4' && <TiWeatherCloudy/>
-      }
-      </ImgBox>
-    </WeatherBox>
+    <Container>
+      <Home>
+        <img src="img/logo.png"/>
+      </Home>
+      <WeatherBox>
+        <TextBox>
+          <div>
+            <p>{DateText}</p>
+          </div>
+          <div>
+            <p>{SKY}</p>
+            <p>최고: {TMX}°C 최저: {TMN}°C</p>
+          </div>
+        </TextBox>
+        <ImgBox>
+        {
+          IMG === '1' && <TiWeatherSunny/>
+        }
+        {
+          IMG === '3' && <TiWeatherPartlySunny/>
+        }
+        {
+          IMG === '4' && <TiWeatherCloudy/>
+        }
+        </ImgBox>
+      </WeatherBox>
+    </Container>
   );
 }
+
+const Container = styled.div`
+  width:250px;
+  height:150px;
+  position: absolute;
+  z-index: 1;
+  top: 2%;
+  border-radius: 10px 10px 2px 2px;
+  overflow: hidden;
+`
+
+const Home = styled.div`
+  width:250px;
+  height:45px;
+  background-color: #fff;
+  display:flex;
+  align-items:center;
+  padding:20px;
+  >img{
+    width:80px;
+  }
+`
+
 const WeatherBox = styled.div`
   width: 250px;
   height: 105px;
   background-color: rgba(160,160,160,0.4);
   display:flex;
-  position: absolute;
-  top: 3%;
-  z-index: 1;
   backdrop-filter: blur(10px);
-  border-radius: 5px;
   padding-left: 12px;
   padding-right: 3px;
   justify-content:center;
