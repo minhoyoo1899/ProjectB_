@@ -4,7 +4,8 @@ import {FaExclamationTriangle} from "react-icons/fa"
 import {FaCarCrash} from "react-icons/fa"
 import {BsFillCameraVideoFill} from "react-icons/bs"
 
-const Bottom = () =>{
+const Bottom = (test:any) =>{
+  console.log(test.children)
   return(
     <Container>
       <Item><BsFillCameraVideoFill/>&nbsp;&nbsp;CCTV</Item>

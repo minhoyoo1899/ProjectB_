@@ -3,12 +3,13 @@ import axios from "axios"
 import styled from 'styled-components'
 import Side from '../Main/Side'
 import Bottom from '../Main/Bottom'
+import {BsFillCameraVideoFill} from "react-icons/bs"
 
 interface Main {
   children: ReactNode;
 }
 
-function Map({ children }: Main) {
+function Map({ children }: Main ) {
   //현위치 마커
   const markRef = useRef<any>()
   //cctv 마커 
@@ -30,14 +31,14 @@ function Map({ children }: Main) {
   //서버에 요청 
   useEffect(()=> {
     const getDatas = async()=>{
-      const datas = await axios.get("http://localhost:6565/route")
+      // const datas = await axios.get("http://localhost:6565/route")
       // console.log(datas)
       const cctvData = await axios.get("http://localhost:6565/cctv")
-      console.log(cctvData.data.response.data)
-      console.log(cctvData.data.response.data)
+      // console.log(cctvData.data.response.data)
+      // console.log(cctvData.data.response.data)
       cctvPos.current = cctvData.data.response.data
       let cctvCoord = cctvData.data.response.data
-      console.log(cctvCoord)
+      // console.log(cctvCoord)
       setCctv(cctvCoord)
       
 
@@ -45,7 +46,7 @@ function Map({ children }: Main) {
       //   lat : Number(cctvCoord.coordy),
       //   lng : Number(cctvCoord.coordx)
       // })
-      const routePath = datas.data.route.traoptimal[0].path
+      // const routePath = datas.data.route.traoptimal[0].path
     }
     getDatas();
   },[])
@@ -85,7 +86,7 @@ function Map({ children }: Main) {
       trafficLayer.setMap(mapRef.current)
     })
   },[mapRef, centerX])
-  console.log(centerX,centerY)
+  // console.log(centerX,centerY)
   
   //현재위치 마커 
   useEffect(()=> {
@@ -102,23 +103,27 @@ function Map({ children }: Main) {
       })
   },[location,centerX])
 
+  //cctv 띄우는 코드 
   useEffect(()=>{
     cctv.map((el:any,id:number)=>{
       // console.log(el.coordx, el.coordy)
+      //cctv 마커 
       cctvMarkRef.current = new naver.maps.Marker({
         position: new naver.maps.LatLng(el.coordy,el.coordx),
         map : mapRef.current,
         icon: {
-          url: "Img/cctv.png", 
+          url: "Img/cctv2.png", 
           scaledSize : new naver.maps.Size(32,32),
         }
       })
       // console.log(cctvMarkRef.current)
+      //Cctv 마커클릭 했을때 
       naver.maps.Event.addListener(cctvMarkRef.current,"click",(e)=>{
-        console.log(cctv[id])
-        console.log(id)
-        console.log(e)
+        // console.log(cctv[id])
+        // console.log(mapRef.current)
+        // console.log(e)
         let cctvWindow = new naver.maps.InfoWindow({
+          //cctv 아이콘 클릭시 나타날 컨텐츠
           content: [
             '<div style="width:400px; height:400px; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:10px;"}}>',
             `<h3>${cctv[id].cctvname}</h3>`,
@@ -126,56 +131,68 @@ function Map({ children }: Main) {
             '</div>'
           ].join('') 
         });
+        
         let newMarker = new naver.maps.Marker({
           position:e.coord,
           map:mapRef.current
         })
+        //
+        //만약 cctv 가 화면에 띄워져 있을때 다른게 띄워지면 기존거 닫기 
         if(cctvWindow.getMap()) {
           cctvWindow.close()
-        } else {
+        } 
+        //cctv 가 화면에 띄워져 있지 않을때(초기화면) cctv 창 띄우기  
+        else {
           cctvWindow.open(mapRef.current,newMarker)
+          newMarker.setMap(null)
+          //cctv 창이 뜬 상태에서 지도 클릭시 cctv 창 닫기
+          naver.maps.Event.addListener(mapRef.current,"click",()=>{
+              if(e.domEvent.type === "click"){
+                cctvWindow.close()
+              }
+            })
         }
       })
     })
   },[cctv])
   
-  useEffect(() => {
-    if (typeof location !== "string") {
-        //클릭한 위치에 마커 생성
-      naver.maps.Event.addListener(mapRef.current,"click",(e)=> {
-        // console.log(e)
-        setCenterX(e.coord._lng)
-        setCenterY(e.coord._lat)
-        setZoom(17)
-        let infoWindow = new naver.maps.InfoWindow({
-          content: [
-            '<div class="iw_inner">',
-            `<h2>선택한 좌표값</h2>`,
-            `<p>${e.coord._lat}<br>
-            ${e.coord._lng}`,
-            '</p>',
-            '</div>'
-          ].join('')
-        });
-        let newMarker = new naver.maps.Marker({
-          position:e.coord,
-          map:mapRef.current
-        })
-        if(infoWindow.getMap()) {
-          infoWindow.close()
-        } else {
-          infoWindow.open(mapRef.current,newMarker)
-        }
-      })
-    }
-  }, [ centerX]);
+  // useEffect(() => {
+  //   if (typeof location !== "string") {
+  //       //클릭한 위치에 마커 생성
+  //     naver.maps.Event.addListener(mapRef.current,"click",(e)=> {
+  //       // console.log(e)
+  //       setCenterX(e.coord._lng)
+  //       setCenterY(e.coord._lat)
+  //       setZoom(17)
+  //       let infoWindow = new naver.maps.InfoWindow({
+  //         content: [
+  //           '<div class="iw_inner">',
+  //           `<h2>선택한 좌표값</h2>`,
+  //           `<p>${e.coord._lat}<br>
+  //           ${e.coord._lng}`,
+  //           '</p>',
+  //           '</div>'
+  //         ].join('')
+  //       });
+  //       let newMarker = new naver.maps.Marker({
+  //         position:e.coord,
+  //         map:mapRef.current
+  //       })
+  //       if(infoWindow.getMap()) {
+  //         infoWindow.close()
+  //       } else {
+  //         infoWindow.open(mapRef.current,newMarker)
+  //       }
+  //     })
+  //   }
+  // }, [ centerX]);
 
 
   return (
     <Bg>
       <MapBox id="map">
         <Side/>
-        <Bottom/>
+        <Bottom test={mapRef}/>
       </MapBox>
     </Bg>
   )
@@ -191,6 +208,7 @@ function Map({ children }: Main) {
     width: 100vw;
     height: 100vh;
     z-index:0;
+    padding : 2%;
   `
 
 export default Map
