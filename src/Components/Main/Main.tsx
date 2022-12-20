@@ -1,4 +1,8 @@
-import Map from "../Map/Map";
+
+import React, {ReactNode} from 'react'
+import Destination from '../Destination/Destination'
+import Map from '../Map/Map'
+
 const Main = () => {
 
   return (
@@ -7,4 +11,5 @@ const Main = () => {
     </>
   );
 }
+
 export default Main
