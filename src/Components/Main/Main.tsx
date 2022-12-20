@@ -1,16 +1,15 @@
+
 import React, {ReactNode} from 'react'
 import Destination from '../Destination/Destination'
 import Map from '../Map/Map'
 
+const Main = () => {
 
-function Main() {
   return (
-    <div>
-      <Map>
-        {/* <Destination></Destination> */}
-      </Map>
-    </div>
-  )
+    <>
+      <Map/>
+    </>
+  );
 }
 
 export default Main
