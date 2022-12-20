@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components'
 
+import {TiWeatherSunny, TiWeatherPartlySunny, TiWeatherCloudy} from 'react-icons/ti'
+
 const Weather = () => {
   const week = ['일','월','화','수','목','금','토']
   const SKYdata = ['0','맑음','2','구름 많음','흐림']
@@ -33,21 +35,20 @@ const Weather = () => {
       let a = res.response.body.items.item
       a.map((item:any)=>{
         if(item.category === 'TMX' && item.fcstDate === todayText){
-          setTMX(`${Number(item.fcstValue)}°C`)
+          setTMX(`${Number(item.fcstValue)}`)
           console.log(item.fcstValue)
         }
         if(item.category === 'TMN' && item.fcstDate === todayText){
-          setTMN(`${Number(item.fcstValue)}°C`)
+          setTMN(`${Number(item.fcstValue)}`)
           console.log(item.fcstValue)
         }
         if(item.category === 'SKY' && item.fcstDate === todayText && item.fcstTime === timeText){
           setSKY(`${SKYdata[item.fcstValue]} (${today.getHours()}시 00분 기준)`)
-          console.log(item);
+          setIMG(item.fcstValue)
         }
       })
     })
   },[])
-
   return (
     <WeatherBox>
       <TextBox>
@@ -56,11 +57,19 @@ const Weather = () => {
         </div>
         <div>
           <p>{SKY}</p>
-          <p>최고: {TMX} 최저: {TMN}</p>
+          <p>최고: {TMX}°C 최저: {TMN}°C</p>
         </div>
       </TextBox>
       <ImgBox>
-        
+      {
+        IMG === '1' && <TiWeatherSunny/>
+      }
+      {
+        IMG === '3' && <TiWeatherPartlySunny/>
+      }
+      {
+        IMG === '4' && <TiWeatherCloudy/>
+      }
       </ImgBox>
     </WeatherBox>
   );
@@ -68,25 +77,35 @@ const Weather = () => {
 const WeatherBox = styled.div`
   width: 250px;
   height: 105px;
-  background-color: rgba(40,40,40,0.5);
+  background-color: rgba(160,160,160,0.4);
   display:flex;
   position: absolute;
-  top:3%;
-  z-index:1;
+  top: 3%;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+  border-radius: 5px;
+  padding-left: 12px;
+  padding-right: 3px;
+  justify-content:center;
+  align-items: center;
 `
 
 const TextBox = styled.div`
   width: 70%;
-  height: 100%;
+  height: 60%;
   color: #fff;
   font-size: 14px;
   font-weight: bold;
-  padding-left: 12px;
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
-  >div{
-    height: 30%;
+  justify-content: space-between;
+  >div:nth-child(1){
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+  }
+  >div:nth-child(2){
+    height: 50%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -95,11 +114,15 @@ const TextBox = styled.div`
 
 const ImgBox = styled.div`
   width: 40%;
-  height: 100%;
+  height: 80%;
   color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
+  >svg{
+    width:80px;
+    height: 80px;
+  }
 `
 
 export default Weather;
