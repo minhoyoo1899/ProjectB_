@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      #UI {
+        width: 100px;
+        height: 100vh;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: #fff;
+      }
+    </style>
+    <title>네이버 지도 TEST</title>
+    <script
+      type="text/javascript"
+      src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=i3adj30j3s"
+    ></script>
+  </head>
+  <body>
+    <div id="map" style="width: 100vw; height: 100vh"></div>
+    <div id="UI">
+      <p id="line">거리재기</p>
+      <p id="text"></p>
+      <br />
+      <p id="text2"></p>
+      <div id="video"></div>
+    </div>
+    <script>
+      function test(obj1, obj2) {
+        let 위도_차이 = obj1["위도"] - obj2["위도"];
+        let 경도_차이 = obj1["경도"] - obj2["경도"];
+        // console.log("위도 차이 : " + 위도_차이);
+        // console.log("경도 차이 : " + 경도_차이);
+        let 위도 = (obj1["위도"] + obj2["위도"]) / 2;
+        let 위도반지름 = Math.cos((Math.PI * 위도) / 180) * 6400;
+        let 위도둘레 = 위도반지름 * 2 * Math.PI;
+        //? 위도마다 경도 1도당 거리가 달라지기때문에 따로 위도반지름을 설정함.
+        let 위도_거리 = (위도_차이 * 40000) / 360;
+        let 경도_거리 = (경도_차이 * 위도둘레) / 360;
+        //? 전체 360도중 위도 차이만큼의 거리를 계산해야하니 * 차이 / 360
+        let 거리 = Math.sqrt(위도_거리 ** 2 + 경도_거리 ** 2);
+        //? 대각선길이(전체 거리) = 루트(가로**2 + 세로**2)
+        // console.log(`거리 : ${거리.toFixed(2)}km`);
+        return 거리.toFixed(2);
+      }
+      //두 장소의 거리 계산하는 함수
+
+      //geolocation 현재 위치 위도 경도 추출 ( 오차가 있어서 실제 좌표는 직접 입력했음)
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        console.log(pos);
+        //지도 옵션 정의
+        const mapOptions = {
+          //초기 위도 경도 지정
+          center: new naver.maps.LatLng(36.35193849156777, 127.37843690491263),
+          zoom: 15,
+        };
+        //map 생성
+        const map = new naver.maps.Map("map", mapOptions);
+
+        const polyline = new naver.maps.Polyline({
+          map: map,
+          path: [],
+          strokeColor: "#ff0000",
+          strokeWeight: 2,
+        });
+
+        const key = "6a725a401d08494ba4fb68451ac09c8b";
+        const maxX = 127.38;
+        const minX = 127.18;
+        const maxY = 36.49;
+        const minY = 36.15;
+        // fetch(
+        //   `https://openapi.its.go.kr:9443/cctvInfo?apiKey=${key}&type=ex&cctvType=2&minX=${minX}&maxX=${maxX}&minY=${minY}&maxY=${maxY}&getType=json`
+        // )
+        //   .then((res) => res.json())
+        //   .then((res) => {
+        //     let data = res.response.data;
+        //     console.log(data);
+        //     data.map((item) => {
+        //       let marker = new naver.maps.Marker({
+        //         position: {
+        //           x: item.coordx,
+        //           y: item.coordy,
+        //         },
+        //         map: map,
+        //       });
+        //       marker.addListener("click", () => {
+        //         if (document.getElementById("video").children.length === 2) {
+        //           document.getElementById("video").children[0].remove();
+        //           document.getElementById("video").children[0].remove();
+        //         }
+        //         let video = document.createElement("video");
+        //         video.src = item.cctvurl;
+        //         // video.controls = true;
+        //         video.autoplay = true;
+        //         video.loop = true;
+        //         // video.play();
+        //         video.style.position = "absolute";
+        //         video.style.width = "300px";
+        //         video.style.height = "200px";
+        //         video.style.bottom = "10px";
+        //         video.style.left = "110px";
+        //         document.getElementById("video").appendChild(video);
+        //         let x = document.createElement("div");
+        //         x.textContent = "x";
+        //         x.style.position = "absolute";
+        //         x.style.width = "30px";
+        //         x.style.height = "30px";
+        //         x.style.bottom = "180px";
+        //         x.style.left = "380px";
+        //         x.style.fontSize = "24px";
+        //         x.style.alignItems = "center";
+        //         x.style.justifyContent = "center";
+        //         x.style.cursor = "pointer";
+        //         document.getElementById("video").appendChild(x);
+        //         x.addEventListener("click", () => {
+        //           document.getElementById("video").children[0].remove();
+        //           document.getElementById("video").children[0].remove();
+        //         });
+        //       });
+        //     });
+        //   });
+
+        fetch("http://127.0.0.1:6565/")
+          .then((res) => res.json())
+          .then((res) => {
+            let start = res.route.traoptimal[0].summary.start.location;
+            let goal = res.route.traoptimal[0].summary.goal.location;
+            let path = res.route.traoptimal[0].path;
+            let section = res.route.traoptimal[0].section;
+            let guide = res.route.traoptimal[0].guide;
+            const startMarker = new naver.maps.Marker({
+              map: map,
+              position: start,
+            });
+            const goalMarker = new naver.maps.Marker({
+              map: map,
+              position: goal,
+            });
+            const polyline = new naver.maps.Polyline({
+              map: map,
+              path: path,
+              strokeColor: "#00ff00",
+              strokeWeight: 5,
+            });
+            section.map((item) => {
+              console.log(item.congestion);
+              let start = item.pointIndex;
+              let end = item.pointIndex + item.pointCount;
+              let color = "#00ff00";
+              if (item.congestion === 3) {
+                color = "#ff0000";
+              } else if (item.congestion === 2) {
+                color = "#ff7f44";
+              }
+              const polyline = new naver.maps.Polyline({
+                map: map,
+                path: path.slice(start, end),
+                strokeColor: color,
+                strokeWeight: 5,
+              });
+            });
+            guide.map((item) => {
+              let point = polyline.path._array[item.pointIndex];
+              const marker = new naver.maps.Marker({
+                map: map,
+                position: point,
+              });
+              marker.addListener("mouseover", () => {
+                console.log(item.instructions);
+              });
+            });
+          });
+
+        const line = document.getElementById("line");
+
+        let arr = [];
+        let sumArr = [];
+        //클릭시 레이어에 현재 위도 경도 출력하도록 설정함
+        let lineState = false;
+        line.addEventListener("click", () => {
+          if (lineState) {
+            lineState = false;
+            line.style.backgroundColor = "white";
+            let sum = 0;
+            sumArr.map((item) => {
+              sum += Number(item);
+            });
+            document.getElementById("text").textContent = sum + "km";
+            sumArr = [];
+            arr = [];
+            polyline.getPath()._array = [];
+          } else {
+            lineState = true;
+            line.style.backgroundColor = "pink";
+          }
+        });
+
+        const marker = new naver.maps.Marker({
+          map: map,
+        });
+
+        naver.maps.Event.addListener(map, "click", function (e) {
+          let point = e.latlng;
+          let path = polyline.getPath();
+          if (lineState) {
+            path.push(point);
+            arr.push({ 위도: e.latlng._lat, 경도: e.latlng._lng });
+            if (arr.length === 2) {
+              let sum = test(arr[0], arr[1]);
+              sumArr.push(sum);
+              arr.shift();
+            }
+          }
+
+          marker.position = point;
+          marker.setPosition(e.latlng);
+          // console.log("위도: "+e.latlng._lat, "경도: "+e.latlng._lng)
+          var HOME_PATH = window.HOME_PATH || ".";
+          //화면에 출력할 정보창 내용
+          var contentString = [
+            '<div class="iw_inner">',
+            "<h3>현재 위치</h3>",
+            `<p>위도: ${e.latlng._lat}</p>`,
+            `<p>경도: ${e.latlng._lng}</p>`,
+            "</div>",
+          ].join("");
+          //위치 정보창 생성 => html 작성후 content 옵션에 대입함
+
+          const text2 = document.getElementById("text2");
+          text2.innerHTML = contentString;
+          //누르면 배열에 위도 경도 입력, 2번 이상 누를시 최근 2번의 거리 계산해서 콘솔에 출력
+        });
+      });
+    </script>
+  </body>
+</html>

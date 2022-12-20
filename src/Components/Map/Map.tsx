@@ -3,9 +3,9 @@ import axios from "axios"
 import styled from 'styled-components'
 import Side from '../Main/Side'
 import Bottom from '../Main/Bottom'
+import { stateStore } from '../store/stateStore
+import Weather from '../Main/Weather'
 import { response } from 'express'
-import { stateStore } from '../store/stateStore'
-
 
 function Map() {
   //현위치 마커
@@ -176,6 +176,7 @@ function Map() {
   return (
     <Bg>
       <MapBox id="map">
+        <Weather props={{centerX,centerY}}/>
         <Side/>
         <Bottom/>
       </MapBox> 
