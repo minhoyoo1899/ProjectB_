@@ -79,7 +79,7 @@ app.get("/direction15", async (req, res) => {
   try {
     const result = await axios({
       method: "get",
-      url: "https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=127.377579,36.349252&goal=127.408952,36.321161&cartype=4",
+      url: "https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=127.377579,36.349252&goal=127.408952,36.321161&waypoint=127.325118,36.300500",
       headers: header,
     })
     const resultMsg = result.data;
