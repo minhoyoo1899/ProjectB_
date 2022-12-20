@@ -61,6 +61,20 @@ res.send(cctvMsg)
 }) 
 
 
+app.get("/event",async(req,res)=>{
+  try{
+    let eventResult = await axios({
+      method : "get",
+      url: `https://openapi.its.go.kr:9443/eventInfo?apiKey=006a4eca1c784284a64eca250f68063c&type=all&eventType=all&minX=127.234227&maxX=127.570949&minY=36.192958 &maxY=36.488949&getType=json`
+    });
+    const eventData = eventResult.data.body.items
+    res.send(eventData)
+  }catch(err){
+    console.log(err)
+  }
+})
+
+
 
 // 포트 넘버는 네이버에 본인이 등록한 애플리케이션 주소로 변경  
 app.listen(6565, ()=> {
