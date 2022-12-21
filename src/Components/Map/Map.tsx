@@ -3,9 +3,9 @@ import axios from "axios"
 import styled from 'styled-components'
 import Side from '../Main/Side'
 import Bottom from '../Main/Bottom'
-import { stateStore } from '../store/stateStore
-import Weather from '../Main/Weather'
+import { stateStore } from '../store/stateStore'
 import { response } from 'express'
+import Weather from '../Main/Weather'
 
 function Map() {
   //현위치 마커
@@ -15,7 +15,7 @@ function Map() {
   const mapRef = useRef<any>()
   //cctv 정보
   const cctvI = useRef<any>()
-  //현재 좌표의 위도 경도 담을 스테이트
+  //현재 좌표의 위도 경도 담을 스테이트 
   const [location, setLocation] = useState<any>({
     latitude: "",
     longitude : ""
@@ -63,7 +63,7 @@ function Map() {
   const [centerX, setCenterX] = useState<number>(127.3845475)
   const [centerY, setCenterY] = useState<number>(36.3504119)
   // 지도 줌 값 
-  const [zoom, setZoom] = useState<number>(15)
+  const [zoom, setZoom] = useState<number>(10)
   // 지도
   useEffect(()=>{
     let trafficLayer = new naver.maps.TrafficLayer({
@@ -139,38 +139,36 @@ function Map() {
   
   useEffect(()=>{
     let test:any = []
-    
 
-  stateStore.subscribe(()=>{
-  
-    // markRef.current.getVisible(stateStore.getState())
+    //스토어 값이 변경될때 마커 출력or숨김 변경
+    stateStore.subscribe(()=>{
     test.map((item:any)=>{
       item.setVisible(stateStore.getState())
       console.log(item.visible)
     })
   })
-    fetch("http://localhost:6565/event")
+    fetch("http://localhost:8282/event")
     .then((response)=>response.json())
     .then((response)=>{
-      console.log(response)
+      //console.log(response)
       for(let i in response){
         if(response[i].eventType !== '교통사고'){
           markRef.current = new naver.maps.Marker({
             position:new naver.maps.LatLng(response[i].coordY,response[i].coordX),
             map:mapRef.current,
-            //visible: false
+            icon:{
+              url: '../img/error.png',
+              scaledSize : new naver.maps.Size(30,30)
+            },
+            visible:true
           })
           test.push(markRef.current)
-          console.log(test)
-          //console.log(response[i].coordY)
-          //console.log(markRef)
+          //console.log(test)
         }
-        
       }
     }).catch((err)=>{
       console.log(err)
     })
-   
   },[])
 
   return (
