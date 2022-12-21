@@ -2,13 +2,14 @@ import styled from "styled-components";
 import { FaCarAlt } from "react-icons/fa"
 import {FaExclamationTriangle} from "react-icons/fa"
 import {FaCarCrash} from "react-icons/fa"
-import {BsFillCameraVideoFill} from "react-icons/bs"
-<<<<<<< HEAD
+import { BsFillCameraVideoFill } from "react-icons/bs"
+import { forwardRef, useState } from "react";
 import { stateStore } from "../store/stateStore";
 
-const Bottom = () =>{
 
-  //리덕스 세팅
+  const Bottom = (props: any, ref: any) => {
+  
+      //리덕스 세팅
   function eventClick(){
     if(stateStore.getState()===false){
       stateStore.dispatch({type:"TRUE"})
@@ -19,32 +20,31 @@ const Bottom = () =>{
     }
     
   }
-
-=======
-import { forwardRef, useState } from "react";
-
-
-const Bottom = (props:any,ref:any) =>{
   
   let clicked = true
+  const [isActive,setIsActive] = useState<string>("")
   // const [test, setTest]= useState<any>(ref.current)
   // console.log(test)
->>>>>>> origin/Maps
+
   return(
     <Container>
-      <Item onClick={()=>{
+      <Item 
+      color={isActive}
+      onClick={()=>{
         if(clicked === true){
-            console.log(ref.current[0])
+            // console.log(ref.current[0])
             ref.current.map((el:any,id:number)=>{
               ref.current[id].setVisible(false)
             })
             clicked = false
+            setIsActive("#555")
         }
         else if(clicked === false) {
           ref.current.map((el:any,id:number)=>{
             ref.current[id].setVisible(true)
           })
           clicked = true
+          setIsActive("#fff")
         }
       }}><BsFillCameraVideoFill/>&nbsp;&nbsp;CCTV</Item>
       <Item color="lightblue"><FaCarAlt/>&nbsp;&nbsp;도로흐름</Item>
@@ -52,7 +52,6 @@ const Bottom = (props:any,ref:any) =>{
       <Item color="tomato"><FaCarCrash/>&nbsp;&nbsp;사고정보</Item>
     </Container>
   )
- 
 }
 // BFBFBF
 // E6E6E6

@@ -38,7 +38,7 @@ function Map() {
     const getDatas = async()=>{
       // const datas = await axios.get("http://localhost:6565/route")
       // console.log(datas)
-      const cctvData = await axios.get("http://localhost:6565/cctv")
+      const cctvData = await axios.get("http://localhost:8282/cctv")
       // console.log(cctvData.data.response.data)
       // console.log(cctvData.data.response.data)
       cctvPos.current = cctvData.data.response.data
@@ -170,7 +170,7 @@ function Map() {
           }
         })
       })
-    }, [centerX]);
+    }, [centerX,cctv,cctvMarkRef]);
   // console.log(testArr)
   
   // useEffect(() => {
@@ -219,7 +219,7 @@ function Map() {
       console.log(item.visible)
     })
   })
-    fetch("http://localhost:6565/event")
+    fetch("http://localhost:8282/event")
     .then((response)=>response.json())
     .then((response)=>{
       console.log(response)

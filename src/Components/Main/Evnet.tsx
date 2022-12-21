@@ -204,7 +204,6 @@ const Event = () =>{
     <Container>
       <div>
         <Title color="tomato">사고정보</Title>
-<<<<<<< HEAD
         <Content>
         {
           test.map((item:any)=>{
@@ -222,9 +221,7 @@ const Event = () =>{
         {
           count1 === 0 ? <div style={{alignItems:"center",display:'flex',justifyContent:'center'}}>사고 정보가 없습니다.</div>:null
         }
-
         </Content>
-=======
         {/* {
           eventView.map((item:any)=>{
             return(
@@ -246,14 +243,13 @@ const Event = () =>{
             )
           })
         } */}
->>>>>>> origin/Maps
+
         
 
       </div>
       {/* 돌발정보 데이터 반복 삽입 */}
       <div>
         <Title color="#FFC314">돌발정보</Title>
-<<<<<<< HEAD
         <Content>
         {
           test.map((item:any)=>{
@@ -277,7 +273,7 @@ const Event = () =>{
         }
 
         </Content>
-=======
+
         {/* {
           eventView.map((item:any)=>{
             return(
@@ -295,7 +291,7 @@ const Event = () =>{
             
           })
         } */}
->>>>>>> origin/Maps
+
       </div>
     </Container>
   )
