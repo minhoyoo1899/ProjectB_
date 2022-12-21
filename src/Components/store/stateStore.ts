@@ -16,6 +16,7 @@ function state(state = true, action:type){
   }
 }
 
+
 let stateStore = createStore(state)
 
 export {stateStore}

@@ -1,13 +1,12 @@
 
 import styled from "styled-components";
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import Map from "../Map/Map";
 
 const Event = () =>{
   
   const test =[]
-  
-  const [check,setCheck] = useState(false)
+
   const [eventView,setEventView] = useState([])
     useEffect(()=>{
       fetch(`http://localhost:8282/event`)
@@ -50,7 +49,6 @@ const Event = () =>{
         {
           count1 === 0 ? <div style={{alignItems:"center",display:'flex',justifyContent:'center'}}>사고 정보가 없습니다.</div>:null
         }
-
         </Content>
         
       </div>
@@ -76,6 +74,7 @@ const Event = () =>{
         }
 
         </Content>
+
       </div>
     </Container>
   )
@@ -106,7 +105,6 @@ const Content = styled.div`
   height:max-content;
   min-height:200px;
   max-height:230px;
-  //max-height:${props=>props.itemProp || "200px"}
   padding:4%;
   background-color:rgba(40,40,40,0.5);
   backdrop-filter:blur(10px);

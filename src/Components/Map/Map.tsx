@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import React, { useEffect, useRef, useState, ReactNode, forwardRef } from 'react'
 import axios from "axios"
 import styled from 'styled-components'
 import Side from '../Main/Side'
@@ -7,14 +7,22 @@ import { stateStore } from '../store/stateStore'
 import { response } from 'express'
 import Weather from '../Main/Weather'
 
+interface Main {
+  children: ReactNode;
+}
+let testArr:any[] = [];
+
 function Map() {
   //현위치 마커
-  const markRef = useRef<any>();
+
+  const markRef = useRef<any>();  
+  //cctv 마커 
+  const cctvMarkRef = useRef<any>([])
 
   //지도용
   const mapRef = useRef<any>()
   //cctv 정보
-  const cctvI = useRef<any>()
+  const cctvPos = useRef<any>()
   //현재 좌표의 위도 경도 담을 스테이트 
   const [location, setLocation] = useState<any>({
     latitude: "",
@@ -22,25 +30,23 @@ function Map() {
   })
   
   //cctv 좌표 담을 스테이트
-  const [cctv, setCctv] = useState<any>({
-    lat: "",
-    lng : ""
-  })
-  
+  const [cctv, setCctv] = useState<any>([])
+  //cctv 기본정보 담을 스테이트 
+  const [cctvInfo, setCctvInfo] = useState<any>()
   //서버에 요청 
   useEffect(()=> {
     const getDatas = async()=>{
-      const datas = await axios.get("http://localhost:6565/route")
+      // const datas = await axios.get("http://localhost:6565/route")
       // console.log(datas)
       const cctvData = await axios.get("http://localhost:6565/cctv")
       console.log(cctvData.data.response.data[0])
-      cctvI.current = cctvData.data.response.data[0]
+      cctv.current = cctvData.data.response.data[0]
       let cctvCoord = cctvData.data.response.data[0]
       setCctv({
         lat : Number(cctvCoord.coordy),
         lng : Number(cctvCoord.coordx)
       })
-      const routePath = datas.data.route.traoptimal[0].path
+      //const routePath = datas.data.route.traoptimal[0].path
     }
     getDatas();
   },[])
@@ -70,26 +76,22 @@ function Map() {
       interval: 300000 // 5분마다 새로고침 (최소값 5분)
     });
     mapRef.current = new naver.maps.Map("map", {
-      // center: new naver.maps.LatLng(location.latitude, location.longitude),
       center: new naver.maps.LatLng(centerY,centerX),
       zoom:zoom,
       mapTypeControl: true,
       // zoomControl: true,  
     });
-    // console.log(mapRef.current.center)
     trafficLayer.setMap(mapRef.current)
-    // setCenterX(mapRef.current.center.x)
-    // setCenterY(mapRef.current.center.y)
-    
     naver.maps.Event.once(mapRef.current,"init",(e)=>{
       trafficLayer.setMap(mapRef.current)
     })
   },[mapRef, centerX])
-  console.log(centerX,centerY)
+  // console.log(centerX,centerY)
   
   //현재위치 마커 
   useEffect(()=> {
       const currentPosition = [location.latitude, location.longitude];
+      
       //마커관련
       markRef.current = new naver.maps.Marker({
         position : new naver.maps.LatLng(currentPosition[0],currentPosition[1]),
@@ -100,43 +102,56 @@ function Map() {
           scaledSize : new naver.maps.Size(80,80),
         }
       })
-  },[location])
+  },[location,centerX])
   
-  useEffect(() => {
-    if (typeof location !== "string") {
-        //클릭한 위치에 마커 생성
-      naver.maps.Event.addListener(mapRef.current,"click",(e)=> {
-        // console.log(e)
-        setCenterX(e.coord._lng)
-        setCenterY(e.coord._lat)
-        setZoom(17)
-        let infoWindow = new naver.maps.InfoWindow({
+  //cctv 띄우는 코드 
+  useEffect(()=>{
+    cctv.map((el:any,id:number)=>{
+      // console.log(el.coordx, el.coordy)
+      //cctv 마커 
+      let cctvM = new naver.maps.Marker({
+        position: new naver.maps.LatLng(el.coordy,el.coordx),
+        map : mapRef.current,
+        icon: {
+          url: "Img/cctv2.png", 
+          scaledSize : new naver.maps.Size(32,32),
+        }
+      })
+      cctvMarkRef.current.push(cctvM)
+      // console.log(cctvMarkRef.current)
+
+      //Cctv 마커클릭 했을때 
+      naver.maps.Event.addListener(cctvMarkRef.current[id],"click",(e)=>{
+        // console.log(cctv[id])
+        // console.log(mapRef.current)
+        // console.log("e")
+        let cctvWindow = new naver.maps.InfoWindow({
+          //cctv 아이콘 클릭시 나타날 컨텐츠
           content: [
-            '<div class="iw_inner">',
-            `<h2>선택한 좌표값</h2>`,
-            `<p>${e.coord._lat}<br>
-            ${e.coord._lng}`,
-            '</p>',
+            '<div style="width:400px; height:400px; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:10px;"}}>',
+            `<h3>${cctv[id].cctvname}</h3>`,
+            `<video src=${cctv[id].cctvurl} width="400px" height="300px" controls autoplay playsinline muted type="application/x-mpegURL"></video>`,
             '</div>'
-          ].join('')
+          ].join('') 
         });
+        
         let newMarker = new naver.maps.Marker({
           position:e.coord,
           map:mapRef.current
         })
-        if(infoWindow.getMap()) {
-          infoWindow.close()
+        if(cctvWindow.getMap()) {
+          cctvWindow.close()
         } else {
-          infoWindow.open(mapRef.current,newMarker)
+          cctvWindow.open(mapRef.current,newMarker)
         }
       })
     }
-  }, [location, centerX]);
-   
+  )}, [location, centerX]);
   
 
   //돌발정보 마커 생성
   
+  //**돌발정보 마커 생성
   useEffect(()=>{
     let test:any = []
 
@@ -153,7 +168,8 @@ function Map() {
       //console.log(response)
       for(let i in response){
         if(response[i].eventType !== '교통사고'){
-          markRef.current = new naver.maps.Marker({
+          //돌발상황 마크 생성
+          let evnetMark = new naver.maps.Marker({ 
             position:new naver.maps.LatLng(response[i].coordY,response[i].coordX),
             map:mapRef.current,
             icon:{
@@ -163,21 +179,24 @@ function Map() {
             visible:true
           })
           test.push(markRef.current)
-          //console.log(test)
+          console.log(test)
+          //console.log(response[i].coordY)
+          //console.log(markRef)
         }
+        
       }
     }).catch((err)=>{
       console.log(err)
     })
-  },[])
+  },[]);
 
   return (
     <Bg>
       <MapBox id="map">
-        <Weather props={{centerX,centerY}}/>
+        <Weather props={{ centerX, centerY }} />
         <Side/>
-        <Bottom/>
-      </MapBox> 
+        <Bottom ref={cctvMarkRef}/>
+      </MapBox>
     </Bg>
   )
 }
@@ -186,12 +205,13 @@ function Map() {
   padding:0;
   box-sizing: border-box;
   width : 100%;
-  height :100%
+  height :100%;
   `
   const MapBox = styled.div`
     width: 100vw;
     height: 100vh;
-    padding:2%;
+    z-index:0;
+    padding : 2%;
   `
 
-export default Map
+export default forwardRef(Map)
