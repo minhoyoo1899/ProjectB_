@@ -3,6 +3,7 @@ import { FaCarAlt } from "react-icons/fa"
 import {FaExclamationTriangle} from "react-icons/fa"
 import {FaCarCrash} from "react-icons/fa"
 import {BsFillCameraVideoFill} from "react-icons/bs"
+<<<<<<< HEAD
 import { stateStore } from "../store/stateStore";
 
 const Bottom = () =>{
@@ -19,9 +20,33 @@ const Bottom = () =>{
     
   }
 
+=======
+import { forwardRef, useState } from "react";
+
+
+const Bottom = (props:any,ref:any) =>{
+  
+  let clicked = true
+  // const [test, setTest]= useState<any>(ref.current)
+  // console.log(test)
+>>>>>>> origin/Maps
   return(
     <Container>
-      <Item><BsFillCameraVideoFill/>&nbsp;&nbsp;CCTV</Item>
+      <Item onClick={()=>{
+        if(clicked === true){
+            console.log(ref.current[0])
+            ref.current.map((el:any,id:number)=>{
+              ref.current[id].setVisible(false)
+            })
+            clicked = false
+        }
+        else if(clicked === false) {
+          ref.current.map((el:any,id:number)=>{
+            ref.current[id].setVisible(true)
+          })
+          clicked = true
+        }
+      }}><BsFillCameraVideoFill/>&nbsp;&nbsp;CCTV</Item>
       <Item color="lightblue"><FaCarAlt/>&nbsp;&nbsp;도로흐름</Item>
       <Item onClick={eventClick} color="#FFC314"><FaExclamationTriangle/>&nbsp;&nbsp;돌발상황</Item>
       <Item color="tomato"><FaCarCrash/>&nbsp;&nbsp;사고정보</Item>
@@ -29,8 +54,9 @@ const Bottom = () =>{
   )
  
 }
-
-export default Bottom;
+// BFBFBF
+// E6E6E6
+export default forwardRef(Bottom);
 
 const Container = styled.div`
   display:flex;
