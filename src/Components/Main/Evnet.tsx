@@ -204,6 +204,7 @@ const Event = () =>{
     <Container>
       <div>
         <Title color="tomato">사고정보</Title>
+<<<<<<< HEAD
         <Content>
         {
           test.map((item:any)=>{
@@ -223,12 +224,36 @@ const Event = () =>{
         }
 
         </Content>
+=======
+        {/* {
+          eventView.map((item:any)=>{
+            return(
+              
+              <Content key={item.linkId}>
+                
+                {item.eventType === "교통사고" ? (
+                  // 이벤트 메시지가 존재하면 메시지 띄우고 없으면 이벤트타입 데이터 띄우도록
+                  <>
+                    <div>{item.roadName}</div>
+                    {item.message !== "" ? (
+                      <div>{item.message}</div>
+                    ):(<div>{item.eventDetailType}</div>)}
+                    
+                  </>
+                ):(<div>데이터가 없습니다</div>)}
+
+              </Content>
+            )
+          })
+        } */}
+>>>>>>> origin/Maps
         
 
       </div>
       {/* 돌발정보 데이터 반복 삽입 */}
       <div>
         <Title color="#FFC314">돌발정보</Title>
+<<<<<<< HEAD
         <Content>
         {
           test.map((item:any)=>{
@@ -252,6 +277,25 @@ const Event = () =>{
         }
 
         </Content>
+=======
+        {/* {
+          eventView.map((item:any)=>{
+            return(
+              <Content key={item.linkId}>
+                {item.eventType !== "교통사고" ? (
+                  <>
+                    <div>{item.roadName}</div>
+                    {item.message !== "" ? (
+                      <div>{item.message}</div>
+                    ):(<div>{item.eventDetailType}</div>)}
+                  </>
+                ):(null)}
+              </Content>
+            )
+            
+          })
+        } */}
+>>>>>>> origin/Maps
       </div>
     </Container>
   )
