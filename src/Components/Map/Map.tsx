@@ -247,10 +247,7 @@ function Map() {
     <Bg>
 
       <MapBox id="map">
-        <Weather props={{centerX,centerY}}/>
-
-      <MapBox id="map" >
-
+        <Weather props={{ centerX, centerY }} />
         <Side/>
         <Bottom ref={cctvMarkRef}/>
       </MapBox>
