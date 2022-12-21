@@ -22,7 +22,7 @@ const dbconfig = {
   user: "root",
   password: "password",
   port: "3306",
-  database: "hi_five",
+  database: "project_b_",
 };
 
 const ymhApi = "jio9z2ehit";
@@ -57,7 +57,7 @@ app.get("/", async (req, res) => {
     });
 
     const resultMsg = result.data;
-    // console.log(resultMsg)
+    console.log(typeof resultMsg)    
     res.send(resultMsg);
   } catch (err) {
     console.log(err);
@@ -67,12 +67,25 @@ app.get("/", async (req, res) => {
 app.get("/db", async (req, res) => {
   conn.query("SELECT * FROM test_table;", (error, rows) => {
     if (error) throw error;
-    console.log(rows);
-    console.log(typeof rows);
+    // console.log(rows);
+    // console.log(typeof rows);
     res.statusCode = 200;
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.end(`데이터 테스트 : ${rows}`);
   });
+});
+
+app.get("/direction15", async (req, res) => { 
+  try {
+    const result = await axios({
+      method: "get",
+      url: "https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=127.377579,36.349252&goal=127.408952,36.321161&waypoint=127.325118,36.300500",
+      headers: header,
+    })
+    const resultMsg = result.data;
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 

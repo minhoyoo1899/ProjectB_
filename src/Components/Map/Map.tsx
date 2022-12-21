@@ -3,6 +3,9 @@ import axios from "axios"
 import styled from 'styled-components'
 import Side from '../Main/Side'
 import Bottom from '../Main/Bottom'
+import { stateStore } from '../store/stateStore'
+import Weather from '../Main/Weather'
+import { response } from 'express'
 
 interface Main {
   children: ReactNode;
@@ -11,9 +14,11 @@ let testArr:any[] = [];
 
 function Map() {
   //현위치 마커
-  const markRef = useRef<any>()
+
+  const markRef = useRef<any>();  
   //cctv 마커 
   const cctvMarkRef = useRef<any>([])
+
   //지도용
   const mapRef = useRef<any>()
   //cctv 정보
@@ -165,7 +170,7 @@ function Map() {
           }
         })
       })
-    },[cctv,cctvMarkRef])
+    }, [centerX]);
   // console.log(testArr)
   
   // useEffect(() => {
@@ -200,9 +205,48 @@ function Map() {
   // }, [ centerX]);
 
 
+  //돌발정보 마커 생성
+  
+  useEffect(()=>{
+    let test:any = []
+    
+
+  stateStore.subscribe(()=>{
+  
+    // markRef.current.getVisible(stateStore.getState())
+    test.map((item:any)=>{
+      item.setVisible(stateStore.getState())
+      console.log(item.visible)
+    })
+  })
+    fetch("http://localhost:6565/event")
+    .then((response)=>response.json())
+    .then((response)=>{
+      console.log(response)
+      for(let i in response){
+        if(response[i].eventType !== '교통사고'){
+          markRef.current = new naver.maps.Marker({
+            position:new naver.maps.LatLng(response[i].coordY,response[i].coordX),
+            map:mapRef.current,
+            //visible: false
+          })
+          test.push(markRef.current)
+          console.log(test)
+          //console.log(response[i].coordY)
+          //console.log(markRef)
+        }
+        
+      }
+    }).catch((err)=>{
+      console.log(err)
+    })
+   
+  },[]);
+
   return (
     <Bg>
-      <MapBox id="map" >
+      <MapBox id="map">
+        <Weather props={{ centerX, centerY }} />
         <Side/>
         <Bottom ref={cctvMarkRef}/>
       </MapBox>
