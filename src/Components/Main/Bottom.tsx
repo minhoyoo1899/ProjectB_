@@ -52,7 +52,6 @@ import { stateStore } from "../store/stateStore";
       <Item color="tomato"><FaCarCrash/>&nbsp;&nbsp;사고정보</Item>
     </Container>
   )
- 
 }
 // BFBFBF
 // E6E6E6
