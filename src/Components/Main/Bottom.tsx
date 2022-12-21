@@ -5,7 +5,7 @@ import {FaCarCrash} from "react-icons/fa"
 import { BsFillCameraVideoFill } from "react-icons/bs"
 import { forwardRef, useState } from "react";
 import { stateStore } from "../store/stateStore";
-
+// 
 
   const Bottom = (props:any, ref:any) => {
     const {mapRef,cctvMarkRef} = ref
