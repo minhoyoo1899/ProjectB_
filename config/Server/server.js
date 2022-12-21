@@ -22,7 +22,7 @@ const dbconfig = {
   user: "root",
   password: "password",
   port: "3306",
-  database: "hi_five",
+  database: "project_b_",
 };
 
 const ymhApi = "jio9z2ehit";
