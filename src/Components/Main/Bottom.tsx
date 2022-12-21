@@ -2,13 +2,14 @@ import styled from "styled-components";
 import { FaCarAlt } from "react-icons/fa"
 import {FaExclamationTriangle} from "react-icons/fa"
 import {FaCarCrash} from "react-icons/fa"
-import {BsFillCameraVideoFill} from "react-icons/bs"
-<<<<<<< HEAD
+import { BsFillCameraVideoFill } from "react-icons/bs"
+import { forwardRef, useState } from "react";
 import { stateStore } from "../store/stateStore";
 
-const Bottom = () =>{
 
-  //리덕스 세팅
+  const Bottom = (props: any, ref: any) => {
+  
+      //리덕스 세팅
   function eventClick(){
     if(stateStore.getState()===false){
       stateStore.dispatch({type:"TRUE"})
@@ -19,17 +20,11 @@ const Bottom = () =>{
     }
     
   }
-
-=======
-import { forwardRef, useState } from "react";
-
-
-const Bottom = (props:any,ref:any) =>{
   
   let clicked = true
   // const [test, setTest]= useState<any>(ref.current)
   // console.log(test)
->>>>>>> origin/Maps
+
   return(
     <Container>
       <Item onClick={()=>{
