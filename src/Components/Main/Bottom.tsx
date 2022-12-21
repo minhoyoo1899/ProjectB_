@@ -8,7 +8,7 @@ import { stateStore } from "../store/stateStore";
 
 
   const Bottom = (props: any, ref: any) => {
-  
+    console.log(props)
       //리덕스 세팅
   function eventClick(){
     if(stateStore.getState()===false){
@@ -18,13 +18,11 @@ import { stateStore } from "../store/stateStore";
       stateStore.dispatch({type:"FALSE"})
       //console.log(stateStore.getState())
     }
-    
   }
-  
+  //cctv 버튼용
   let clicked = true
   const [isActive,setIsActive] = useState<string>("")
-  // const [test, setTest]= useState<any>(ref.current)
-  // console.log(test)
+
 
   return(
     <Container>
@@ -47,7 +45,12 @@ import { stateStore } from "../store/stateStore";
           setIsActive("#fff")
         }
       }}><BsFillCameraVideoFill/>&nbsp;&nbsp;CCTV</Item>
-      <Item color="lightblue"><FaCarAlt/>&nbsp;&nbsp;도로흐름</Item>
+      <Item 
+      color="lightblue"
+      onClick={()=>{
+          props.change()
+      }}
+      ><FaCarAlt/>&nbsp;&nbsp;도로흐름</Item>
       <Item onClick={eventClick} color="#FFC314"><FaExclamationTriangle/>&nbsp;&nbsp;돌발상황</Item>
       <Item color="tomato"><FaCarCrash/>&nbsp;&nbsp;사고정보</Item>
     </Container>

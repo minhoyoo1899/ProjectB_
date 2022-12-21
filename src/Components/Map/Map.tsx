@@ -33,6 +33,8 @@ function Map() {
   const [cctv, setCctv] = useState<any>([])
   //cctv 기본정보 담을 스테이트 
   const [cctvInfo, setCctvInfo] = useState<any>()
+
+  
   //서버에 요청 
   useEffect(()=> {
     const getDatas = async()=>{
@@ -48,51 +50,71 @@ function Map() {
       testArr.push(cctvCoord)
       // console.log(testArr[0])
       
-
+      
       // setCctv({
-      //   lat : Number(cctvCoord.coordy),
-      //   lng : Number(cctvCoord.coordx)
-      // })
-      // const routePath = datas.data.route.traoptimal[0].path
-    }
-    getDatas();
-  },[])
-
-  // 현재위치의 위도값과 경도값을 받아서 state 저장 
-  useEffect(()=> {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        // console.log(position)
-        setLocation({
-          latitude: Number(position.coords.latitude),
-          longitude: Number(position.coords.longitude),
+        //   lat : Number(cctvCoord.coordy),
+        //   lng : Number(cctvCoord.coordx)
+        // })
+        // const routePath = datas.data.route.traoptimal[0].path
+      }
+      getDatas();
+    },[])
+    
+    // 현재위치의 위도값과 경도값을 받아서 state 저장 
+    useEffect(()=> {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          // console.log(position)
+          setLocation({
+            latitude: Number(position.coords.latitude),
+            longitude: Number(position.coords.longitude),
+          });
         });
-      });
-    } else {
-      window.alert("현재위치를 알수 없습니다.");
+      } else {
+        window.alert("현재위치를 알수 없습니다.");
+      }
+    },[])
+    //지도 중앙좌표값
+    const [centerX, setCenterX] = useState<number>(127.3845475)
+    const [centerY, setCenterY] = useState<number>(36.3504119)
+    // 지도 줌 값 
+    const [zoom, setZoom] = useState<number>(12)
+    //지도 교통 흐름도 옵션 
+    const [isTrafficAvtive, setIsTrafficActive] = useState<boolean>(true)
+    // let isTrafficAvtive = true
+
+    const changeTraffic = (e:any) => {
+      
+      if(isTrafficAvtive === true){
+        console.log("비활성화")
+        setIsTrafficActive(false)
+      }
+      else if (isTrafficAvtive === false){
+        console.log("활성화")
+        setIsTrafficActive(true)
+      }
     }
-  },[])
-  //지도 중앙좌표값
-  const [centerX, setCenterX] = useState<number>(127.3845475)
-  const [centerY, setCenterY] = useState<number>(36.3504119)
-  // 지도 줌 값 
-  const [zoom, setZoom] = useState<number>(12)
-  // 지도
-  useEffect(()=>{
-    let trafficLayer = new naver.maps.TrafficLayer({
-      interval: 300000 // 5분마다 새로고침 (최소값 5분)
+    // 지도
+    useEffect(()=>{
+      let trafficLayer = new naver.maps.TrafficLayer({
+        interval: 300000 // 5분마다 새로고침 (최소값 5분)
+      });
+      mapRef.current = new naver.maps.Map("map", {
+        center: new naver.maps.LatLng(centerY,centerX),
+        zoom:zoom,
+        mapTypeControl: true,
+        // zoomControl: true,  
     });
-    mapRef.current = new naver.maps.Map("map", {
-      center: new naver.maps.LatLng(centerY,centerX),
-      zoom:zoom,
-      mapTypeControl: true,
-      // zoomControl: true,  
-    });
-    trafficLayer.setMap(mapRef.current)
-    naver.maps.Event.once(mapRef.current,"init",(e)=>{
+    if (isTrafficAvtive === true) {
       trafficLayer.setMap(mapRef.current)
-    })
-  },[mapRef, centerX])
+      naver.maps.Event.once(mapRef.current,"init",(e)=>{
+        trafficLayer.setMap(mapRef.current)
+      })
+    }
+    else if (isTrafficAvtive === false){
+      trafficLayer.setMap(null)
+    }
+  },[mapRef, centerX, isTrafficAvtive])
   // console.log(centerX,centerY)
   
   //현재위치 마커 
@@ -109,7 +131,7 @@ function Map() {
           scaledSize : new naver.maps.Size(80,80),
         }
       })
-  },[location,centerX])
+  },[location,centerX,isTrafficAvtive])
   
   //cctv 띄우는 코드 
   useEffect(()=>{
@@ -170,7 +192,7 @@ function Map() {
           }
         })
       })
-    }, [centerX,cctv,cctvMarkRef]);
+    }, [centerX,cctv,cctvMarkRef,isTrafficAvtive]);
   // console.log(testArr)
   
   // useEffect(() => {
@@ -240,15 +262,14 @@ function Map() {
     }).catch((err)=>{
       console.log(err)
     })
-   
   },[]);
-
+  console.log(isTrafficAvtive)
   return (
     <Bg>
       <MapBox id="map">
         <Weather props={{ centerX, centerY }} />
         <Side/>
-        <Bottom ref={cctvMarkRef}/>
+        <Bottom ref={cctvMarkRef} istraffic={isTrafficAvtive} change = {changeTraffic}/>
       </MapBox>
     </Bg>
   )
