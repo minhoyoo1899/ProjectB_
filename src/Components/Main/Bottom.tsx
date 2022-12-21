@@ -23,24 +23,29 @@ import { stateStore } from "../store/stateStore";
   }
   
   let clicked = true
+  const [isActive,setIsActive] = useState<string>("")
   // const [test, setTest]= useState<any>(ref.current)
   // console.log(test)
 
   return(
     <Container>
-      <Item onClick={()=>{
+      <Item 
+      color={isActive}
+      onClick={()=>{
         if(clicked === true){
-            console.log(ref.current[0])
+            // console.log(ref.current[0])
             ref.current.map((el:any,id:number)=>{
               ref.current[id].setVisible(false)
             })
             clicked = false
+            setIsActive("#555")
         }
         else if(clicked === false) {
           ref.current.map((el:any,id:number)=>{
             ref.current[id].setVisible(true)
           })
           clicked = true
+          setIsActive("#fff")
         }
       }}><BsFillCameraVideoFill/>&nbsp;&nbsp;CCTV</Item>
       <Item color="lightblue"><FaCarAlt/>&nbsp;&nbsp;도로흐름</Item>
@@ -48,7 +53,6 @@ import { stateStore } from "../store/stateStore";
       <Item color="tomato"><FaCarCrash/>&nbsp;&nbsp;사고정보</Item>
     </Container>
   )
- 
 }
 // BFBFBF
 // E6E6E6

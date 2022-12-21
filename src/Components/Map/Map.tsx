@@ -38,15 +38,22 @@ function Map() {
     const getDatas = async()=>{
       // const datas = await axios.get("http://localhost:6565/route")
       // console.log(datas)
-      const cctvData = await axios.get("http://localhost:6565/cctv")
-      console.log(cctvData.data.response.data[0])
-      cctv.current = cctvData.data.response.data[0]
-      let cctvCoord = cctvData.data.response.data[0]
-      setCctv({
-        lat : Number(cctvCoord.coordy),
-        lng : Number(cctvCoord.coordx)
-      })
-      //const routePath = datas.data.route.traoptimal[0].path
+      const cctvData = await axios.get("http://localhost:8282/cctv")
+      // console.log(cctvData.data.response.data)
+      // console.log(cctvData.data.response.data)
+      cctvPos.current = cctvData.data.response.data
+      let cctvCoord = cctvData.data.response.data
+      // console.log(cctvCoord)
+      setCctv(cctvCoord)
+      testArr.push(cctvCoord)
+      // console.log(testArr[0])
+      
+
+      // setCctv({
+      //   lat : Number(cctvCoord.coordy),
+      //   lng : Number(cctvCoord.coordx)
+      // })
+      // const routePath = datas.data.route.traoptimal[0].path
     }
     getDatas();
   },[])
@@ -143,11 +150,56 @@ function Map() {
           cctvWindow.close()
         } else {
           cctvWindow.open(mapRef.current,newMarker)
-        }
+          newMarker.setMap(null)
+          console.log(cctvMarkRef.current.visible)
+          //cctv 창이 뜬 상태에서 지도 클릭시 cctv 창 닫기
+          naver.maps.Event.addListener(mapRef.current,"click",()=>{
+            if(e.domEvent.type === "click"){
+              // setCctv([])
+              // // cctvMarkRef.current = []
+              // cctvMarkRef.current.map((el:any,id:number)=>{
+              //     cctvMarkRef.current[id].setMap(null)
+              // })
+              cctvWindow.close()
+              }
+            })
+          }
+        })
       })
-    }
-  )}, [location, centerX]);
+    }, [centerX,cctv,cctvMarkRef]);
+  // console.log(testArr)
   
+  // useEffect(() => {
+  //   if (typeof location !== "string") {
+  //       //클릭한 위치에 마커 생성
+  //     naver.maps.Event.addListener(mapRef.current,"click",(e)=> {
+  //       // console.log(e)
+  //       setCenterX(e.coord._lng)
+  //       setCenterY(e.coord._lat)
+  //       setZoom(17)
+  //       let infoWindow = new naver.maps.InfoWindow({
+  //         content: [
+  //           '<div class="iw_inner">',
+  //           `<h2>선택한 좌표값</h2>`,
+  //           `<p>${e.coord._lat}<br>
+  //           ${e.coord._lng}`,
+  //           '</p>',
+  //           '</div>'
+  //         ].join('')
+  //       });
+  //       let newMarker = new naver.maps.Marker({
+  //         position:e.coord,
+  //         map:mapRef.current
+  //       })
+  //       if(infoWindow.getMap()) {
+  //         infoWindow.close()
+  //       } else {
+  //         infoWindow.open(mapRef.current,newMarker)
+  //       }
+  //     })
+  //   }
+  // }, [ centerX]);
+
 
   //돌발정보 마커 생성
   
@@ -162,7 +214,7 @@ function Map() {
       console.log(item.visible)
     })
   })
-    fetch("http://localhost:8282/event")
+    fetch("http://localhost:6565/event")
     .then((response)=>response.json())
     .then((response)=>{
       //console.log(response)
