@@ -3,7 +3,7 @@ import axios from "axios"
 import styled from 'styled-components'
 import Side from '../Main/Side'
 import Bottom from '../Main/Bottom'
-import { stateStore } from '../store/stateStore
+import { stateStore } from '../store/stateStore'
 import Weather from '../Main/Weather'
 import { response } from 'express'
 
