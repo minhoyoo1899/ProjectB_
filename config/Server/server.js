@@ -22,7 +22,7 @@ const dbconfig = {
   user: "root",
   password: "password",
   port: "3306",
-  database: "hi_five",
+  database: "project_b_",
 };
 
 const ymhApi = "jio9z2ehit";
@@ -57,7 +57,7 @@ app.get("/", async (req, res) => {
     });
 
     const resultMsg = result.data;
-    // console.log(resultMsg)
+    console.log(typeof resultMsg)    
     res.send(resultMsg);
   } catch (err) {
     console.log(err);
@@ -67,13 +67,43 @@ app.get("/", async (req, res) => {
 app.get("/db", async (req, res) => {
   conn.query("SELECT * FROM test_table;", (error, rows) => {
     if (error) throw error;
-    console.log(rows);
-    console.log(typeof rows);
+    // console.log(rows);
+    // console.log(typeof rows);
     res.statusCode = 200;
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.end(`데이터 테스트 : ${rows}`);
   });
 });
+
+app.get("/direction15", async (req, res) => { 
+  try {
+    const result = await axios({
+      method: "get",
+      url: "https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=127.377579,36.349252&goal=127.408952,36.321161&waypoint=127.325118,36.300500",
+      headers: header,
+    })
+    const resultMsg = result.data;
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+app.get("/cctv", async(req,res)=> {
+  try {
+let cctvResult = await axios({
+  method : "get",
+  url: 'https://openapi.its.go.kr:9443/cctvInfo?apiKey=4537498ac13e4a3a9e10f66e3984c96a&type=ex&cctvType=2&minX=127.234227&maxX=127.570949&minY=36.192958&maxY=36.488949&getType=json',
+});
+const cctvMsg = cctvResult.data
+// console.log(cctvMsg)
+res.send(cctvMsg)
+        
+}catch(err){
+  console.log(err)
+}
+})
+
+
 
 
 //네이버 api 키
@@ -144,6 +174,52 @@ app.get("/apiMap", async (req, res) => {
   }
 });
 
+app.get("/event",async(req,res)=>{
+  try{
+    let eventResult = await axios({
+      method : "get",
+      url: `https://openapi.its.go.kr:9443/eventInfo?apiKey=006a4eca1c784284a64eca250f68063c&type=all&eventType=all&minX=127.234227&maxX=127.570949&minY=36.192958 &maxY=36.488949&getType=json`
+    });
+    const eventData = eventResult.data.body.items
+    res.send(eventData)
+  }catch(err){
+    console.log(err)
+  }
+})
+
+<<<<<<< HEAD
+
+app.get("/cctv", async(req,res)=> {
+  try {
+let cctvResult = await axios({
+  method : "get",
+  url: 'https://openapi.its.go.kr:9443/cctvInfo?apiKey=4537498ac13e4a3a9e10f66e3984c96a&type=ex&cctvType=2&minX=127.234227&maxX=127.570949&minY=36.192958&maxY=36.488949&getType=json',
+});
+const cctvMsg = cctvResult.data
+// console.log(cctvMsg)
+res.send(cctvMsg)
+        
+}catch(err){
+  console.log(err)
+}
+}) 
+
+app.get("/event",async(req,res)=>{
+  try{
+    let eventResult = await axios({
+      method : "get",
+      url: `https://openapi.its.go.kr:9443/eventInfo?apiKey=006a4eca1c784284a64eca250f68063c&type=all&eventType=all&minX=127.234227&maxX=127.570949&minY=36.192958 &maxY=36.488949&getType=json`
+    });
+    const eventData = eventResult.data.body.items
+    res.send(eventData)
+  }catch(err){
+    console.log(err)
+  }
+})
+
+
+=======
+>>>>>>> ad075f6b3ccb05b3959011be1424508e80af0585
 
 // 입력한 주소의 좌표등 기본값 요청
 // app.get("/home", async(req,res)=> {

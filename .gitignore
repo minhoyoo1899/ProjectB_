@@ -1,2 +1,4 @@
 node_modules
 .env
+src/Components/Map/Map copy.tsx
+geodata

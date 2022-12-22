@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack-dev-server --config config/webpack.dev.js",
-    "build": "webpack --config config/webpack.prod.js"
+    "build": "webpack --config config/webpack.prod.js",
+    "server": "nodemon config/Server/server.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
     "axios": "^1.2.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
+    "fs": "^0.0.1-security",
     "http": "^0.0.1-security",
     "mysql": "^2.18.1",
     "react": "^18.2.0",
@@ -51,6 +53,7 @@
     "http": "^0.0.1-security",
     "mini-css-extract-plugin": "^2.7.2",
     "mysql": "^2.18.1",
+    "nodemon": "^2.0.20",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "redux": "^4.2.0",

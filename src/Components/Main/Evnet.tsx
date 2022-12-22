@@ -221,8 +221,29 @@ const Event = () =>{
         {
           count1 === 0 ? <div style={{alignItems:"center",display:'flex',justifyContent:'center'}}>사고 정보가 없습니다.</div>:null
         }
-
         </Content>
+        {/* {
+          eventView.map((item:any)=>{
+            return(
+              
+              <Content key={item.linkId}>
+                
+                {item.eventType === "교통사고" ? (
+                  // 이벤트 메시지가 존재하면 메시지 띄우고 없으면 이벤트타입 데이터 띄우도록
+                  <>
+                    <div>{item.roadName}</div>
+                    {item.message !== "" ? (
+                      <div>{item.message}</div>
+                    ):(<div>{item.eventDetailType}</div>)}
+                    
+                  </>
+                ):(<div>데이터가 없습니다</div>)}
+
+              </Content>
+            )
+          })
+        } */}
+
         
 
       </div>
@@ -252,6 +273,25 @@ const Event = () =>{
         }
 
         </Content>
+
+        {/* {
+          eventView.map((item:any)=>{
+            return(
+              <Content key={item.linkId}>
+                {item.eventType !== "교통사고" ? (
+                  <>
+                    <div>{item.roadName}</div>
+                    {item.message !== "" ? (
+                      <div>{item.message}</div>
+                    ):(<div>{item.eventDetailType}</div>)}
+                  </>
+                ):(null)}
+              </Content>
+            )
+            
+          })
+        } */}
+
       </div>
     </Container>
   )
