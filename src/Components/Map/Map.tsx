@@ -214,7 +214,7 @@ function Map() {
       console.log(item.visible)
     })
   })
-    fetch("http://localhost:6565/event")
+    fetch("http://localhost:8282/event")
     .then((response)=>response.json())
     .then((response)=>{
       //console.log(response)
@@ -230,10 +230,8 @@ function Map() {
             },
             visible:true
           })
-          test.push(markRef.current)
+          test.push(evnetMark)
           console.log(test)
-          //console.log(response[i].coordY)
-          //console.log(markRef)
         }
         
       }
