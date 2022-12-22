@@ -1,6 +1,4 @@
-
 import React, {ReactNode} from 'react'
-
 import Map from '../Map/Map'
 
 const Main = () => {

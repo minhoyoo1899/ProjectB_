@@ -450,6 +450,60 @@ function Map() {
   },[])
 
 
+
+  
+
+  // 종인 작업 충돌 부분 수정
+  const navigation:any = []
+
+  useEffect(()=>{
+    fetch('http://127.0.0.1:8282/deajeonNode')
+    .then((res)=>res.json())
+    .then((res)=>{
+      res.map((item:any)=>{
+        let node = new naver.maps.Marker({
+          position: new naver.maps.LatLng(
+            item.node_Ycode,item.node_Xcode),
+          map : mapRef.current,
+          icon: {
+            url: "Img/cctv.png", 
+            scaledSize : new naver.maps.Size(8,8),
+          }
+        })
+        node.addListener('click',()=>{
+          navigation.push(item)
+          if(navigation.length === 2){
+            fetch('http://127.0.0.1:8282/navigation',{
+              method: "POST",
+              headers: {
+                'Content-Type':'application/json'
+              },
+              body: JSON.stringify({
+                start: navigation[0],
+                end: navigation[1],
+              }),
+            })
+            .then((res)=>res.json())
+            .then((res)=>{
+              console.log(res)
+              const polyline = new naver.maps.Polyline({
+                map: mapRef.current,
+                path: res.map((item:any)=>{
+                  return new naver.maps.LatLng(
+                    item.node_Ycode,item.node_Xcode)
+                }),
+                strokeColor: "#0000ff",
+                strokeWeight: 5,
+              });
+              navigation.pop()
+              navigation.pop()
+            })
+          }
+        })
+      })
+    })
+  },[])
+
 //*사고정보 마커 생성 --(돌발상황 마크 생성과 같은방식)
 useEffect(()=>{
 
@@ -574,6 +628,10 @@ useEffect(()=>{
   //     console.log(err)
   //   })
   // },[]);
+  }, []);
+
+
+
 
   return (
     <Bg>
