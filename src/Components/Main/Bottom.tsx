@@ -12,7 +12,7 @@ import { eventViewStore } from "../store/stateStore";
     const {mapRef,cctvMarkRef} = ref
       //리덕스 세팅
 
-  //돌발정보 마크의 옵션값 true,flase로 변경하는 리듀서에 액션값을 보냄 
+  //*돌발정보 마크의 옵션값 true,flase로 변경하는 리듀서에 액션값을 보냄 
   function eventClick(){
     if(stateStore.getState()===false){
       stateStore.dispatch({type:"TRUE"})
@@ -22,7 +22,7 @@ import { eventViewStore } from "../store/stateStore";
       //console.log(stateStore.getState())
     }
   }
-  //사고정보 마크의 옵션값 true,false로 변경하는 리듀서에 액션값을 보냄
+  //* 마크의 옵션값 true,false로 변경하는 리듀서에 액션값을 보냄
   function accidentClick(){
     if(accidentStore.getState()===false){
       accidentStore.dispatch({type:"TRUE"})

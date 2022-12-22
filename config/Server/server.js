@@ -88,7 +88,7 @@ app.get("/direction15", async (req, res) => {
   }
 });
 
-
+//사고, 돌발정보 가져올 api 요청
 app.get("/event",async(req,res)=>{
   try{
     let eventResult = await axios({

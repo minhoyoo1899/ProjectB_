@@ -382,66 +382,20 @@ function Map() {
   //   }
   // }, [ centerX]);
 
-  //사고정보 마커 생성
+  
+
+  //!돌발정보 마커 생성 --- 테스트용 데이터로 작업한 내용
   useEffect(()=>{
 
-    let accidentArr:any = []
-    accidentStore.subscribe(()=>{
-      accidentArr.map((item:any)=>{
-        item.setVisible(accidentStore.getState())
-      })
-    })
+    //* 교통사고와 교통사고 외의 돌발상황을 분리하여 작성함
+    //* 1. eventMark : 돌발정보 마크
+    //* 2. infowindow : 정보창
+    // 마크를 클릭하면 정보창 표시, 
+    // 사이드바의 사고,돌발 정보를 클릭했을때 eventViewStore리듀서의 state 값이 변경되면서 
+    // 해당 마크 위치에 정보창이 출력됨.
+    //* 3. eventArr: 돌발상황 마크들을 배열에 저장해놓음, 
+    // stateStore리듀서에서 state 값이 변경되면 배열에 있는 마크들의 visible값을 false로 변경하여 숨김
 
-    for(let i in test){
-      if(test[i].eventType === '교통사고'){
-        let accidentMark = new naver.maps.Marker({
-          position : new naver.maps.LatLng(Number(test[i].coordY),Number(test[i].coordX)),
-          map:mapRef.current,
-          icon:{
-            url:"../img/car.png",
-            scaledSize: new naver.maps.Size(30,30)
-          }
-        })
-        let infowindow = new naver.maps.InfoWindow({
-          content:
-          `<div>
-              <div style="background-color:#35BABC;color:white; padding:10px">${test[i].roadName}</div>
-              <div>${test[i].eventType}(${test[i].eventDetailType})</dvi>
-          </div>`
-        })
-        naver.maps.Event.addListener(accidentMark,'click',(e)=>{
-          if(infowindow.getMap()){
-            infowindow.close();
-          }else{
-            infowindow.open(mapRef.current,accidentMark)
-          }
-        })
-        
-        //사고정보 정보창 생성
-        eventViewStore.subscribe(()=>{
-         
-          if(test[i].linkId === eventViewStore.getState()){
-           
-            if(infowindow.getMap()){
-              
-              infowindow.close()
-            }else{
-              infowindow.open(mapRef.current,accidentMark)
-              
-            }
-            
-          }
-        })
-
-
-        accidentArr.push(accidentMark)
-
-      }
-    }
-  })
-
-  //돌발정보 마커 생성 --- 테스트용 데이터
-  useEffect(()=>{
     let eventArr:any = [];
     stateStore.subscribe(()=>{
       eventArr.map((item:any)=>{
@@ -450,8 +404,7 @@ function Map() {
       })
     })
 
-    // 교통사고와 교통사고 외의 돌발상황을 분리하여 작성함
-    // 
+    
     for(let i in test){
       if(test[i].eventType !== "교통사고"){
         let eventMark = new naver.maps.Marker({
@@ -496,7 +449,67 @@ function Map() {
     }
   },[])
 
-  //**돌발정보 마커 생성
+
+//*사고정보 마커 생성 --(돌발상황 마크 생성과 같은방식)
+useEffect(()=>{
+
+  let accidentArr:any = []
+  accidentStore.subscribe(()=>{
+    accidentArr.map((item:any)=>{
+      item.setVisible(accidentStore.getState())
+    })
+  })
+
+  for(let i in test){
+    if(test[i].eventType === '교통사고'){
+      let accidentMark = new naver.maps.Marker({
+        position : new naver.maps.LatLng(Number(test[i].coordY),Number(test[i].coordX)),
+        map:mapRef.current,
+        icon:{
+          url:"../img/car.png",
+          scaledSize: new naver.maps.Size(30,30)
+        }
+      })
+      let infowindow = new naver.maps.InfoWindow({
+        content:
+        `<div>
+            <div style="background-color:#35BABC;color:white; padding:10px">${test[i].roadName}</div>
+            <div>${test[i].eventType}(${test[i].eventDetailType})</dvi>
+        </div>`
+      })
+      naver.maps.Event.addListener(accidentMark,'click',(e)=>{
+        if(infowindow.getMap()){
+          infowindow.close();
+        }else{
+          infowindow.open(mapRef.current,accidentMark)
+        }
+      })
+      
+      //사고정보 정보창 생성
+      eventViewStore.subscribe(()=>{
+       
+        if(test[i].linkId === eventViewStore.getState()){
+         
+          if(infowindow.getMap()){
+            
+            infowindow.close()
+          }else{
+            infowindow.open(mapRef.current,accidentMark)
+            
+          }
+          
+        }
+      })
+
+
+      accidentArr.push(accidentMark)
+
+    }
+  }
+},[])
+
+
+  //*돌발정보 마커 생성 -- 기존 api데이터 받아와서 작업한 내용
   // useEffect(()=>{
   //   let test:any = []
 

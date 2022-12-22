@@ -201,7 +201,9 @@ const Event = () =>{
   let count1 = 0; //사고정보 카운트
   let count2 = 0; //돌발정보 카운트
   
-  
+  //*eventViewStore에 액션 요청하는 함수
+  // 1. text속성에 현재 likID값을 액션타입과 함께 보내줌
+
   function infoView(target:any){
     //console.log(target.linkId)
     eventViewStore.dispatch({type:"ADD",text:target.linkId})
