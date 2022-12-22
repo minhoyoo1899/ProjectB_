@@ -5,7 +5,7 @@ interface type{
 }
 
 
-function state(state = false, action:type){
+function state(state = true, action:type){
   switch (action.type){
     case "TRUE":
       return state = true
@@ -15,6 +15,7 @@ function state(state = false, action:type){
       return state
   }
 }
+
 
 let stateStore = createStore(state)
 
