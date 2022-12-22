@@ -240,8 +240,59 @@ function Map() {
     }).catch((err)=>{
       console.log(err)
     })
-   
   },[]);
+
+
+  const navigation:any = []
+
+  useEffect(()=>{
+    fetch('http://127.0.0.1:8282/deajeon')
+    .then((res)=>res.json())
+    .then((res)=>{
+      res.map((item:any)=>{
+        let node = new naver.maps.Marker({
+          position: new naver.maps.LatLng(
+            item.node_Ycode,item.node_Xcode),
+          map : mapRef.current,
+          icon: {
+            url: "Img/cctv.png", 
+            scaledSize : new naver.maps.Size(8,8),
+          }
+        })
+        node.addListener('click',()=>{
+          navigation.push(item)
+          if(navigation.length === 2){
+            fetch('http://127.0.0.1:8282/navigation',{
+              method: "POST",
+              headers: {
+                'Content-Type':'application/json'
+              },
+              body: JSON.stringify({
+                start: navigation[0],
+                end: navigation[1],
+              }),
+            })
+            .then((res)=>res.json())
+            .then((res)=>{
+              console.log(res)
+              res.unshift(navigation[0])
+              const polyline = new naver.maps.Polyline({
+                map: mapRef.current,
+                path: res.map((item:any)=>{
+                  return new naver.maps.LatLng(
+                    item.node_Ycode,item.node_Xcode)
+                }),
+                strokeColor: "#0000ff",
+                strokeWeight: 5,
+              });
+              navigation.pop()
+              navigation.pop()
+            })
+          }
+        })
+      })
+    })
+  },[])
 
   return (
     <Bg>
