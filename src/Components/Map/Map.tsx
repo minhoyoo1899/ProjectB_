@@ -190,38 +190,6 @@ function Map() {
       })
     }, [centerX,cctv,cctvMarkRef,isTrafficAvtive]);
   // console.log(testArr)
-  
-  // useEffect(() => {
-  //   if (typeof location !== "string") {
-  //       //클릭한 위치에 마커 생성
-  //     naver.maps.Event.addListener(mapRef.current,"click",(e)=> {
-  //       // console.log(e)
-  //       setCenterX(e.coord._lng)
-  //       setCenterY(e.coord._lat)
-  //       setZoom(17)
-  //       let infoWindow = new naver.maps.InfoWindow({
-  //         content: [
-  //           '<div class="iw_inner">',
-  //           `<h2>선택한 좌표값</h2>`,
-  //           `<p>${e.coord._lat}<br>
-  //           ${e.coord._lng}`,
-  //           '</p>',
-  //           '</div>'
-  //         ].join('')
-  //       });
-  //       let newMarker = new naver.maps.Marker({
-  //         position:e.coord,
-  //         map:mapRef.current
-  //       })
-  //       if(infoWindow.getMap()) {
-  //         infoWindow.close()
-  //       } else {
-  //         infoWindow.open(mapRef.current,newMarker)
-  //       }
-  //     })
-  //   }
-  // }, [ centerX]);
-
 
   //돌발정보 마커 생성
   
