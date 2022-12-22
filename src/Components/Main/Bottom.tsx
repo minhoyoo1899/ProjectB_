@@ -5,10 +5,13 @@ import {FaCarCrash} from "react-icons/fa"
 import { BsFillCameraVideoFill } from "react-icons/bs"
 import { forwardRef, useState } from "react";
 import { stateStore } from "../store/stateStore";
+// 
 
 
   const Bottom = (props: any, ref: any) => {
-    console.log(props)
+    const {mapRef,cctvMarkRef} = ref
+    console.log(mapRef)
+  
       //리덕스 세팅
   function eventClick(){
     if(stateStore.getState()===false){

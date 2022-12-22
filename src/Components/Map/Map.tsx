@@ -4,8 +4,8 @@ import styled from 'styled-components'
 import Side from '../Main/Side'
 import Bottom from '../Main/Bottom'
 import { stateStore } from '../store/stateStore'
-import Weather from '../Main/Weather'
 import { response } from 'express'
+import Weather from '../Main/Weather'
 
 interface Main {
   children: ReactNode;
@@ -23,7 +23,7 @@ function Map() {
   const mapRef = useRef<any>()
   //cctv 정보
   const cctvPos = useRef<any>()
-  //현재 좌표의 위도 경도 담을 스테이트
+  //현재 좌표의 위도 경도 담을 스테이트 
   const [location, setLocation] = useState<any>({
     latitude: "",
     longitude : ""
@@ -52,58 +52,58 @@ function Map() {
       
       
       // setCctv({
-        //   lat : Number(cctvCoord.coordy),
-        //   lng : Number(cctvCoord.coordx)
-        // })
-        // const routePath = datas.data.route.traoptimal[0].path
-      }
-      getDatas();
-    },[])
-    
-    // 현재위치의 위도값과 경도값을 받아서 state 저장 
-    useEffect(()=> {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          // console.log(position)
-          setLocation({
-            latitude: Number(position.coords.latitude),
-            longitude: Number(position.coords.longitude),
-          });
-        });
-      } else {
-        window.alert("현재위치를 알수 없습니다.");
-      }
-    },[])
-    //지도 중앙좌표값
-    const [centerX, setCenterX] = useState<number>(127.3845475)
-    const [centerY, setCenterY] = useState<number>(36.3504119)
-    // 지도 줌 값 
-    const [zoom, setZoom] = useState<number>(12)
-    //지도 교통 흐름도 옵션 
-    const [isTrafficAvtive, setIsTrafficActive] = useState<boolean>(true)
-    // let isTrafficAvtive = true
-
-    const changeTraffic = (e:any) => {
-      
-      if(isTrafficAvtive === true){
-        console.log("비활성화")
-        setIsTrafficActive(false)
-      }
-      else if (isTrafficAvtive === false){
-        console.log("활성화")
-        setIsTrafficActive(true)
-      }
+      //   lat : Number(cctvCoord.coordy),
+      //   lng : Number(cctvCoord.coordx)
+      // })
+      // const routePath = datas.data.route.traoptimal[0].path
     }
-    // 지도
-    useEffect(()=>{
-      let trafficLayer = new naver.maps.TrafficLayer({
-        interval: 300000 // 5분마다 새로고침 (최소값 5분)
+    getDatas();
+  },[])
+
+  // 현재위치의 위도값과 경도값을 받아서 state 저장 
+  useEffect(()=> {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        // console.log(position)
+        setLocation({
+          latitude: Number(position.coords.latitude),
+          longitude: Number(position.coords.longitude),
+        });
       });
-      mapRef.current = new naver.maps.Map("map", {
-        center: new naver.maps.LatLng(centerY,centerX),
-        zoom:zoom,
-        mapTypeControl: true,
-        // zoomControl: true,  
+    } else {
+      window.alert("현재위치를 알수 없습니다.");
+    }
+  },[])
+  //지도 중앙좌표값
+  const [centerX, setCenterX] = useState<number>(127.3845475)
+  const [centerY, setCenterY] = useState<number>(36.3504119)
+  // 지도 줌 값 
+  const [zoom, setZoom] = useState<number>(12)
+  //지도 교통 흐름도 옵션 
+  const [isTrafficAvtive, setIsTrafficActive] = useState<boolean>(true)
+  // let isTrafficAvtive = true
+
+  const changeTraffic = (e:any) => {
+    
+    if(isTrafficAvtive === true){
+      console.log("비활성화")
+      setIsTrafficActive(false)
+    }
+    else if (isTrafficAvtive === false){
+      console.log("활성화")
+      setIsTrafficActive(true)
+    }
+  }
+  // 지도
+  useEffect(()=>{
+    let trafficLayer = new naver.maps.TrafficLayer({
+      interval: 300000 // 5분마다 새로고침 (최소값 5분)
+    });
+    mapRef.current = new naver.maps.Map("map", {
+      center: new naver.maps.LatLng(centerY,centerX),
+      zoom:zoom,
+      mapTypeControl: true,
+      // zoomControl: true,  
     });
     if (isTrafficAvtive === true) {
       trafficLayer.setMap(mapRef.current)
@@ -168,13 +168,9 @@ function Map() {
           position:e.coord,
           map:mapRef.current
         })
-        //
-        //만약 cctv 가 화면에 띄워져 있을때 다른게 띄워지면 기존거 닫기 
         if(cctvWindow.getMap()) {
           cctvWindow.close()
-        } 
-        //cctv 가 화면에 띄워져 있지 않을때(초기화면) cctv 창 띄우기  
-        else {
+        } else {
           cctvWindow.open(mapRef.current,newMarker)
           newMarker.setMap(null)
           console.log(cctvMarkRef.current.visible)
@@ -229,13 +225,12 @@ function Map() {
 
   //돌발정보 마커 생성
   
+  //**돌발정보 마커 생성
   useEffect(()=>{
     let test:any = []
-    
 
-  stateStore.subscribe(()=>{
-  
-    // markRef.current.getVisible(stateStore.getState())
+    //스토어 값이 변경될때 마커 출력or숨김 변경
+    stateStore.subscribe(()=>{
     test.map((item:any)=>{
       item.setVisible(stateStore.getState())
       console.log(item.visible)
@@ -244,26 +239,82 @@ function Map() {
     fetch("http://localhost:8282/event")
     .then((response)=>response.json())
     .then((response)=>{
-      console.log(response)
+      //console.log(response)
       for(let i in response){
         if(response[i].eventType !== '교통사고'){
-          markRef.current = new naver.maps.Marker({
+          //돌발상황 마크 생성
+          let evnetMark = new naver.maps.Marker({ 
             position:new naver.maps.LatLng(response[i].coordY,response[i].coordX),
             map:mapRef.current,
-            //visible: false
+            icon:{
+              url: '../img/error.png',
+              scaledSize : new naver.maps.Size(30,30)
+            },
+            visible:true
           })
-          test.push(markRef.current)
+          test.push(evnetMark)
           console.log(test)
-          //console.log(response[i].coordY)
-          //console.log(markRef)
         }
         
       }
     }).catch((err)=>{
       console.log(err)
     })
+   
   },[]);
-  console.log(isTrafficAvtive)
+
+   // 종인 작업 충돌 부분 수정
+   const navigation:any = []
+
+   useEffect(()=>{
+     fetch('http://127.0.0.1:8282/deajeonNode')
+     .then((res)=>res.json())
+     .then((res)=>{
+       res.map((item:any)=>{
+         let node = new naver.maps.Marker({
+           position: new naver.maps.LatLng(
+             item.node_Ycode,item.node_Xcode),
+           map : mapRef.current,
+           icon: {
+             url: "Img/cctv.png", 
+             scaledSize : new naver.maps.Size(8,8),
+           }
+         })
+         node.addListener('click',()=>{
+           navigation.push(item)
+           if(navigation.length === 2){
+             fetch('http://127.0.0.1:8282/navigation',{
+               method: "POST",
+               headers: {
+                 'Content-Type':'application/json'
+               },
+               body: JSON.stringify({
+                 start: navigation[0],
+                 end: navigation[1],
+               }),
+             })
+             .then((res)=>res.json())
+             .then((res)=>{
+               console.log(res)
+               const polyline = new naver.maps.Polyline({
+                 map: mapRef.current,
+                 path: res.map((item:any)=>{
+                   return new naver.maps.LatLng(
+                     item.node_Ycode,item.node_Xcode)
+                 }),
+                 strokeColor: "#0000ff",
+                 strokeWeight: 5,
+               });
+               navigation.pop()
+               navigation.pop()
+             })
+           }
+         })
+       })
+     })
+   },[])
+ 
+
   return (
     <Bg>
       <MapBox id="map">
@@ -279,7 +330,7 @@ function Map() {
   padding:0;
   box-sizing: border-box;
   width : 100%;
-  height :100%
+  height :100%;
   `
   const MapBox = styled.div`
     width: 100vw;
@@ -288,4 +339,4 @@ function Map() {
     padding : 2%;
   `
 
-export default Map
+export default forwardRef(Map)
