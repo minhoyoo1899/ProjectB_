@@ -100,7 +100,7 @@ app.get("/cctv", async (req, res) => {
     // console.log(cctvMsg)
     res.send(cctvMsg);
   } catch (err) {
-    console.log(err);
+    // console.log(err);
   }
 });
 
@@ -170,6 +170,7 @@ app.get("/apiMap", async (req, res) => {
     );
   } catch (err) {
     console.log(err);
+    console.log("apiMap err");
   }
 });
 
@@ -183,6 +184,7 @@ app.get("/event", async (req, res) => {
     res.send(eventData);
   } catch (err) {
     console.log(err);
+    console.log("event err");
   }
 });
 
@@ -221,7 +223,7 @@ app.get("/event", async (req, res) => {
 // }
 // })
 
-app.get("/deajeon", async (req, res) => {
+app.get("/deajeonNode", async (req, res) => {
   conn.query(`SELECT * from daejeon_node`, (err, row, fields) => {
     if (err) throw err;
     let json = JSON.stringify(row);
@@ -240,15 +242,41 @@ app.post("/navigation", (req, response) => {
     return Xgap ** 2 + Ygap ** 2;
   }
 
-  function navi(start, end) {
-    const route = [];
+  function navi(naviStart, naviEnd) {
+    let route = [naviStart];
+    const notNode = [];
+    let count = 0;
     function find(start, end) {
+      count++;
+      let routeNode = route.map((item) => {
+        return item.node_id;
+      });
       new Promise((resolve, reject) => {
         conn.query(
           `SELECT T_NODE from daejeon_link where F_NODE = ${start.node_id}`,
           (err, row, fields) => {
             if (err) throw err;
-            resolve(row);
+            let filter = row.filter((item) => {
+              return (
+                notNode.indexOf(item.T_NODE) < 0 &&
+                routeNode.indexOf(item.T_NODE) < 0
+              );
+            });
+            // console.log(filter);
+            console.log(count);
+            //notNode에 있는 node는 제외하고 탐색.
+            if (route.length > 0 && filter.length === 0) {
+              //시작지점이 아닌데 막다른길
+              notNode.push(route[route.length - 1].node_id);
+              //notNode에 현재 위치노드 추가,
+              route = [naviStart];
+              //route에 마지막 요소 제거
+              // find(route[route.length - 1], end);
+              find(naviStart, end);
+              //그 이전부터 다시 시작
+            } else {
+              resolve(filter);
+            }
           }
         );
       }).then((res) => {
@@ -276,7 +304,7 @@ app.post("/navigation", (req, response) => {
           });
         }).then((res) => {
           route.push(res);
-          if (res.node_id === end.node_id) {
+          if (res.node_id === end.node_id || count > 500) {
             let json = JSON.stringify(route);
             response.writeHead(200, {
               "Content-Type": "text/json;charset=utf-8",
@@ -288,7 +316,7 @@ app.post("/navigation", (req, response) => {
         });
       });
     }
-    find(start, end);
+    find(naviStart, naviEnd);
   }
   navi(start, end);
 });

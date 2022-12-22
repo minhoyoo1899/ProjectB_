@@ -34,29 +34,29 @@ function Map() {
   //cctv 기본정보 담을 스테이트 
   const [cctvInfo, setCctvInfo] = useState<any>()
   //서버에 요청 
-  useEffect(()=> {
-    const getDatas = async()=>{
-      // const datas = await axios.get("http://localhost:6565/route")
-      // console.log(datas)
-      const cctvData = await axios.get("http://localhost:8282/cctv")
-      // console.log(cctvData.data.response.data)
-      // console.log(cctvData.data.response.data)
-      cctvPos.current = cctvData.data.response.data
-      let cctvCoord = cctvData.data.response.data
-      // console.log(cctvCoord)
-      setCctv(cctvCoord)
-      testArr.push(cctvCoord)
-      // console.log(testArr[0])
+  // useEffect(()=> {
+  //   const getDatas = async()=>{
+  //     // const datas = await axios.get("http://localhost:6565/route")
+  //     // console.log(datas)
+  //     const cctvData = await axios.get("http://localhost:8282/cctv")
+  //     // console.log(cctvData.data.response.data)
+  //     // console.log(cctvData.data.response.data)
+  //     cctvPos.current = cctvData.data.response.data
+  //     let cctvCoord = cctvData.data.response.data
+  //     // console.log(cctvCoord)
+  //     setCctv(cctvCoord)
+  //     testArr.push(cctvCoord)
+  //     // console.log(testArr[0])
       
 
-      // setCctv({
-      //   lat : Number(cctvCoord.coordy),
-      //   lng : Number(cctvCoord.coordx)
-      // })
-      // const routePath = datas.data.route.traoptimal[0].path
-    }
-    getDatas();
-  },[])
+  //     // setCctv({
+  //     //   lat : Number(cctvCoord.coordy),
+  //     //   lng : Number(cctvCoord.coordx)
+  //     // })
+  //     // const routePath = datas.data.route.traoptimal[0].path
+  //   }
+  //   getDatas();
+  // },[])
 
   // 현재위치의 위도값과 경도값을 받아서 state 저장 
   useEffect(()=> {
@@ -212,41 +212,40 @@ function Map() {
     
 
   stateStore.subscribe(()=>{
-  
     // markRef.current.getVisible(stateStore.getState())
     test.map((item:any)=>{
       item.setVisible(stateStore.getState())
       console.log(item.visible)
     })
   })
-    fetch("http://localhost:8282/event")
-    .then((response)=>response.json())
-    .then((response)=>{
-      console.log(response)
-      for(let i in response){
-        if(response[i].eventType !== '교통사고'){
-          markRef.current = new naver.maps.Marker({
-            position:new naver.maps.LatLng(response[i].coordY,response[i].coordX),
-            map:mapRef.current,
-            //visible: false
-          })
-          test.push(markRef.current)
-          console.log(test)
-          //console.log(response[i].coordY)
-          //console.log(markRef)
-        }
+    // fetch("http://localhost:8282/event")
+    // .then((response)=>response.json())
+    // .then((response)=>{
+    //   // console.log(response)
+    //   for(let i in response){
+    //     if(response[i].eventType !== '교통사고'){
+    //       markRef.current = new naver.maps.Marker({
+    //         position:new naver.maps.LatLng(response[i].coordY,response[i].coordX),
+    //         map:mapRef.current,
+    //         //visible: false
+    //       })
+    //       test.push(markRef.current)
+    //       // console.log(test)
+    //       //console.log(response[i].coordY)
+    //       //console.log(markRef)
+    //     }
         
-      }
-    }).catch((err)=>{
-      console.log(err)
-    })
+    //   }
+    // }).catch((err)=>{
+    //   console.log(err)
+    // })
   },[]);
 
 
   const navigation:any = []
 
   useEffect(()=>{
-    fetch('http://127.0.0.1:8282/deajeon')
+    fetch('http://127.0.0.1:8282/deajeonNode')
     .then((res)=>res.json())
     .then((res)=>{
       res.map((item:any)=>{
@@ -275,7 +274,6 @@ function Map() {
             .then((res)=>res.json())
             .then((res)=>{
               console.log(res)
-              res.unshift(navigation[0])
               const polyline = new naver.maps.Polyline({
                 map: mapRef.current,
                 path: res.map((item:any)=>{
