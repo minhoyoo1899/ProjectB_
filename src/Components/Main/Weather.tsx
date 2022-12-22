@@ -31,18 +31,21 @@ const Weather = (props:any) => {
     fetch(`https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${serviceKey}&numOfRows=700&base_date=${yesterdayText}&base_time=${baseTime}&nx=${nx}&ny=${ny}&dataType=JSON`)
     .then((res)=>res.json())
     .then((res)=>{
-      let a = res.response.body.items.item
-      a.map((item:any)=>{
+      let data = res.response.body.items.item
+      data.map((item:any)=>{
         if(item.category === 'TMX' && item.fcstDate === todayText){
           setTMX(`${Number(item.fcstValue)}`)
         }
+        //최고기온 구하기
         if(item.category === 'TMN' && item.fcstDate === todayText){
           setTMN(`${Number(item.fcstValue)}`)
         }
+        //최저기온 구하기
         if(item.category === 'SKY' && item.fcstDate === todayText && item.fcstTime === timeText){
           setSKY(`${SKYdata[item.fcstValue]} (${timeText.slice(0,2)}시 00분 기준)`)
           setIMG(item.fcstValue)
         }
+        //날씨 구하기(맑음, 구름많음, 흐림)
         if(item.category === 'PTY' && item.fcstDate === todayText && item.fcstTime === timeText){
           // 없음(0), 비(1), 비/눈(2), 눈(3), 소나기(4)
           if(item.fcstValue === '1' || item.fcstValue === '2'|| item.fcstValue === '4'){
@@ -52,6 +55,7 @@ const Weather = (props:any) => {
             setIMG('SNOW')
           }
         }
+        //비나 눈 오는지 구하기
       })
     })
   },[props])

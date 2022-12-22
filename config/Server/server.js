@@ -20,9 +20,9 @@ dotenv.config();
 const dbconfig = {
   host: "localhost",
   user: "root",
-  password: "password",
+  password: "1111",
   port: "3306",
-  database: "project_b_",
+  database: "hi_five",
 };
 
 const ymhApi = "jio9z2ehit";
@@ -39,6 +39,8 @@ const header = {
   "X-NCP-APIGW-API-KEY": ymhSecret,
 };
 const app = express();
+
+app.use(express.json());
 
 app.use(
   cors({
@@ -57,7 +59,7 @@ app.get("/", async (req, res) => {
     });
 
     const resultMsg = result.data;
-    console.log(typeof resultMsg)    
+    console.log(typeof resultMsg);
     res.send(resultMsg);
   } catch (err) {
     console.log(err);
@@ -75,36 +77,32 @@ app.get("/db", async (req, res) => {
   });
 });
 
-app.get("/direction15", async (req, res) => { 
+app.get("/direction15", async (req, res) => {
   try {
     const result = await axios({
       method: "get",
       url: "https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=127.377579,36.349252&goal=127.408952,36.321161&waypoint=127.325118,36.300500",
       headers: header,
-    })
+    });
     const resultMsg = result.data;
   } catch (err) {
     console.log(err);
   }
 });
 
-app.get("/cctv", async(req,res)=> {
+app.get("/cctv", async (req, res) => {
   try {
-let cctvResult = await axios({
-  method : "get",
-  url: 'https://openapi.its.go.kr:9443/cctvInfo?apiKey=4537498ac13e4a3a9e10f66e3984c96a&type=ex&cctvType=2&minX=127.234227&maxX=127.570949&minY=36.192958&maxY=36.488949&getType=json',
+    let cctvResult = await axios({
+      method: "get",
+      url: "https://openapi.its.go.kr:9443/cctvInfo?apiKey=4537498ac13e4a3a9e10f66e3984c96a&type=ex&cctvType=2&minX=127.234227&maxX=127.570949&minY=36.192958&maxY=36.488949&getType=json",
+    });
+    const cctvMsg = cctvResult.data;
+    // console.log(cctvMsg)
+    res.send(cctvMsg);
+  } catch (err) {
+    // console.log(err);
+  }
 });
-const cctvMsg = cctvResult.data
-// console.log(cctvMsg)
-res.send(cctvMsg)
-        
-}catch(err){
-  console.log(err)
-}
-})
-
-
-
 
 app.get("/event",async(req,res)=>{
   try{
@@ -144,8 +142,9 @@ app.get("/apiMap", async (req, res) => {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Document</title>
       <script type="text/javascript"
-      src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${encodeURI(ymhApi)
-    }"></script>
+      src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${encodeURI(
+        ymhApi
+      )}"></script>
       </head>
       <body>
       <div id="map" style="width:100%; height:800px;"></div>
@@ -185,22 +184,23 @@ app.get("/apiMap", async (req, res) => {
     );
   } catch (err) {
     console.log(err);
+    console.log("apiMap err");
   }
 });
 
-app.get("/event",async(req,res)=>{
-  try{
+app.get("/event", async (req, res) => {
+  try {
     let eventResult = await axios({
-      method : "get",
-      url: `https://openapi.its.go.kr:9443/eventInfo?apiKey=006a4eca1c784284a64eca250f68063c&type=all&eventType=all&minX=127.234227&maxX=127.570949&minY=36.192958 &maxY=36.488949&getType=json`
+      method: "get",
+      url: `https://openapi.its.go.kr:9443/eventInfo?apiKey=006a4eca1c784284a64eca250f68063c&type=all&eventType=all&minX=127.234227&maxX=127.570949&minY=36.192958 &maxY=36.488949&getType=json`,
     });
-    const eventData = eventResult.data.body.items
-    res.send(eventData)
-  }catch(err){
-    console.log(err)
+    const eventData = eventResult.data.body.items;
+    res.send(eventData);
+  } catch (err) {
+    console.log(err);
+    console.log("event err");
   }
-})
-
+});
 
 
 app.get("/cctv", async(req,res)=> {
@@ -267,6 +267,104 @@ app.get("/event",async(req,res)=>{
 // console.log(err)
 // }
 // })
+
+app.get("/deajeonNode", async (req, res) => {
+  conn.query(`SELECT * from daejeon_node`, (err, row, fields) => {
+    if (err) throw err;
+    let json = JSON.stringify(row);
+    res.writeHead(200, { "Content-Type": "text/json;charset=utf-8" });
+    res.end(json);
+  });
+});
+
+app.post("/navigation", (req, response) => {
+  const start = req.body.start;
+  const end = req.body.end;
+
+  function gap(obj1, obj2) {
+    let Xgap = obj1.node_Xcode - obj2.node_Xcode;
+    let Ygap = obj1.node_Ycode - obj2.node_Ycode;
+    return Xgap ** 2 + Ygap ** 2;
+  }
+
+  function navi(naviStart, naviEnd) {
+    let route = [naviStart];
+    const notNode = [];
+    let count = 0;
+    function find(start, end) {
+      count++;
+      let routeNode = route.map((item) => {
+        return item.node_id;
+      });
+      new Promise((resolve, reject) => {
+        conn.query(
+          `SELECT T_NODE from daejeon_link where F_NODE = ${start.node_id}`,
+          (err, row, fields) => {
+            if (err) throw err;
+            let filter = row.filter((item) => {
+              return (
+                notNode.indexOf(item.T_NODE) < 0 &&
+                routeNode.indexOf(item.T_NODE) < 0
+              );
+            });
+            // console.log(filter);
+            console.log(count);
+            //notNode에 있는 node는 제외하고 탐색.
+            if (route.length > 0 && filter.length === 0) {
+              //시작지점이 아닌데 막다른길
+              notNode.push(route[route.length - 1].node_id);
+              //notNode에 현재 위치노드 추가,
+              route = [naviStart];
+              //route에 마지막 요소 제거
+              // find(route[route.length - 1], end);
+              find(naviStart, end);
+              //그 이전부터 다시 시작
+            } else {
+              resolve(filter);
+            }
+          }
+        );
+      }).then((res) => {
+        // console.log(res);
+        let node = "";
+        new Promise((resolve, reject) => {
+          res.map((item, index) => {
+            // console.log(item.T_NODE);
+            conn.query(
+              `SELECT * from daejeon_node where node_id = ${item.T_NODE}`,
+              (err, row, fields) => {
+                if (err) throw err;
+                let data = row[0];
+                data.gap = gap(data, end);
+                if (node.length === 0) {
+                  node = data;
+                } else if (data.gap < node.gap) {
+                  node = data;
+                }
+                if (index === res.length - 1) {
+                  resolve(node);
+                }
+              }
+            );
+          });
+        }).then((res) => {
+          route.push(res);
+          if (res.node_id === end.node_id || count > 500) {
+            let json = JSON.stringify(route);
+            response.writeHead(200, {
+              "Content-Type": "text/json;charset=utf-8",
+            });
+            response.end(json);
+          } else {
+            find(res, end);
+          }
+        });
+      });
+    }
+    find(naviStart, naviEnd);
+  }
+  navi(start, end);
+});
 
 app.listen(8282, () => {
   console.log("server on port : 8282");
