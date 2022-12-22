@@ -187,7 +187,7 @@ app.get("/event",async(req,res)=>{
   }
 })
 
-<<<<<<< HEAD
+
 
 app.get("/cctv", async(req,res)=> {
   try {
@@ -218,8 +218,6 @@ app.get("/event",async(req,res)=>{
 })
 
 
-=======
->>>>>>> ad075f6b3ccb05b3959011be1424508e80af0585
 
 // 입력한 주소의 좌표등 기본값 요청
 // app.get("/home", async(req,res)=> {
