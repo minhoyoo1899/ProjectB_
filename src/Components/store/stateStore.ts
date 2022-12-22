@@ -4,14 +4,16 @@ interface type{
   
 }
 
-function test(state = "",action:any){
+function eventView(state = "",action:any){
   if(action.type === "ADD"){
     return state = action.text
   }
 }
-let testStore = createStore(test)
-testStore.dispatch({type:"ADD",text:"123456"})
-console.log(testStore.getState())
+
+
+let eventViewStore = createStore(eventView)
+eventViewStore.dispatch({type:"ADD",text:"123456"})
+// console.log(eventViewStore.getState())
 
 function state(state = true, action:type){
   switch (action.type){
@@ -23,8 +25,21 @@ function state(state = true, action:type){
       return state
   }
 }
-
-
 let stateStore = createStore(state)
 
-export {stateStore,testStore}
+
+//사고정보 리듀서
+function accidentState(state = true, action:type){
+  switch(action.type){
+    case "TRUE":
+      return state = true
+    case "FALSE":
+      return state = false
+    default:
+      return state
+  }
+}
+let accidentStore = createStore(accidentState)
+
+
+export {stateStore,accidentStore,eventViewStore}

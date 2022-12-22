@@ -2,7 +2,7 @@
 import styled from "styled-components";
 import { useEffect, useState, forwardRef } from "react";
 import Map from "../Map/Map";
-import { testStore } from "../store/stateStore";
+import { eventViewStore } from "../store/stateStore";
 
 const Event = () =>{
   
@@ -138,8 +138,8 @@ const Event = () =>{
       },
       {
           "type": "고속도로",
-          "eventType": "공사",
-          "eventDetailType": "작업",
+          "eventType": "교통사고",
+          "eventDetailType": "충돌사고",
           "startDate": "20221220091000",
           "coordX": "127.3174",
           "coordY": "36.2905",
@@ -149,13 +149,13 @@ const Event = () =>{
           "roadDrcType": "기점",
           "lanesBlockType": "",
           "lanesBlocked": "",
-          "message": "(갓길)이동잡목제거작업중",
+          "message": "승용차 단독사고, 종료",
           "endDate": ""
       },
       {
           "type": "국도",
           "eventType": "교통사고",
-          "eventDetailType": "시설물보수작업",
+          "eventDetailType": "충돌사고",
           "startDate": "20221220000000",
           "coordX": "127.27543",
           "coordY": "36.41606",
@@ -165,7 +165,7 @@ const Event = () =>{
           "roadDrcType": "시점방향",
           "lanesBlockType": "",
           "lanesBlocked": "1 차로",
-          "message": "교통사고",
+          "message": "승용차 단독사고, 종료",
           "endDate": ""
       },
       {
@@ -203,11 +203,8 @@ const Event = () =>{
   
   
   function infoView(target:any){
-    console.log(target.linkId)
-    testStore.dispatch({type:"ADD",text:target.linkId})
-    testStore.subscribe(()=>{
-      console.log(testStore.getState())
-    })
+    //console.log(target.linkId)
+    eventViewStore.dispatch({type:"ADD",text:target.linkId})
   }
 
   return(
@@ -221,8 +218,8 @@ const Event = () =>{
               count1++;
               return (
                 <Item key={item.linkId} onClick={()=>infoView(item)}>
-                  <div style={{fontWeight:'bold'}}>{item.roadName}</div>
-                  <div>{item.message}</div>
+                  <div>🚗 {item.roadName} → {item.eventType} ({item.eventDetailType})</div>
+                    <div style={{fontSize:'x-small',paddingLeft:'20px'}}>{item.message}</div> 
                 </Item>
               )
             }
@@ -293,7 +290,7 @@ const Content = styled.div`
   color:white;
   display:flex;
   flex-direction:column;
-  gap:10px;
+  gap:20px;
   overflow-y:scroll;
   ::-webkit-scrollbar{
     display:none;
@@ -302,6 +299,7 @@ const Content = styled.div`
 `
 
 const Item = styled.div`
+
   :hover{
     color:#F4C932;
     cursor:pointer

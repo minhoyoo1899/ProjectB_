@@ -3,10 +3,10 @@ import axios from "axios"
 import styled from 'styled-components'
 import Side from '../Main/Side'
 import Bottom from '../Main/Bottom'
-import { stateStore } from '../store/stateStore'
-import { response } from 'express'
+import e, { response } from 'express'
 import Weather from '../Main/Weather'
-import { testStore } from '../store/stateStore'
+import { eventViewStore, accidentStore,stateStore } from '../store/stateStore'
+
 
   const test = 
     [
@@ -140,8 +140,8 @@ import { testStore } from '../store/stateStore'
       },
       {
           "type": "고속도로",
-          "eventType": "공사",
-          "eventDetailType": "작업",
+          "eventType": "교통사고",
+          "eventDetailType": "충돌사고",
           "startDate": "20221220091000",
           "coordX": "127.3174",
           "coordY": "36.2905",
@@ -151,7 +151,7 @@ import { testStore } from '../store/stateStore'
           "roadDrcType": "기점",
           "lanesBlockType": "",
           "lanesBlocked": "",
-          "message": "(갓길)이동잡목제거작업중",
+          "message": "승용차 단독사고, 종료",
           "endDate": ""
       },
       {
@@ -384,6 +384,14 @@ function Map() {
 
   //사고정보 마커 생성
   useEffect(()=>{
+
+    let accidentArr:any = []
+    accidentStore.subscribe(()=>{
+      accidentArr.map((item:any)=>{
+        item.setVisible(accidentStore.getState())
+      })
+    })
+
     for(let i in test){
       if(test[i].eventType === '교통사고'){
         let accidentMark = new naver.maps.Marker({
@@ -403,26 +411,45 @@ function Map() {
         })
         naver.maps.Event.addListener(accidentMark,'click',(e)=>{
           if(infowindow.getMap()){
-            infowindow.close()
+            infowindow.close();
           }else{
             infowindow.open(mapRef.current,accidentMark)
           }
         })
-        testStore.subscribe(()=>{
-          if(test[i].linkId === testStore.getState()){
+        
+        //사고정보 정보창 생성
+        eventViewStore.subscribe(()=>{
+         
+          if(test[i].linkId === eventViewStore.getState()){
+           
             if(infowindow.getMap()){
+              
               infowindow.close()
             }else{
               infowindow.open(mapRef.current,accidentMark)
+              
             }
+            
           }
         })
+
+
+        accidentArr.push(accidentMark)
+
       }
     }
   })
 
   //돌발정보 마커 생성 --- 테스트용 데이터
   useEffect(()=>{
+    let eventArr:any = [];
+    stateStore.subscribe(()=>{
+      eventArr.map((item:any)=>{
+        item.setVisible(stateStore.getState())
+        //console.log(item.visible)
+      })
+    })
+
     // 교통사고와 교통사고 외의 돌발상황을 분리하여 작성함
     // 
     for(let i in test){
@@ -451,15 +478,17 @@ function Map() {
           }
         })
 
-        testStore.subscribe(()=>{
-          if(test[i].linkId === testStore.getState()){
+        eventViewStore.subscribe(()=>{
+          if(test[i].linkId === eventViewStore.getState()){
             if(infowindow.getMap()){
               infowindow.close()
+              //console.log('얘는 되냐')
             }else{
               infowindow.open(mapRef.current,eventMark)
             }
           }
         })
+        eventArr.push(eventMark)
         
         
 
@@ -468,73 +497,70 @@ function Map() {
   },[])
 
   //**돌발정보 마커 생성
-  useEffect(()=>{
-    let test:any = []
+  // useEffect(()=>{
+  //   let test:any = []
 
+  //   //스토어 값이 변경될때 마커 출력or숨김 변경
+  //   stateStore.subscribe(()=>{
+  //   test.map((item:any)=>{
+  //     item.setVisible(stateStore.getState())
+  //     console.log(item.visible)
+  //     })
+  //   })
 
-   
+  //   fetch("http://localhost:8282/event")
+  //   .then((response)=>response.json())
+  //   .then((response)=>{
+  //     console.log(response)
+  //     for(let i in response){
+  //       if(response[i].eventType !== '교통사고'){
+  //         //돌발상황 마크 생성
+  //         let eventMark = new naver.maps.Marker({ 
+  //           position:new naver.maps.LatLng(response[i].coordY,response[i].coordX),
+  //           map:mapRef.current,
+  //           icon:{
+  //             url: '../img/error.png',
+  //             scaledSize : new naver.maps.Size(30,30)
+  //           },
+  //           visible:true
+  //         })
 
-    //스토어 값이 변경될때 마커 출력or숨김 변경
-    stateStore.subscribe(()=>{
-    test.map((item:any)=>{
-      item.setVisible(stateStore.getState())
-      console.log(item.visible)
-      })
-    })
-
-    fetch("http://localhost:8282/event")
-    .then((response)=>response.json())
-    .then((response)=>{
-      console.log(response)
-      for(let i in response){
-        if(response[i].eventType !== '교통사고'){
-          //돌발상황 마크 생성
-          let eventMark = new naver.maps.Marker({ 
-            position:new naver.maps.LatLng(response[i].coordY,response[i].coordX),
-            map:mapRef.current,
-            icon:{
-              url: '../img/error.png',
-              scaledSize : new naver.maps.Size(30,30)
-            },
-            visible:true
-          })
-
-          let infowindow = new naver.maps.InfoWindow({
-            content: 
-            `<div>
-              <div style="background-color:#35BABC;color:white; padding:10px">${response[i].roadName}</div>
-              <div>${response[i].eventType}(${response[i].eventDetailType})</dvi>
-            </div>`
-          })
-          naver.maps.Event.addListener(eventMark,'click',(e)=>{
-            if(infowindow.getMap()){
-              infowindow.close();
-            }else{
-              infowindow.open(mapRef.current,eventMark)
-            }
-          })
+  //         let infowindow = new naver.maps.InfoWindow({
+  //           content: 
+  //           `<div>
+  //             <div style="background-color:#35BABC;color:white; padding:10px">${response[i].roadName}</div>
+  //             <div>${response[i].eventType}(${response[i].eventDetailType})</dvi>
+  //           </div>`
+  //         })
+  //         naver.maps.Event.addListener(eventMark,'click',(e)=>{
+  //           if(infowindow.getMap()){
+  //             infowindow.close();
+  //           }else{
+  //             infowindow.open(mapRef.current,eventMark)
+  //           }
+  //         })
           
 
-          test.push(eventMark)
-          console.log(test)
+  //         test.push(eventMark)
+  //         console.log(test)
 
-          testStore.subscribe(()=>{
-            if(response[i].linkId === testStore.getState()){
-              if(infowindow.getMap()){
-                infowindow.close()
-              }else{
-                infowindow.open(mapRef.current,eventMark)
-              }
-            }
-          })
+  //         eventViewStore.subscribe(()=>{
+  //           if(response[i].linkId === eventViewStore.getState()){
+  //             if(infowindow.getMap()){
+  //               infowindow.close()
+  //             }else{
+  //               infowindow.open(mapRef.current,eventMark)
+  //             }
+  //           }
+  //         })
 
-        }
+  //       }
         
-      }
-    }).catch((err)=>{
-      console.log(err)
-    })
-  },[]);
+  //     }
+  //   }).catch((err)=>{
+  //     console.log(err)
+  //   })
+  // },[]);
 
   return (
     <Bg>
