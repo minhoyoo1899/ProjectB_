@@ -14,7 +14,7 @@ function eventView(state = "",action:any){
 
 
 let eventViewStore = createStore(eventView)
-eventViewStore.dispatch({type:"ADD",text:"123456"})
+eventViewStore.dispatch({type:"ADD",text:""})
 // console.log(eventViewStore.getState())
 
 
