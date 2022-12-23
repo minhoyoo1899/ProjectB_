@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site" : "project-b-970a0.web.app",
     "public": "public",
     "ignore": [
       "firebase.json",

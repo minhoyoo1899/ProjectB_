@@ -24,6 +24,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "firebase": "^8.10.1",
+    "firebase-admin": "^11.4.1",
     "fs": "^0.0.1-security",
     "http": "^0.0.1-security",
     "mysql": "^2.18.1",
