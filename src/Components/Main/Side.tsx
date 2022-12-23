@@ -1,6 +1,7 @@
 
 import styled from "styled-components";
 import Event from "./Evnet";
+import SearchBar from "./searchBar";
 
 
 const Side = () =>{
@@ -16,7 +17,7 @@ export default Side
 
 const Container = styled.div`
   width:250px;
-  height:65%;
+  height:70%;
   min-width:200px;
   background-color:rgba(160,160,160,0.4);
   position:absolute;

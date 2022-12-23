@@ -1,10 +1,11 @@
 
 import styled from "styled-components";
 import { useEffect, useState, forwardRef } from "react";
-import Map from "../Map/Map";
-import { eventViewStore } from "../store/stateStore";
 
+import { eventViewStore } from "../store/stateStore";
+import SearchBar from "./searchBar";
 const Event = () =>{
+
   
   const test = 
     [
@@ -187,16 +188,16 @@ const Event = () =>{
   ]
 
   const [eventView,setEventView] = useState([])
-    useEffect(()=>{
-      fetch(`http://localhost:8282/event`)
-        .then((response)=>response.json())
-        .then((response)=>{
-          console.log(response)
-          setEventView(response)
-        }).catch((err)=>{
-          console.log(err)
-        })
-    },[])
+    // useEffect(()=>{
+    //   fetch(`http://localhost:8282/event`)
+    //     .then((response)=>response.json())
+    //     .then((response)=>{
+    //       console.log(response)
+    //       setEventView(response)
+    //     }).catch((err)=>{
+    //       console.log(err)
+    //     })
+    // },[])
 
   let count1 = 0; //사고정보 카운트
   let count2 = 0; //돌발정보 카운트
@@ -211,6 +212,7 @@ const Event = () =>{
 
   return(
     <Container>
+      <SearchBar/>
       <div>
         <Title color="tomato">사고정보</Title>
         <Content>
@@ -268,7 +270,7 @@ const Container = styled.div`
   font-size:.7em;
   display:flex;
   flex-direction:column;
-  gap:50px;
+  gap:10px;
  
 `
 //타이틀
@@ -284,7 +286,7 @@ const Title = styled.div`
 const Content = styled.div`
   width:100%;
   height:max-content;
-  min-height:200px;
+  //min-height:200px;
   max-height:230px;
   padding:4%;
   background-color:rgba(40,40,40,0.5);
@@ -307,4 +309,6 @@ const Item = styled.div`
     cursor:pointer
   }
 `
+
+
 

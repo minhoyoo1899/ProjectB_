@@ -20,7 +20,7 @@ dotenv.config();
 const dbconfig = {
   host: "localhost",
   user: "root",
-  password: "1111",
+  password: "9099",
   port: "3306",
   database: "hi_five",
 };
@@ -159,6 +159,26 @@ app.get("/apiMap", async (req, res) => {
     console.log("apiMap err");
   }
 });
+
+// 네이버 검색 api 사용
+app.get(`/search/:name`,async(req,res)=>{
+  try{
+    const searchResult = await axios({
+      method:"get",
+      url:`https://openapi.naver.com/v1/search/local.json?query=${req.params.name}&display=10&start=1&sort=random`,
+      headers:{
+        "X-Naver-Client-Id":"ZGE54oYQtkC7mL5htQ71",
+          "X-Naver-Client-Secret":"RZIX1BycPn"
+      }
+    });
+    const searchData = searchResult.data.items;
+    res.send(searchData)
+  }catch(err){
+    console.log(err)
+  }
+  
+})
+
 
 app.get("/event", async (req, res) => {
   try {
