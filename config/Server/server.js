@@ -82,6 +82,18 @@ app.get("/", async (req, res) => {
 //   }
 // });
 
+//네이버 api 키
+// const id = "rw8kfxnmol"
+// const secret = "KLcIjNMP9IXvoxSEQmdcNjip3b5oj0agPyQmIQ30"
+// //집주소
+// const address = "대전 서구 도솔로434-8"
+// //api 요청시 헤더에 넣을 기본 정보
+// const header = {
+// "X-NCP-APIGW-API-KEY-ID" : id,
+// "X-NCP-APIGW-API-KEY" : secret
+// }
+// 현재위치 좌표값 받아와서 지도에 마커표시
+// 파일 분리를 안해서 좀 지저분 합니다...
 app.get("/apiMap", async (req, res) => {
   try {
     res.send(
@@ -140,6 +152,39 @@ app.get("/apiMap", async (req, res) => {
   }
 });
 
+// 네이버 검색 api 사용
+app.get(`/search/:name`,async(req,res)=>{
+  try{
+    const searchResult = await axios({
+      method:"get",
+      url:`https://openapi.naver.com/v1/search/local.json?query=${req.params.name}&display=10&start=1&sort=random`,
+      headers:{
+        "X-Naver-Client-Id":"ZGE54oYQtkC7mL5htQ71",
+          "X-Naver-Client-Secret":"RZIX1BycPn"
+      }
+    });
+    const searchData = searchResult.data.items;
+    res.send(searchData)
+  }catch(err){
+    console.log(err)
+  }
+  
+})
+
+
+app.get("/event", async (req, res) => {
+  try {
+    let eventResult = await axios({
+      method: "get",
+      url: `https://openapi.its.go.kr:9443/eventInfo?apiKey=006a4eca1c784284a64eca250f68063c&type=all&eventType=all&minX=127.234227&maxX=127.570949&minY=36.192958 &maxY=36.488949&getType=json`,
+    });
+    const eventData = eventResult.data.body.items;
+    res.send(eventData);
+  } catch (err) {
+    console.log(err);
+    console.log("event err");
+  }
+});
 
 
 app.get("/cctv", async(req,res)=> {
@@ -157,19 +202,41 @@ res.send(cctvMsg)
 }
 }) 
 
-app.get("/event",async(req,res)=>{
-  try{
-    let eventResult = await axios({
-      method : "get",
-      url: `https://openapi.its.go.kr:9443/eventInfo?apiKey=006a4eca1c784284a64eca250f68063c&type=all&eventType=all&minX=127.234227&maxX=127.570949&minY=36.192958 &maxY=36.488949&getType=json`
-    });
-    const eventData = eventResult.data.body.items
-    res.send(eventData)
-  }catch(err){
-    console.log(err)
-  }
-})
 
+// 입력한 주소의 좌표등 기본값 요청
+// app.get("/home", async(req,res)=> {
+// try {
+// let result = await axios({
+// method : "get",
+// url :
+// `https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=${address}`,
+// headers: header
+// });
+// const resultMsg = result.data
+// // console.log(resultMsg)
+// res.send(resultMsg)
+// }catch(err){
+// console.log(err)
+// }
+// })
+// 출발지와 도착지의 좌표값을 요청하여 목적지까지의 경로 요청
+// 해당 부분과 지도에 오버레이하여 표기하는 것을 찾으면 출발지와 도착지 까지의 경로를 지도위에 표기할수 있을듯 함
+// app.get("/wayhome", async(req,res)=> {
+// try {
+// let result = await axios({
+// method : "get",
+// url :
+// `https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=127.392362
+// 2,36.3434230&goal=127.3776464,36.3493567&option=trafast`,
+// headers: header
+// });
+// const resultMsg = result.data.route.trafast[0].guide
+// console.log(resultMsg)
+// res.send(resultMsg)
+// }catch(err){
+// console.log(err)
+// }
+// })
 
 app.get("/deajeonNode", async (req, res) => {
   conn.query(`SELECT * from daejeon_node`, (err, row, fields) => {

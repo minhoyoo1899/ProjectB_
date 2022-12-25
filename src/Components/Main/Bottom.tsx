@@ -4,13 +4,15 @@ import {FaExclamationTriangle} from "react-icons/fa"
 import {FaCarCrash} from "react-icons/fa"
 import { BsFillCameraVideoFill } from "react-icons/bs"
 import { forwardRef, useState } from "react";
-import { stateStore } from "../store/stateStore";
+import { accidentStore, stateStore } from "../store/stateStore";
+import { eventViewStore } from "../store/stateStore";
 // 
   // console.log(props)
   const Bottom = (props:any, ref:any) => {
     const {mapRef,cctvMarkRef} = ref
-    console.log(mapRef)
       //리덕스 세팅
+
+  //*돌발정보 마크의 옵션값 true,flase로 변경하는 리듀서에 액션값을 보냄 
   function eventClick(){
     if(stateStore.getState()===false){
       stateStore.dispatch({type:"TRUE"})
@@ -20,7 +22,15 @@ import { stateStore } from "../store/stateStore";
       //console.log(stateStore.getState())
     }
   }
-  //cctv 버튼용
+  //* 마크의 옵션값 true,false로 변경하는 리듀서에 액션값을 보냄
+  function accidentClick(){
+    if(accidentStore.getState()===false){
+      accidentStore.dispatch({type:"TRUE"})
+    }else{
+      accidentStore.dispatch({type:"FALSE"})
+    }
+  }
+
   let clicked = true
   const [isActive,setIsActive] = useState<string>("")
 
@@ -53,7 +63,7 @@ import { stateStore } from "../store/stateStore";
       }}
       ><FaCarAlt/>&nbsp;&nbsp;도로흐름</Item>
       <Item onClick={eventClick} color="#FFC314"><FaExclamationTriangle/>&nbsp;&nbsp;돌발상황</Item>
-      <Item color="tomato"><FaCarCrash/>&nbsp;&nbsp;사고정보</Item>
+      <Item color="tomato" onClick={accidentClick}><FaCarCrash/>&nbsp;&nbsp;사고정보</Item>
     </Container>
   )
 }

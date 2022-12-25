@@ -3,9 +3,191 @@ import axios from "axios"
 import styled from 'styled-components'
 import Side from '../Main/Side'
 import Bottom from '../Main/Bottom'
-import { stateStore } from '../store/stateStore'
-import { response } from 'express'
+import e, { response } from 'express'
 import Weather from '../Main/Weather'
+import { eventViewStore, accidentStore,stateStore } from '../store/stateStore'
+
+
+  const test = 
+    [
+      {
+          "type": "고속도로",
+          "eventType": "작업",
+          "eventDetailType": "작업",
+          "startDate": "20221220093317",
+          "coordX": "127.4226",
+          "coordY": "36.4137",
+          "linkId": "1870199600",
+          "roadName": "경부선",
+          "roadNo": "1",
+          "roadDrcType": "기점",
+          "lanesBlockType": "",
+          "lanesBlocked": "",
+          "message": "(갓길)방초매트설치작업중",
+          "endDate": ""
+      },
+      {
+          "type": "고속도로",
+          "eventType": "기타돌발",
+          "eventDetailType": "고장",
+          "startDate": "20221220090802",
+          "coordX": "127.3164",
+          "coordY": "36.2853",
+          "linkId": "1850324300",
+          "roadName": "호남지선",
+          "roadNo": "251",
+          "roadDrcType": "기점",
+          "lanesBlockType": "",
+          "lanesBlocked": "",
+          "message": "(갓길)소형화물차고장처리중",
+          "endDate": ""
+      },
+      {
+          "type": "고속도로",
+          "eventType": "작업",
+          "eventDetailType": "작업",
+          "startDate": "20221220111308",
+          "coordX": "127.3158",
+          "coordY": "36.2949",
+          "linkId": "1860631500",
+          "roadName": "호남지선",
+          "roadNo": "251",
+          "roadDrcType": "종점",
+          "lanesBlockType": "",
+          "lanesBlocked": "2차로 차단",
+          "message": "(2차로)노면보수작업중",
+          "endDate": ""
+      },
+      {
+          "type": "고속도로",
+          "eventType": "작업",
+          "eventDetailType": "작업",
+          "startDate": "20221220092119",
+          "coordX": "127.2702",
+          "coordY": "36.4382",
+          "linkId": "4130093800",
+          "roadName": "당진대전선",
+          "roadNo": "30",
+          "roadDrcType": "종점",
+          "lanesBlockType": "",
+          "lanesBlocked": "1차로 차단",
+          "message": "(1차로)시설물보수작업중",
+          "endDate": ""
+      },
+      {
+          "type": "고속도로",
+          "eventType": "공사",
+          "eventDetailType": "작업",
+          "startDate": "20221220085005",
+          "coordX": "127.5292",
+          "coordY": "36.3356",
+          "linkId": "2760275600",
+          "roadName": "경부선",
+          "roadNo": "1",
+          "roadDrcType": "종점",
+          "lanesBlockType": "",
+          "lanesBlocked": "",
+          "message": "(갓길)표지판교체작업중",
+          "endDate": ""
+      },
+      {
+          "type": "고속도로",
+          "eventType": "공사",
+          "eventDetailType": "작업",
+          "startDate": "20221220091833",
+          "coordX": "127.3204",
+          "coordY": "36.3936",
+          "linkId": "1860167900",
+          "roadName": "당진대전선",
+          "roadNo": "30",
+          "roadDrcType": "기점",
+          "lanesBlockType": "",
+          "lanesBlocked": "2차로 차단",
+          "message": "(2차로)VMS설치작업중",
+          "endDate": ""
+      },
+      {
+          "type": "고속도로",
+          "eventType": "공사",
+          "eventDetailType": "작업",
+          "startDate": "20221220092459",
+          "coordX": "127.4906",
+          "coordY": "36.2119",
+          "linkId": "2920027003",
+          "roadName": "통영대전선",
+          "roadNo": "35",
+          "roadDrcType": "기점",
+          "lanesBlockType": "",
+          "lanesBlocked": "",
+          "message": "(갓길)시설물점검작업중",
+          "endDate": ""
+      },
+      {
+          "type": "고속도로",
+          "eventType": "기타돌발",
+          "eventDetailType": "고장",
+          "startDate": "20221220104724",
+          "coordX": "127.2498",
+          "coordY": "36.4634",
+          "linkId": "4130116700",
+          "roadName": "당진대전선",
+          "roadNo": "30",
+          "roadDrcType": "기점",
+          "lanesBlockType": "",
+          "lanesBlocked": "",
+          "message": "(갓길)소형화물고장차처리중",
+          "endDate": ""
+      },
+      {
+          "type": "고속도로",
+          "eventType": "교통사고",
+          "eventDetailType": "충돌사고",
+          "startDate": "20221220091000",
+          "coordX": "127.3174",
+          "coordY": "36.2905",
+          "linkId": "1860631600",
+          "roadName": "호남지선",
+          "roadNo": "251",
+          "roadDrcType": "기점",
+          "lanesBlockType": "",
+          "lanesBlocked": "",
+          "message": "승용차 단독사고, 종료",
+          "endDate": ""
+      },
+      {
+          "type": "국도",
+          "eventType": "교통사고",
+          "eventDetailType": "충돌사고",
+          "startDate": "20221220000000",
+          "coordX": "127.27543",
+          "coordY": "36.41606",
+          "linkId": "2860255507",
+          "roadName": "국도1호선",
+          "roadNo": "1",
+          "roadDrcType": "시점방향",
+          "lanesBlockType": "",
+          "lanesBlocked": "1 차로",
+          "message": "승용차 단독사고, 종료",
+          "endDate": ""
+      },
+      {
+          "type": "국도",
+          "eventType": "공사",
+          "eventDetailType": "시설물보수작업",
+          "startDate": "20221220000000",
+          "coordX": "127.26385",
+          "coordY": "36.33656",
+          "linkId": "1860633200",
+          "roadName": "국도1호선",
+          "roadNo": "1",
+          "roadDrcType": "종점방향",
+          "lanesBlockType": "",
+          "lanesBlocked": "1 차로",
+          "message": "",
+          "endDate": ""
+      }
+  ]
+
 
 
 interface Main {
@@ -189,42 +371,74 @@ function Map() {
 
   //돌발정보 마커 생성
   
-  //**돌발정보 마커 생성
-  useEffect(()=>{
-    let test:any = []
 
-    //스토어 값이 변경될때 마커 출력or숨김 변경
+  //!돌발정보 마커 생성 --- 테스트용 데이터로 작업한 내용
+  useEffect(()=>{
+
+    //* 교통사고와 교통사고 외의 돌발상황을 분리하여 작성함
+    //* 1. eventMark : 돌발정보 마크
+    //* 2. infowindow : 정보창
+    // 마크를 클릭하면 정보창 표시, 
+    // 사이드바의 사고,돌발 정보를 클릭했을때 eventViewStore리듀서의 state 값이 변경되면서 
+    // 해당 마크 위치에 정보창이 출력됨.
+    //* 3. eventArr: 돌발상황 마크들을 배열에 저장해놓음, 
+    // stateStore리듀서에서 state 값이 변경되면 배열에 있는 마크들의 visible값을 false로 변경하여 숨김
+
+    let eventArr:any = [];
     stateStore.subscribe(()=>{
-    test.map((item:any)=>{
-      item.setVisible(stateStore.getState())
-      console.log(item.visible)
+      eventArr.map((item:any)=>{
+        item.setVisible(stateStore.getState())
+        //console.log(item.visible)
+      })
     })
-  })
-    fetch("http://localhost:8282/event")
-    .then((response)=>response.json())
-    .then((response)=>{
-      //console.log(response)
-      for(let i in response){
-        if(response[i].eventType !== '교통사고'){
-          //돌발상황 마크 생성
-          let evnetMark = new naver.maps.Marker({ 
-            position:new naver.maps.LatLng(response[i].coordY,response[i].coordX),
-            map:mapRef.current,
-            icon:{
-              url: '../img/error.png',
-              scaledSize : new naver.maps.Size(30,30)
-            },
-            visible:true
-          })
-          test.push(evnetMark)
-          console.log(test)
-        }
+
+    
+    for(let i in test){
+      if(test[i].eventType !== "교통사고"){
+        let eventMark = new naver.maps.Marker({
+          position: new naver.maps.LatLng(Number(test[i].coordY),Number(test[i].coordX)),
+          map:mapRef.current,
+          icon:{
+            url:"../img/error.png",
+            scaledSize:new naver.maps.Size(30,30)
+          },
+          visible:true
+        })
+        let infowindow = new naver.maps.InfoWindow({
+          content:
+          `<div>
+              <div style="background-color:#35BABC;color:white; padding:10px">${test[i].roadName}</div>
+              <div>${test[i].eventType}(${test[i].eventDetailType})</dvi>
+          </div>`
+        })
+        naver.maps.Event.addListener(eventMark,'click',(e)=>{
+          if(infowindow.getMap()){
+            infowindow.close();
+          }else{
+            infowindow.open(mapRef.current,eventMark)
+          }
+        })
+
+        eventViewStore.subscribe(()=>{
+          if(test[i].linkId === eventViewStore.getState()){
+            if(infowindow.getMap()){
+              infowindow.close()
+              //console.log('얘는 되냐')
+            }else{
+              infowindow.open(mapRef.current,eventMark)
+            }
+          }
+        })
+        eventArr.push(eventMark)
         
+        
+
       }
-    }).catch((err)=>{
-      console.log(err)
-    })
-  }, []);
+    }
+  },[])
+
+
+
   
   const [stroke, setStroke] = useState<number>(5)
 
@@ -375,6 +589,131 @@ function Map() {
     })
   },)
 
+//*사고정보 마커 생성 --(돌발상황 마크 생성과 같은방식)
+useEffect(()=>{
+
+  let accidentArr:any = []
+  accidentStore.subscribe(()=>{
+    accidentArr.map((item:any)=>{
+      item.setVisible(accidentStore.getState())
+    })
+  })
+
+  for(let i in test){
+    if(test[i].eventType === '교통사고'){
+      let accidentMark = new naver.maps.Marker({
+        position : new naver.maps.LatLng(Number(test[i].coordY),Number(test[i].coordX)),
+        map:mapRef.current,
+        icon:{
+          url:"../img/car.png",
+          scaledSize: new naver.maps.Size(30,30)
+        }
+      })
+      let infowindow = new naver.maps.InfoWindow({
+        content:
+        `<div>
+            <div style="background-color:#35BABC;color:white; padding:10px">${test[i].roadName}</div>
+            <div>${test[i].eventType}(${test[i].eventDetailType})</dvi>
+        </div>`
+      })
+      naver.maps.Event.addListener(accidentMark,'click',(e)=>{
+        if(infowindow.getMap()){
+          infowindow.close();
+        }else{
+          infowindow.open(mapRef.current,accidentMark)
+        }
+      })
+      
+      //사고정보 정보창 생성
+      eventViewStore.subscribe(()=>{
+       
+        if(test[i].linkId === eventViewStore.getState()){
+         
+          if(infowindow.getMap()){
+            
+            infowindow.close()
+          }else{
+            infowindow.open(mapRef.current,accidentMark)
+            
+          }
+          
+        }
+      })
+
+
+      accidentArr.push(accidentMark)
+
+    }
+  }
+},[])
+
+
+  //*돌발정보 마커 생성 -- 기존 api데이터 받아와서 작업한 내용
+  // useEffect(()=>{
+  //   let test:any = []
+
+  //   //스토어 값이 변경될때 마커 출력or숨김 변경
+  //   stateStore.subscribe(()=>{
+  //   test.map((item:any)=>{
+  //     item.setVisible(stateStore.getState())
+  //     console.log(item.visible)
+  //     })
+  //   })
+
+  //   fetch("http://localhost:8282/event")
+  //   .then((response)=>response.json())
+  //   .then((response)=>{
+  //     console.log(response)
+  //     for(let i in response){
+  //       if(response[i].eventType !== '교통사고'){
+  //         //돌발상황 마크 생성
+  //         let eventMark = new naver.maps.Marker({ 
+  //           position:new naver.maps.LatLng(response[i].coordY,response[i].coordX),
+  //           map:mapRef.current,
+  //           icon:{
+  //             url: '../img/error.png',
+  //             scaledSize : new naver.maps.Size(30,30)
+  //           },
+  //           visible:true
+  //         })
+
+  //         let infowindow = new naver.maps.InfoWindow({
+  //           content: 
+  //           `<div>
+  //             <div style="background-color:#35BABC;color:white; padding:10px">${response[i].roadName}</div>
+  //             <div>${response[i].eventType}(${response[i].eventDetailType})</dvi>
+  //           </div>`
+  //         })
+  //         naver.maps.Event.addListener(eventMark,'click',(e)=>{
+  //           if(infowindow.getMap()){
+  //             infowindow.close();
+  //           }else{
+  //             infowindow.open(mapRef.current,eventMark)
+  //           }
+  //         })
+          
+
+  //         test.push(eventMark)
+  //         console.log(test)
+
+  //         eventViewStore.subscribe(()=>{
+  //           if(response[i].linkId === eventViewStore.getState()){
+  //             if(infowindow.getMap()){
+  //               infowindow.close()
+  //             }else{
+  //               infowindow.open(mapRef.current,eventMark)
+  //             }
+  //           }
+  //         })
+
+  //       }
+        
+  //     }
+  //   }).catch((err)=>{
+  //     console.log(err)
+  //   })
+  // },[]);
+  // }, []);
 
 
 
