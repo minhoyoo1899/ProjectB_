@@ -478,13 +478,11 @@ function Map() {
             .then((res)=>res.json())
             .then((res)=>{
               console.log(res)
+              let color = ''
               for(let i=0; i<res.length-1;i++){
-                let color = ''
-                // console.log(res[i].node_id)
-                // console.log(res[i+1].node_id)
                 activePath.push(res[i].node_id,res[i+1].node_id)
-                console.log(activePath)
-              
+              }
+              console.log(activePath)
                 fetch('http://127.0.0.1:8282/activePath',{
                   method: "POST",
                   headers: {
@@ -496,88 +494,88 @@ function Map() {
                 })
                 .then((res)=>res.json())
                 .then((data)=>{
-                  
                   console.log(data)
-                  const linkData = data[0].LINK_ID
+                })
+                //   const linkData = data[0].LINK_ID
 
-                  const getLinkData = fetch('http://127.0.0.1:8282/linkData',{
-                    method: "POST",
-                    headers: {
-                      'Content-Type':'application/json'
-                    },
-                    body: JSON.stringify({
-                      data : linkData
-                    }),
-                  })
-                  .then((res)=>res.json())
-                  .then((data)=>{
-                    console.log(data.response.body["TRAFFIC-LIST"]["TRAFFIC"][i])
-                    // congestion = data.elements[0].elements[1].elements[0].elements[0].elements[0].elements[0].text
-                    console.log(congestion)
-                    // console.log(data.elements[0].elements[1].elements[0].elements[0].elements[0].elements[0].text)
-                    if(congestion === '0'){
-                      color = '#555'
-                    }else if (congestion === '1'){
-                      color = "green"
-                    }else if (congestion === '2'){
-                      color = "orange"
-                    }else if (congestion === '3'){
-                      color = "red"
-                    }
-                    const polyline = new naver.maps.Polyline({
-                      map: mapRef.current,
-                      path: [
-                        new naver.maps.LatLng(
-                          res[i].node_Ycode,res[i].node_Xcode),
-                          new naver.maps.LatLng(
-                            res[i+1].node_Ycode,res[i+1].node_Xcode)
-                          ],
-                          clickable:true,
-                          strokeColor: color,
-                          strokeWeight: stroke,
-                        });
-                        naver.maps.Event.addListener(polyline,"mouseover",()=>{
-                          console.log(res[i].node_id)
-                          console.log(res[i+1].node_id)
-                          activePath.push(res[i].node_id,res[i+1].node_id)
-                          console.log(activePath)
-                          console.log(i)
-                          fetch('http://127.0.0.1:8282/activePath',{
-                            method: "POST",
-                            headers: {
-                              'Content-Type':'application/json'
-                            },
-                            body: JSON.stringify({
-                              first: activePath[0],
-                              second: activePath[1],
-                            }),
-                          })
-                          .then((res)=>res.json())
-                          .then((data)=>{
-                            console.log(data[0].LINK_ID)
-                            const linkData = data[0].LINK_ID
+                  // const getLinkData = fetch('http://127.0.0.1:8282/linkData',{
+                  //   method: "POST",
+                  //   headers: {
+                  //     'Content-Type':'application/json'
+                  //   },
+                  //   body: JSON.stringify({
+                  //     data : linkData
+                  //   }),
+                  // })
+                  // .then((res)=>res.json())
+                  // .then((data)=>{
+                  //   console.log(data.response.body["TRAFFIC-LIST"]["TRAFFIC"][i])
+                  //   // congestion = data.elements[0].elements[1].elements[0].elements[0].elements[0].elements[0].text
+                  //   console.log(congestion)
+                  //   // console.log(data.elements[0].elements[1].elements[0].elements[0].elements[0].elements[0].text)
+                  //   if(congestion === '0'){
+                  //     color = '#555'
+                  //   }else if (congestion === '1'){
+                  //     color = "green"
+                  //   }else if (congestion === '2'){
+                  //     color = "orange"
+                  //   }else if (congestion === '3'){
+                  //     color = "red"
+                  //   }
+                    // const polyline = new naver.maps.Polyline({
+                    //   map: mapRef.current,
+                    //   path: [
+                    //     new naver.maps.LatLng(
+                    //       res[i].node_Ycode,res[i].node_Xcode),
+                    //       new naver.maps.LatLng(
+                    //         res[i+1].node_Ycode,res[i+1].node_Xcode)
+                    //       ],
+                    //       clickable:true,
+                    //       strokeColor: color,
+                    //       strokeWeight: stroke,
+                    //     });
+                        // naver.maps.Event.addListener(polyline,"mouseover",()=>{
+                          // console.log(res[i].node_id)
+                          // console.log(res[i+1].node_id)
+                          // activePath.push(res[i].node_id,res[i+1].node_id)
+                          // console.log(activePath)
+                          // console.log(i)
+                          // fetch('http://127.0.0.1:8282/activePath',{
+                          //   method: "POST",
+                          //   headers: {
+                          //     'Content-Type':'application/json'
+                          //   },
+                          //   body: JSON.stringify({
+                          //     first: activePath[0],
+                          //     second: activePath[1],
+                          //   }),
+                          // })
+                          // .then((res)=>res.json())
+                          // .then((data)=>{
+                          //   console.log(data[0].LINK_ID)
+                          //   const linkData = data[0].LINK_ID
         
-                            const getLinkData = fetch('http://127.0.0.1:8282/linkData',{
-                              method: "POST",
-                              headers: {
-                                'Content-Type':'application/json'
-                              },
-                              body: JSON.stringify({
-                                data : linkData
-                              }),
-                            })
-                            .then((res)=>res.json())
-                            .then((data)=>{
-                              console.log(data.elements[0].elements[1].elements[0].elements[0].elements[0].elements[0].text)
-                            })
-                          })
-                        })
-                        naver.maps.Event.addListener(polyline,"mouseout",()=>{
-                          activePath = []
-                        })
-                      })
-                    })
-                  }
+                            // const getLinkData = fetch('http://127.0.0.1:8282/linkData',{
+                            //   method: "POST",
+                            //   headers: {
+                            //     'Content-Type':'application/json'
+                            //   },
+                            //   body: JSON.stringify({
+                            //     data : linkData
+                            //   }),
+                            // })
+                            // .then((res)=>res.json())
+                            // .then((data)=>{
+                            //   console.log(data.elements[0].elements[1].elements[0].elements[0].elements[0].elements[0].text)
+                            // })
+                          // })
+                        // })
+                        // naver.maps.Event.addListener(polyline,"mouseout",()=>{
+                        //   activePath = []
+                        // })
+                      // })
+                    // })
+                  
                   navigation.pop()
                   navigation.pop()
                 })

@@ -5,7 +5,8 @@ const cors = require("cors");
 const mysql = require("mysql");
 const dotenv = require("dotenv"); // .env 설정 추가
 const convert = require('xml-js');
-const { response } = require("express");
+const { response, json } = require("express");
+const { link } = require("fs");
 dotenv.config();
 
 
@@ -82,18 +83,6 @@ app.get("/", async (req, res) => {
 //   }
 // });
 
-//네이버 api 키
-// const id = "rw8kfxnmol"
-// const secret = "KLcIjNMP9IXvoxSEQmdcNjip3b5oj0agPyQmIQ30"
-// //집주소
-// const address = "대전 서구 도솔로434-8"
-// //api 요청시 헤더에 넣을 기본 정보
-// const header = {
-// "X-NCP-APIGW-API-KEY-ID" : id,
-// "X-NCP-APIGW-API-KEY" : secret
-// }
-// 현재위치 좌표값 받아와서 지도에 마커표시
-// 파일 분리를 안해서 좀 지저분 합니다...
 app.get("/apiMap", async (req, res) => {
   try {
     res.send(
@@ -202,7 +191,7 @@ res.send(cctvMsg)
 }
 }) 
 
-
+//전체 노드 정보 가져오는 부분 
 app.get("/deajeonNode", async (req, res) => {
   conn.query(`SELECT * from daejeon_node`, (err, row, fields) => {
     if (err) throw err;
@@ -215,16 +204,27 @@ app.get("/deajeonNode", async (req, res) => {
 // 패스위에 마우스 올리면 요청 가는것 
 app.post("/activePath", async(req,res)=>{
   const datas = req.body.way
-  console.log(datas)
-  // const second = req.body.second
-
-  // conn.query(`SELECT LINK_ID from daejeon_link where F_NODE = ${first} AND T_NODE = ${second}`, (err, row, fields) => {
-  //   if (err) throw err;
-  //   console.log(row)
-  //   let json = JSON.stringify(row);
-  //   res.writeHead(200, { "Content-Type": "text/json;charset=utf-8" });
-  //   res.end(json);
-  // });
+  // console.log(datas)
+  let pathArr = []
+  let count = 0
+  for(let i = 0; i<datas.length/2; i++){
+    pathArr.push([datas[count],datas[count+1]])
+    count= count+2
+    // console.log(count)
+  }
+  console.log(pathArr)
+  let jsonArr = []
+  for(let i=0; i<pathArr.length;i++){
+    conn.query(`SELECT LINK_ID from daejeon_link where F_NODE = ${pathArr[i][0]} AND T_NODE = ${pathArr[i][1]}`, (err, row, fields) => {
+      if (err) throw err;
+      let json = JSON.stringify(row);
+      console.log(json)
+      jsonArr.push(i)
+    });
+  }
+  console.log(jsonArr)
+  // res.writeHead(200, { "Content-Type": "text/json;charset=utf-8" });
+  // res.end(json);
 })
 
 app.post('/linkData', async(req,res)=>{
@@ -277,7 +277,7 @@ app.post("/navigation", (req, response) => {
               );
             });
             // console.log(filter);
-            console.log(count);
+            // console.log(count);
             //notNode에 있는 node는 제외하고 탐색.
             if (route.length > 0 && filter.length === 0) {
               //시작지점이 아닌데 막다른길
