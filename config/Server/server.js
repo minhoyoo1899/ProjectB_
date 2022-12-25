@@ -4,13 +4,15 @@ const axios = require("axios");
 const cors = require("cors");
 const mysql = require("mysql");
 const dotenv = require("dotenv"); // .env 설정 추가
+const convert = require('xml-js');
+const { response } = require("express");
 dotenv.config();
 
 
 const dbconfig = {
   host: "localhost",
   user: "root",
-  password: "1111",
+  password: "61910923",
   port: "3306",
   database: "hi_five",
 };
@@ -56,70 +58,30 @@ app.get("/", async (req, res) => {
   }
 });
 
-app.get("/db", async (req, res) => {
-  conn.query("SELECT * FROM test_table;", (error, rows) => {
-    if (error) throw error;
-    // console.log(rows);
-    // console.log(typeof rows);
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "text/html; charset=utf-8");
-    res.end(`데이터 테스트 : ${rows}`);
-  });
-});
+// app.get("/db", async (req, res) => {
+//   conn.query("SELECT * FROM test_table;", (error, rows) => {
+//     if (error) throw error;
+//     // console.log(rows);
+//     // console.log(typeof rows);
+//     res.statusCode = 200;
+//     res.setHeader("Content-Type", "text/html; charset=utf-8");
+//     res.end(`데이터 테스트 : ${rows}`);
+//   });
+// });
 
-app.get("/direction15", async (req, res) => {
-  try {
-    const result = await axios({
-      method: "get",
-      url: "https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=127.377579,36.349252&goal=127.408952,36.321161&waypoint=127.325118,36.300500",
-      headers: header,
-    });
-    const resultMsg = result.data;
-  } catch (err) {
-    console.log(err);
-  }
-});
+// app.get("/direction15", async (req, res) => {
+//   try {
+//     const result = await axios({
+//       method: "get",
+//       url: "https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=127.377579,36.349252&goal=127.408952,36.321161&waypoint=127.325118,36.300500",
+//       headers: header,
+//     });
+//     const resultMsg = result.data;
+//   } catch (err) {
+//     console.log(err);
+//   }
+// });
 
-app.get("/cctv", async (req, res) => {
-  try {
-    let cctvResult = await axios({
-      method: "get",
-      url: "https://openapi.its.go.kr:9443/cctvInfo?apiKey=4537498ac13e4a3a9e10f66e3984c96a&type=ex&cctvType=2&minX=127.234227&maxX=127.570949&minY=36.192958&maxY=36.488949&getType=json",
-    });
-    const cctvMsg = cctvResult.data;
-    // console.log(cctvMsg)
-    res.send(cctvMsg);
-  } catch (err) {
-    // console.log(err);
-  }
-});
-
-app.get("/event",async(req,res)=>{
-  try{
-    let eventResult = await axios({
-      method : "get",
-      url: `https://openapi.its.go.kr:9443/eventInfo?apiKey=006a4eca1c784284a64eca250f68063c&type=all&eventType=all&minX=127.234227&maxX=127.570949&minY=36.192958 &maxY=36.488949&getType=json`
-    });
-    const eventData = eventResult.data.body.items
-    res.send(eventData)
-  }catch(err){
-    console.log(err)
-  }
-})
-
-
-//네이버 api 키
-// const id = "rw8kfxnmol"
-// const secret = "KLcIjNMP9IXvoxSEQmdcNjip3b5oj0agPyQmIQ30"
-// //집주소
-// const address = "대전 서구 도솔로434-8"
-// //api 요청시 헤더에 넣을 기본 정보
-// const header = {
-// "X-NCP-APIGW-API-KEY-ID" : id,
-// "X-NCP-APIGW-API-KEY" : secret
-// }
-// 현재위치 좌표값 받아와서 지도에 마커표시
-// 파일 분리를 안해서 좀 지저분 합니다...
 app.get("/apiMap", async (req, res) => {
   try {
     res.send(
@@ -178,26 +140,13 @@ app.get("/apiMap", async (req, res) => {
   }
 });
 
-app.get("/event", async (req, res) => {
-  try {
-    let eventResult = await axios({
-      method: "get",
-      url: `https://openapi.its.go.kr:9443/eventInfo?apiKey=006a4eca1c784284a64eca250f68063c&type=all&eventType=all&minX=127.234227&maxX=127.570949&minY=36.192958 &maxY=36.488949&getType=json`,
-    });
-    const eventData = eventResult.data.body.items;
-    res.send(eventData);
-  } catch (err) {
-    console.log(err);
-    console.log("event err");
-  }
-});
 
 
 app.get("/cctv", async(req,res)=> {
   try {
 let cctvResult = await axios({
   method : "get",
-  url: 'https://openapi.its.go.kr:9443/cctvInfo?apiKey=4537498ac13e4a3a9e10f66e3984c96a&type=ex&cctvType=2&minX=127.234227&maxX=127.570949&minY=36.192958&maxY=36.488949&getType=json',
+  url: 'https://openapi.its.go.kr:9443/cctvInfo?apiKey=006a4eca1c784284a64eca250f68063c&type=ex&cctvType=2&minX=127.234227&maxX=127.570949&minY=36.192958&maxY=36.488949&getType=json',
 });
 const cctvMsg = cctvResult.data
 // console.log(cctvMsg)
@@ -222,42 +171,6 @@ app.get("/event",async(req,res)=>{
 })
 
 
-
-// 입력한 주소의 좌표등 기본값 요청
-// app.get("/home", async(req,res)=> {
-// try {
-// let result = await axios({
-// method : "get",
-// url :
-// `https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=${address}`,
-// headers: header
-// });
-// const resultMsg = result.data
-// // console.log(resultMsg)
-// res.send(resultMsg)
-// }catch(err){
-// console.log(err)
-// }
-// })
-// 출발지와 도착지의 좌표값을 요청하여 목적지까지의 경로 요청
-// 해당 부분과 지도에 오버레이하여 표기하는 것을 찾으면 출발지와 도착지 까지의 경로를 지도위에 표기할수 있을듯 함
-// app.get("/wayhome", async(req,res)=> {
-// try {
-// let result = await axios({
-// method : "get",
-// url :
-// `https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=127.392362
-// 2,36.3434230&goal=127.3776464,36.3493567&option=trafast`,
-// headers: header
-// });
-// const resultMsg = result.data.route.trafast[0].guide
-// console.log(resultMsg)
-// res.send(resultMsg)
-// }catch(err){
-// console.log(err)
-// }
-// })
-
 app.get("/deajeonNode", async (req, res) => {
   conn.query(`SELECT * from daejeon_node`, (err, row, fields) => {
     if (err) throw err;
@@ -266,6 +179,40 @@ app.get("/deajeonNode", async (req, res) => {
     res.end(json);
   });
 });
+
+// 패스위에 마우스 올리면 요청 가는것 
+app.post("/activePath", async(req,res)=>{
+  const datas = req.body.way
+  console.log(datas)
+  // const second = req.body.second
+
+  // conn.query(`SELECT LINK_ID from daejeon_link where F_NODE = ${first} AND T_NODE = ${second}`, (err, row, fields) => {
+  //   if (err) throw err;
+  //   console.log(row)
+  //   let json = JSON.stringify(row);
+  //   res.writeHead(200, { "Content-Type": "text/json;charset=utf-8" });
+  //   res.end(json);
+  // });
+})
+
+app.post('/linkData', async(req,res)=>{
+  // console.log(req.body.data)
+  let selectdLink = req.body.data
+  try{
+    let activeLinkdata = await axios({
+      method : "get",
+      url: `http://openapitraffic.daejeon.go.kr/traffic/rest/getTrafficInfoAll.do?ServiceKey=1fBa1MM3xBTQkcg0xPlEQqd4JEkxWAqfUlMr/8ak3zBXUPHau8gPpxRkoWLURTNOt/PPKYm5g9KrCGbVs1ohAw==&numOfRows=5&pageNo=1`
+    });
+    // console.log(activeLinkdata.data)
+    const xml2json = convert.xml2json((activeLinkdata.data),{compact:true, spaces:4})
+    // console.log(xml2json)
+    res.send(xml2json)
+  }catch(err){
+    console.log(err)
+  }
+})
+
+
 
 app.post("/navigation", (req, response) => {
   const start = req.body.start;

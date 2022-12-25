@@ -7,6 +7,7 @@ import { stateStore } from '../store/stateStore'
 import { response } from 'express'
 import Weather from '../Main/Weather'
 
+
 interface Main {
   children: ReactNode;
 }
@@ -78,7 +79,7 @@ function Map() {
     const [centerX, setCenterX] = useState<number>(127.3845475)
     const [centerY, setCenterY] = useState<number>(36.3504119)
     // 지도 줌 값 
-    const [zoom, setZoom] = useState<number>(12)
+    const [zoom, setZoom] = useState<number>(17)
     //지도 교통 흐름도 옵션 
     const [isTrafficAvtive, setIsTrafficActive] = useState<boolean>(true)
     // let isTrafficAvtive = true
@@ -177,11 +178,6 @@ function Map() {
           //cctv 창이 뜬 상태에서 지도 클릭시 cctv 창 닫기
           naver.maps.Event.addListener(mapRef.current,"click",()=>{
             if(e.domEvent.type === "click"){
-              // setCctv([])
-              // // cctvMarkRef.current = []
-              // cctvMarkRef.current.map((el:any,id:number)=>{
-              //     cctvMarkRef.current[id].setMap(null)
-              // })
               cctvWindow.close()
               }
             })
@@ -230,10 +226,13 @@ function Map() {
     })
   }, []);
   
+  const [stroke, setStroke] = useState<number>(5)
 
   // 종인 작업 충돌 부분 수정
   const navigation:any = []
-
+  let activePath:any = []
+  let congestion = ""
+  
   useEffect(()=>{
     fetch('http://127.0.0.1:8282/deajeonNode')
     .then((res)=>res.json())
@@ -250,6 +249,7 @@ function Map() {
         })
         node.addListener('click',()=>{
           navigation.push(item)
+          // console.log(navigation)
           if(navigation.length === 2){
             fetch('http://127.0.0.1:8282/navigation',{
               method: "POST",
@@ -264,23 +264,116 @@ function Map() {
             .then((res)=>res.json())
             .then((res)=>{
               console.log(res)
-              const polyline = new naver.maps.Polyline({
-                map: mapRef.current,
-                path: res.map((item:any)=>{
-                  return new naver.maps.LatLng(
-                    item.node_Ycode,item.node_Xcode)
-                }),
-                strokeColor: "#0000ff",
-                strokeWeight: 5,
-              });
-              navigation.pop()
-              navigation.pop()
-            })
+              for(let i=0; i<res.length-1;i++){
+                let color = ''
+                // console.log(res[i].node_id)
+                // console.log(res[i+1].node_id)
+                activePath.push(res[i].node_id,res[i+1].node_id)
+                console.log(activePath)
+              
+                fetch('http://127.0.0.1:8282/activePath',{
+                  method: "POST",
+                  headers: {
+                    'Content-Type':'application/json'
+                  },
+                  body: JSON.stringify({
+                    way : activePath
+                  })
+                })
+                .then((res)=>res.json())
+                .then((data)=>{
+                  
+                  console.log(data)
+                  const linkData = data[0].LINK_ID
+
+                  const getLinkData = fetch('http://127.0.0.1:8282/linkData',{
+                    method: "POST",
+                    headers: {
+                      'Content-Type':'application/json'
+                    },
+                    body: JSON.stringify({
+                      data : linkData
+                    }),
+                  })
+                  .then((res)=>res.json())
+                  .then((data)=>{
+                    console.log(data.response.body["TRAFFIC-LIST"]["TRAFFIC"][i])
+                    // congestion = data.elements[0].elements[1].elements[0].elements[0].elements[0].elements[0].text
+                    console.log(congestion)
+                    // console.log(data.elements[0].elements[1].elements[0].elements[0].elements[0].elements[0].text)
+                    if(congestion === '0'){
+                      color = '#555'
+                    }else if (congestion === '1'){
+                      color = "green"
+                    }else if (congestion === '2'){
+                      color = "orange"
+                    }else if (congestion === '3'){
+                      color = "red"
+                    }
+                    const polyline = new naver.maps.Polyline({
+                      map: mapRef.current,
+                      path: [
+                        new naver.maps.LatLng(
+                          res[i].node_Ycode,res[i].node_Xcode),
+                          new naver.maps.LatLng(
+                            res[i+1].node_Ycode,res[i+1].node_Xcode)
+                          ],
+                          clickable:true,
+                          strokeColor: color,
+                          strokeWeight: stroke,
+                        });
+                        naver.maps.Event.addListener(polyline,"mouseover",()=>{
+                          console.log(res[i].node_id)
+                          console.log(res[i+1].node_id)
+                          activePath.push(res[i].node_id,res[i+1].node_id)
+                          console.log(activePath)
+                          console.log(i)
+                          fetch('http://127.0.0.1:8282/activePath',{
+                            method: "POST",
+                            headers: {
+                              'Content-Type':'application/json'
+                            },
+                            body: JSON.stringify({
+                              first: activePath[0],
+                              second: activePath[1],
+                            }),
+                          })
+                          .then((res)=>res.json())
+                          .then((data)=>{
+                            console.log(data[0].LINK_ID)
+                            const linkData = data[0].LINK_ID
+        
+                            const getLinkData = fetch('http://127.0.0.1:8282/linkData',{
+                              method: "POST",
+                              headers: {
+                                'Content-Type':'application/json'
+                              },
+                              body: JSON.stringify({
+                                data : linkData
+                              }),
+                            })
+                            .then((res)=>res.json())
+                            .then((data)=>{
+                              console.log(data.elements[0].elements[1].elements[0].elements[0].elements[0].elements[0].text)
+                            })
+                          })
+                        })
+                        naver.maps.Event.addListener(polyline,"mouseout",()=>{
+                          activePath = []
+                        })
+                      })
+                    })
+                  }
+                  navigation.pop()
+                  navigation.pop()
+                })
+                // 마우스 오버되면 오버된 폴리라인의 시작,끝 노드 배열에 담음 
+                // 마우스 아웃되면 배열 초기화 
           }
         })
       })
     })
-  },[])
+  },)
 
 
 
