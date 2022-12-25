@@ -203,41 +203,6 @@ res.send(cctvMsg)
 }) 
 
 
-// 입력한 주소의 좌표등 기본값 요청
-// app.get("/home", async(req,res)=> {
-// try {
-// let result = await axios({
-// method : "get",
-// url :
-// `https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=${address}`,
-// headers: header
-// });
-// const resultMsg = result.data
-// // console.log(resultMsg)
-// res.send(resultMsg)
-// }catch(err){
-// console.log(err)
-// }
-// })
-// 출발지와 도착지의 좌표값을 요청하여 목적지까지의 경로 요청
-// 해당 부분과 지도에 오버레이하여 표기하는 것을 찾으면 출발지와 도착지 까지의 경로를 지도위에 표기할수 있을듯 함
-// app.get("/wayhome", async(req,res)=> {
-// try {
-// let result = await axios({
-// method : "get",
-// url :
-// `https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=127.392362
-// 2,36.3434230&goal=127.3776464,36.3493567&option=trafast`,
-// headers: header
-// });
-// const resultMsg = result.data.route.trafast[0].guide
-// console.log(resultMsg)
-// res.send(resultMsg)
-// }catch(err){
-// console.log(err)
-// }
-// })
-
 app.get("/deajeonNode", async (req, res) => {
   conn.query(`SELECT * from daejeon_node`, (err, row, fields) => {
     if (err) throw err;
