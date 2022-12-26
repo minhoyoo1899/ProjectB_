@@ -445,8 +445,10 @@ function Map() {
   // 종인 작업 충돌 부분 수정
   const navigation:any = []
   let activePath:any = []
-  let congestion = ""
-  
+  let activenode:any = []
+  let color = ''
+  let eventCoord:any = []
+
   useEffect(()=>{
     fetch('http://127.0.0.1:8282/deajeonNode')
     .then((res)=>res.json())
@@ -477,8 +479,7 @@ function Map() {
             })
             .then((res)=>res.json())
             .then((res)=>{
-              console.log(res)
-              let color = ''
+              activenode.push(res)
               for(let i=0; i<res.length-1;i++){
                 activePath.push(res[i].node_id,res[i+1].node_id)
               }
@@ -494,46 +495,119 @@ function Map() {
                 })
                 .then((res)=>res.json())
                 .then((data)=>{
-                  console.log(data)
+                  let dataArr = []
+                  for(let i=0; i<data.length;i++){
+                    // console.log(data[i][0].LINK_ID)
+                    dataArr.push(data[i][0].LINK_ID)
+                  }
+                  // console.log(dataArr)
+                  return dataArr
                 })
-                //   const linkData = data[0].LINK_ID
+                .then((arr)=>{
+                  const getLinkData = fetch('http://127.0.0.1:8282/linkData',{
+                    method: "POST",
+                    headers: {
+                      'Content-Type':'application/json'
+                    },
+                    body: JSON.stringify({
+                      data : arr
+                    }),
+                  })
+                  .then((res)=>res.json())
+                  .then((congestion)=>{
+                    // console.log(congestion)
+                    // console.log(congestion[0])
+                    let congestionArr = []
+                    for(let i=0; i<congestion.length;i++){
+                      // console.log(congestion[i][0].congestion)
+                      congestionArr.push(congestion[i][0].congestion)
+                    }
+                    console.log(congestionArr)
+                    //혼잡도 데이터로 map돌림
+                    congestionArr.map((el,i)=>{
+                      console.log(el)
+                      if(el === 0){
+                        color = '#555'
+                        console.log("w")
+                      }else if (el === 1){
+                        color = "green"
+                        console.log("w")
+                      }else if (el === 2){
+                        color = "orange"
+                        console.log("w")
+                      }else if (el === 3){
+                        color = "red"
+                        console.log("w")
+                      }
+                      const polyline = new naver.maps.Polyline({
+                        map: mapRef.current,
+                        path: [
+                          new naver.maps.LatLng(
+                            activenode[0][i].node_Ycode,activenode[0][i].node_Xcode),
+                          new naver.maps.LatLng(
+                            activenode[0][i+1].node_Ycode,activenode[0][i+1].node_Xcode)
+                          ],
+                        clickable:true,
+                        strokeColor: color,
+                        strokeWeight: 10,
+                      });
+                      //마우스오버 이벤트 
+                      naver.maps.Event.addListener(polyline,"mouseover",(event)=>{
+                        // console.log(event.coord.y,event.coord.x)
+                        eventCoord.push(event.coord.y,event.coord.x)
+                        // console.log(i,"over",activePath[i])
+                        const overdLink = fetch('http://127.0.0.1:8282/mouseover',{
+                            method: "POST",
+                            headers: {
+                              'Content-Type':'application/json'
+                            },
+                            body: JSON.stringify({
+                              node:activePath[i]
+                            }),
+                          })
+                          // console.log(overdLink)
+                          .then((res)=>res.json())
+                          .then((data)=>{
+                            console.log(data.response.body["TRAFFIC-LIST"]["TRAFFIC"])
+                            
+                            let overedPathInfo = data.response.body["TRAFFIC-LIST"]["TRAFFIC"]
+                            console.log(eventCoord)
+                            console.log(overedPathInfo.roadName._text)
+                            naver.maps.Event.addListener(polyline,"mouseout",()=>{
+                              activePath = []
+                            })
+                            //마우스오버시 띄울 정보창 
+                            let roadInfoWindow = new naver.maps.InfoWindow({
+                              content: [
+                                '<div style="width:400px; height:400px; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:10px;"}}>',
+                                `<h3>${overedPathInfo.roadName._text}</h3>`,
+                                '</div>'
+                              ].join('') 
+                            })
 
-                  // const getLinkData = fetch('http://127.0.0.1:8282/linkData',{
-                  //   method: "POST",
-                  //   headers: {
-                  //     'Content-Type':'application/json'
-                  //   },
-                  //   body: JSON.stringify({
-                  //     data : linkData
-                  //   }),
-                  // })
-                  // .then((res)=>res.json())
-                  // .then((data)=>{
-                  //   console.log(data.response.body["TRAFFIC-LIST"]["TRAFFIC"][i])
-                  //   // congestion = data.elements[0].elements[1].elements[0].elements[0].elements[0].elements[0].text
-                  //   console.log(congestion)
-                  //   // console.log(data.elements[0].elements[1].elements[0].elements[0].elements[0].elements[0].text)
-                  //   if(congestion === '0'){
-                  //     color = '#555'
-                  //   }else if (congestion === '1'){
-                  //     color = "green"
-                  //   }else if (congestion === '2'){
-                  //     color = "orange"
-                  //   }else if (congestion === '3'){
-                  //     color = "red"
-                  //   }
-                    // const polyline = new naver.maps.Polyline({
-                    //   map: mapRef.current,
-                    //   path: [
-                    //     new naver.maps.LatLng(
-                    //       res[i].node_Ycode,res[i].node_Xcode),
-                    //       new naver.maps.LatLng(
-                    //         res[i+1].node_Ycode,res[i+1].node_Xcode)
-                    //       ],
-                    //       clickable:true,
-                    //       strokeColor: color,
-                    //       strokeWeight: stroke,
-                    //     });
+                            let roadInfoMarker = new naver.maps.Marker({
+                              position: new naver.maps.LatLng(eventCoord[0],eventCoord[1]),
+                              map : mapRef.current
+                            })
+
+                            roadInfoWindow.open(markRef.current,roadInfoMarker)
+                            roadInfoMarker.setMap(null)
+                            naver.maps.Event.addListener(mapRef.current,"click",(e)=>{
+                              if(e.domEvent.type === "click"){
+                                roadInfoWindow.close()
+                              }
+                            })
+
+                            // if(roadInfoWindow.getMap()){
+                            //   roadInfoWindow.close()
+                            // } else {
+                            // }
+
+                          })
+                      })//마우스오버이벤트 
+                    })
+                  })
+                })
                         // naver.maps.Event.addListener(polyline,"mouseover",()=>{
                           // console.log(res[i].node_id)
                           // console.log(res[i+1].node_id)
@@ -585,7 +659,7 @@ function Map() {
         })
       })
     })
-  },)
+  },[eventCoord,activePath, navigation])
 
 //*사고정보 마커 생성 --(돌발상황 마크 생성과 같은방식)
 useEffect(()=>{

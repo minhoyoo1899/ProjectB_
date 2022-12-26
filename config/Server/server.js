@@ -6,7 +6,8 @@ const mysql = require("mysql");
 const dotenv = require("dotenv"); // .env 설정 추가
 const convert = require('xml-js');
 const { response, json } = require("express");
-const { link } = require("fs");
+const { link, cpSync } = require("fs");
+const { resolve } = require("path");
 dotenv.config();
 
 
@@ -200,46 +201,105 @@ app.get("/deajeonNode", async (req, res) => {
 app.post("/activePath", async(req,res)=>{
   const datas = req.body.way
   // console.log(datas)
-  let pathArr = []
   let count = 0
+  let pathArr = []
   for(let i = 0; i<datas.length/2; i++){
     pathArr.push([datas[count],datas[count+1]])
     count= count+2
-    // console.log(count)
   }
-  console.log(pathArr)
+  // console.log(pathArr)
+
   let jsonArr = []
-  for(let i=0; i<pathArr.length;i++){
-    conn.query(`SELECT LINK_ID from daejeon_link where F_NODE = ${pathArr[i][0]} AND T_NODE = ${pathArr[i][1]}`, (err, row, fields) => {
-      if (err) throw err;
-      let json = JSON.stringify(row);
-      // console.log(json)
-      jsonArr.push(json)
-      console.log("1",jsonArr)
-    });
-    console.log("2",jsonArr)
-    res.writeHead(200, { "Content-Type": "text/json;charset=utf-8" });
-    res.end(json);
+  function linkData(arr) {
+
+    new Promise((resolve,reject)=>{
+        let data = arr.map((el,index)=>{
+          // console.log(el)
+        conn.query(
+          `SELECT LINK_ID from daejeon_link where F_NODE = ${pathArr[index][0]} AND T_NODE = ${pathArr[index][1]}`, 
+          (err, row, fields) => {
+            if (err) throw err;
+            jsonArr.push(row)
+            if(index === arr.length-1){
+              resolve(jsonArr)
+            }
+          });
+        })
+      })
+      .then((res)=>res)
+      .then ((data)=>{
+        res.send(data)
+      })
   }
-  console.log("3",jsonArr)
+  linkData(pathArr)
 })
 
 app.post('/linkData', async(req,res)=>{
   // console.log(req.body.data)
   let selectdLink = req.body.data
-  try{
-    let activeLinkdata = await axios({
-      method : "get",
-      url: `http://openapitraffic.daejeon.go.kr/traffic/rest/getTrafficInfoAll.do?ServiceKey=1fBa1MM3xBTQkcg0xPlEQqd4JEkxWAqfUlMr/8ak3zBXUPHau8gPpxRkoWLURTNOt/PPKYm5g9KrCGbVs1ohAw==&numOfRows=5&pageNo=1`
+  console.log(selectdLink)
+  let consgestionArr = []
+  function congestionData(arr) {
+    new Promise((resolve,reject)=>{
+        let data = arr.map((el,index)=>{
+          // console.log(el)
+        conn.query(
+          `SELECT congestion from daejeon_road where linkID = ${selectdLink[index]}`, 
+          (err, row, fields) => {
+            if (err) throw err;
+            // console.log(row)
+            consgestionArr.push(row)
+            if(consgestionArr.length === arr.length){
+              resolve(consgestionArr)
+            }
+          });
+        })
+      })
+      .then((res)=>res)
+      .then ((data)=>{
+        res.send(data)
+      })
+  }
+  congestionData(selectdLink)
+})
+
+app.post('/mouseover', async(req,res)=>{
+  // console.log(req.body.data)
+  let activeLink = req.body.node
+  console.log(activeLink)
+  try {
+    let activeLinkResult = await axios({
+      method: "get",
+      url: `http://openapitraffic.daejeon.go.kr/traffic/rest/getTrafficInfo.do?linkId=${activeLink}&ServiceKey=1fBa1MM3xBTQkcg0xPlEQqd4JEkxWAqfUlMr/8ak3zBXUPHau8gPpxRkoWLURTNOt/PPKYm5g9KrCGbVs1ohAw==&numOfRows=1&pageNo=1`,
     });
-    // console.log(activeLinkdata.data)
-    const xml2json = convert.xml2json((activeLinkdata.data),{compact:true, spaces:4})
-    // console.log(xml2json)
-    res.send(xml2json)
-  }catch(err){
-    console.log(err)
+    const xml2json = convert.xml2json((activeLinkResult.data),{compact:true, spaces:4})
+    res.send(xml2json);
+  } catch (err) {
+    console.log(err);
   }
 })
+
+// let activeLinkdata = await axios({
+//   method : "get",
+//   url: `http://openapitraffic.daejeon.go.kr/traffic/rest/getTrafficInfoAll.do?ServiceKey=1fBa1MM3xBTQkcg0xPlEQqd4JEkxWAqfUlMr/8ak3zBXUPHau8gPpxRkoWLURTNOt/PPKYm5g9KrCGbVs1ohAw==&numOfRows=5&pageNo=1`
+// });
+// // console.log(activeLinkdata.data)
+// const xml2json = convert.xml2json((activeLinkdata.data),{compact:true, spaces:4})
+// // console.log(xml2json)
+// res.send(xml2json)
+  // conn.query(
+  //   `SELECT congestion,linkLength, from daejeon_road where linkID = ${activeLink}`, 
+  //   (err, row, fields) => {
+  //     if (err) throw err;
+  //     // console.log(row)
+  //     consgestionArr.push(row)
+  //     if(consgestionArr.length === arr.length){
+  //       resolve(consgestionArr)
+  //     }
+  //   });
+  //     res.send(data)
+  // // activeLinkData(selectdLink)
+
 
 
 
