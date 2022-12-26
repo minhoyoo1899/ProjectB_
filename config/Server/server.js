@@ -201,7 +201,6 @@ app.get("/deajeonNode", async (req, res) => {
   });
 });
 
-// 패스위에 마우스 올리면 요청 가는것 
 app.post("/activePath", async(req,res)=>{
   const datas = req.body.way
   // console.log(datas)
@@ -218,13 +217,15 @@ app.post("/activePath", async(req,res)=>{
     conn.query(`SELECT LINK_ID from daejeon_link where F_NODE = ${pathArr[i][0]} AND T_NODE = ${pathArr[i][1]}`, (err, row, fields) => {
       if (err) throw err;
       let json = JSON.stringify(row);
-      console.log(json)
-      jsonArr.push(i)
+      // console.log(json)
+      jsonArr.push(json)
+      console.log("1",jsonArr)
     });
+    console.log("2",jsonArr)
   }
-  console.log(jsonArr)
-  // res.writeHead(200, { "Content-Type": "text/json;charset=utf-8" });
-  // res.end(json);
+  console.log("3",jsonArr)
+  res.writeHead(200, { "Content-Type": "text/json;charset=utf-8" });
+  res.end(json);
 })
 
 app.post('/linkData', async(req,res)=>{
