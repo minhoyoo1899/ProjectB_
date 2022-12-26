@@ -83,6 +83,20 @@ app.get("/", async (req, res) => {
 //   }
 // });
 
+app.get("/cctv", async (req, res) => {
+  try {
+    let cctvResult = await axios({
+      method: "get",
+      url: "https://openapi.its.go.kr:9443/cctvInfo?apiKey=006a4eca1c784284a64eca250f68063c&type=ex&cctvType=2&minX=127.234227&maxX=127.570949&minY=36.192958&maxY=36.488949&getType=json",
+    });
+    const cctvMsg = cctvResult.data;
+    // console.log(cctvMsg)
+    res.send(cctvMsg);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 app.get("/apiMap", async (req, res) => {
   try {
     res.send(
@@ -95,9 +109,7 @@ app.get("/apiMap", async (req, res) => {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Document</title>
       <script type="text/javascript"
-      src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${encodeURI(
-        ymhApi
-      )}"></script>
+      src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${encodeURI(ymhApi)}"></script>
       </head>
       <body>
       <div id="map" style="width:100%; height:800px;"></div>
@@ -161,37 +173,21 @@ app.get(`/search/:name`,async(req,res)=>{
 })
 
 
-app.get("/event", async (req, res) => {
-  try {
+
+app.get("/event",async(req,res)=>{
+  try{
     let eventResult = await axios({
-      method: "get",
-      url: `https://openapi.its.go.kr:9443/eventInfo?apiKey=006a4eca1c784284a64eca250f68063c&type=all&eventType=all&minX=127.234227&maxX=127.570949&minY=36.192958 &maxY=36.488949&getType=json`,
+      method : "get",
+      url: `https://openapi.its.go.kr:9443/eventInfo?apiKey=006a4eca1c784284a64eca250f68063c&type=all&eventType=all&minX=127.234227&maxX=127.570949&minY=36.192958 &maxY=36.488949&getType=json`
     });
-    const eventData = eventResult.data.body.items;
-    res.send(eventData);
-  } catch (err) {
-    console.log(err);
-    console.log("event err");
+    const eventData = eventResult.data.body.items
+    res.send(eventData)
+  }catch(err){
+    console.log(err)
   }
-});
+})
 
 
-app.get("/cctv", async(req,res)=> {
-  try {
-let cctvResult = await axios({
-  method : "get",
-  url: 'https://openapi.its.go.kr:9443/cctvInfo?apiKey=006a4eca1c784284a64eca250f68063c&type=ex&cctvType=2&minX=127.234227&maxX=127.570949&minY=36.192958&maxY=36.488949&getType=json',
-});
-const cctvMsg = cctvResult.data
-// console.log(cctvMsg)
-res.send(cctvMsg)
-        
-}catch(err){
-  console.log(err)
-}
-}) 
-
-//전체 노드 정보 가져오는 부분 
 app.get("/deajeonNode", async (req, res) => {
   conn.query(`SELECT * from daejeon_node`, (err, row, fields) => {
     if (err) throw err;

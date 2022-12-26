@@ -7,9 +7,12 @@ import { forwardRef, useState } from "react";
 import { accidentStore, stateStore } from "../store/stateStore";
 import { eventViewStore } from "../store/stateStore";
 // 
-  // console.log(props)
-  const Bottom = (props:any, ref:any) => {
+
+
+  const Bottom = (props: any, ref: any) => {
     const {mapRef,cctvMarkRef} = ref
+    console.log(mapRef)
+  
       //리덕스 세팅
 
   //*돌발정보 마크의 옵션값 true,flase로 변경하는 리듀서에 액션값을 보냄 

@@ -235,36 +235,36 @@ function Map() {
       
       
       // setCctv({
-        //   lat : Number(cctvCoord.coordy),
-        //   lng : Number(cctvCoord.coordx)
-        // })
-        // const routePath = datas.data.route.traoptimal[0].path
-      }
-      getDatas();
-    },[])
-    
-    // 현재위치의 위도값과 경도값을 받아서 state 저장 
-    useEffect(()=> {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          // console.log(position)
-          setLocation({
-            latitude: Number(position.coords.latitude),
-            longitude: Number(position.coords.longitude),
-          });
+      //   lat : Number(cctvCoord.coordy),
+      //   lng : Number(cctvCoord.coordx)
+      // })
+      // const routePath = datas.data.route.traoptimal[0].path
+    }
+    getDatas();
+  },[])
+
+  // 현재위치의 위도값과 경도값을 받아서 state 저장 
+  useEffect(()=> {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        // console.log(position)
+        setLocation({
+          latitude: Number(position.coords.latitude),
+          longitude: Number(position.coords.longitude),
         });
-      } else {
-        window.alert("현재위치를 알수 없습니다.");
-      }
-    },[])
-    //지도 중앙좌표값
-    const [centerX, setCenterX] = useState<number>(127.3845475)
-    const [centerY, setCenterY] = useState<number>(36.3504119)
-    // 지도 줌 값 
-    const [zoom, setZoom] = useState<number>(17)
-    //지도 교통 흐름도 옵션 
-    const [isTrafficAvtive, setIsTrafficActive] = useState<boolean>(true)
-    // let isTrafficAvtive = true
+      });
+    } else {
+      window.alert("현재위치를 알수 없습니다.");
+    }
+  },[])
+  //지도 중앙좌표값
+  const [centerX, setCenterX] = useState<number>(127.3845475)
+  const [centerY, setCenterY] = useState<number>(36.3504119)
+  // 지도 줌 값 
+  const [zoom, setZoom] = useState<number>(12)
+  //지도 교통 흐름도 옵션 
+  const [isTrafficAvtive, setIsTrafficActive] = useState<boolean>(true)
+  // let isTrafficAvtive = true
 
     const changeTraffic = (e:any) => {
       
@@ -277,6 +277,7 @@ function Map() {
         setIsTrafficActive(true)
       }
     }
+<<<<<<<<< Temporary merge branch 1
     // 지도
     useEffect(()=>{
       let trafficLayer = new naver.maps.TrafficLayer({
@@ -287,6 +288,18 @@ function Map() {
         zoom:zoom,
         mapTypeControl: true,
         // zoomControl: true,  
+=========
+  },[])
+  //지도 중앙좌표값
+  const [centerX, setCenterX] = useState<number>(127.3845475)
+  const [centerY, setCenterY] = useState<number>(36.3504119)
+  // 지도 줌 값 
+  const [zoom, setZoom] = useState<number>(10)
+  // 지도
+  useEffect(()=>{
+    let trafficLayer = new naver.maps.TrafficLayer({
+      interval: 300000 // 5분마다 새로고침 (최소값 5분)
+>>>>>>>>> Temporary merge branch 2
     });
     if (isTrafficAvtive === true) {
       trafficLayer.setMap(mapRef.current)
@@ -434,13 +447,15 @@ function Map() {
         
 
       }
-    }
-  },[])
-
-
-
+    }).catch((err)=>{
+      console.log(err)
+    })
+<<<<<<<<< Temporary merge branch 1
+  },[]);
+  console.log(isTrafficAvtive)
+=========
+  }, []);
   
-  const [stroke, setStroke] = useState<number>(5)
 
   // 종인 작업 충돌 부분 수정
   const navigation:any = []
@@ -585,137 +600,13 @@ function Map() {
         })
       })
     })
-  },)
-
-//*사고정보 마커 생성 --(돌발상황 마크 생성과 같은방식)
-useEffect(()=>{
-
-  let accidentArr:any = []
-  accidentStore.subscribe(()=>{
-    accidentArr.map((item:any)=>{
-      item.setVisible(accidentStore.getState())
-    })
-  })
-
-  for(let i in test){
-    if(test[i].eventType === '교통사고'){
-      let accidentMark = new naver.maps.Marker({
-        position : new naver.maps.LatLng(Number(test[i].coordY),Number(test[i].coordX)),
-        map:mapRef.current,
-        icon:{
-          url:"../img/car.png",
-          scaledSize: new naver.maps.Size(30,30)
-        }
-      })
-      let infowindow = new naver.maps.InfoWindow({
-        content:
-        `<div>
-            <div style="background-color:#35BABC;color:white; padding:10px">${test[i].roadName}</div>
-            <div>${test[i].eventType}(${test[i].eventDetailType})</dvi>
-        </div>`
-      })
-      naver.maps.Event.addListener(accidentMark,'click',(e)=>{
-        if(infowindow.getMap()){
-          infowindow.close();
-        }else{
-          infowindow.open(mapRef.current,accidentMark)
-        }
-      })
-      
-      //사고정보 정보창 생성
-      eventViewStore.subscribe(()=>{
-       
-        if(test[i].linkId === eventViewStore.getState()){
-         
-          if(infowindow.getMap()){
-            
-            infowindow.close()
-          }else{
-            infowindow.open(mapRef.current,accidentMark)
-            
-          }
-          
-        }
-      })
-
-
-      accidentArr.push(accidentMark)
-
-    }
-  }
-},[])
-
-
-  //*돌발정보 마커 생성 -- 기존 api데이터 받아와서 작업한 내용
-  // useEffect(()=>{
-  //   let test:any = []
-
-  //   //스토어 값이 변경될때 마커 출력or숨김 변경
-  //   stateStore.subscribe(()=>{
-  //   test.map((item:any)=>{
-  //     item.setVisible(stateStore.getState())
-  //     console.log(item.visible)
-  //     })
-  //   })
-
-  //   fetch("http://localhost:8282/event")
-  //   .then((response)=>response.json())
-  //   .then((response)=>{
-  //     console.log(response)
-  //     for(let i in response){
-  //       if(response[i].eventType !== '교통사고'){
-  //         //돌발상황 마크 생성
-  //         let eventMark = new naver.maps.Marker({ 
-  //           position:new naver.maps.LatLng(response[i].coordY,response[i].coordX),
-  //           map:mapRef.current,
-  //           icon:{
-  //             url: '../img/error.png',
-  //             scaledSize : new naver.maps.Size(30,30)
-  //           },
-  //           visible:true
-  //         })
-
-  //         let infowindow = new naver.maps.InfoWindow({
-  //           content: 
-  //           `<div>
-  //             <div style="background-color:#35BABC;color:white; padding:10px">${response[i].roadName}</div>
-  //             <div>${response[i].eventType}(${response[i].eventDetailType})</dvi>
-  //           </div>`
-  //         })
-  //         naver.maps.Event.addListener(eventMark,'click',(e)=>{
-  //           if(infowindow.getMap()){
-  //             infowindow.close();
-  //           }else{
-  //             infowindow.open(mapRef.current,eventMark)
-  //           }
-  //         })
-          
-
-  //         test.push(eventMark)
-  //         console.log(test)
-
-  //         eventViewStore.subscribe(()=>{
-  //           if(response[i].linkId === eventViewStore.getState()){
-  //             if(infowindow.getMap()){
-  //               infowindow.close()
-  //             }else{
-  //               infowindow.open(mapRef.current,eventMark)
-  //             }
-  //           }
-  //         })
-
-  //       }
-        
-  //     }
-  //   }).catch((err)=>{
-  //     console.log(err)
-  //   })
-  // },[]);
-  // }, []);
+  },[])
 
 
 
 
+
+>>>>>>>>> Temporary merge branch 2
   return (
     <Bg>
       <MapBox id="map">
