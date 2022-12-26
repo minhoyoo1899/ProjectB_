@@ -1,8 +1,8 @@
 import { createStore } from "redux"
 interface type{
-  type:string
-  
+  type:string,
 }
+
 
 //*정보창 관련 리듀서
 // 1. state : 사이드 메뉴에 돌발,사고정보를 클릭했을때 가져올 값을 text속성에 저장함
@@ -11,8 +11,6 @@ function eventView(state = "",action:any){
     return state = action.text
   }
 }
-
-
 let eventViewStore = createStore(eventView)
 eventViewStore.dispatch({type:"ADD",text:""})
 // console.log(eventViewStore.getState())
@@ -49,4 +47,14 @@ function accidentState(state = true, action:type){
 let accidentStore = createStore(accidentState)
 
 
-export {stateStore,accidentStore,eventViewStore}
+
+//* 주소 좌표 저장
+function addressState(state = [], action:any){
+    console.log(action.text)
+    return state = action.text;
+}
+
+let addressStore = createStore(addressState)
+
+
+export {stateStore,accidentStore,eventViewStore,addressStore}

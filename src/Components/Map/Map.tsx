@@ -420,7 +420,11 @@ function Map() {
           content:
           `<div>
               <div style="background-color:#35BABC;color:white; padding:10px">${test[i].roadName}</div>
-              <div>${test[i].eventType}(${test[i].eventDetailType})</dvi>
+              <div style='padding:10px; font-size:.8rem'>
+                <div style="margin-bottom:5px"><b>유형 : </b>${test[i].eventType}(${test[i].eventDetailType})</div>
+                <div style="margin-bottom:5px"><b>내용 : </b>${test[i].message}</div>
+              </dvi>
+              
           </div>`
         })
         naver.maps.Event.addListener(eventMark,'click',(e)=>{
@@ -435,7 +439,6 @@ function Map() {
           if(test[i].linkId === eventViewStore.getState()){
             if(infowindow.getMap()){
               infowindow.close()
-              //console.log('얘는 되냐')
             }else{
               infowindow.open(mapRef.current,eventMark)
             }
