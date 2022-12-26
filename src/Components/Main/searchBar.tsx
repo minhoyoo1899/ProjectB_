@@ -1,5 +1,7 @@
 import styled from "styled-components"
 import {useState,useEffect} from "react"
+import { addressStore } from "../store/stateStore";
+
 
 const SearchBar:React.FC = () => {
 
@@ -36,7 +38,7 @@ const SearchBar:React.FC = () => {
 
   const handleOnKeyPress = (e:any,name:any,type:any) => {
     if (e.key === 'Enter') {
-      alert(name)
+      //alert(name)
       fetch(`http://localhost:8282/search/${name}`,{
       headers:{
         "Content-Type": "application/json",
@@ -57,7 +59,36 @@ const SearchBar:React.FC = () => {
       console.log(err)
     })
     }
+
   };
+
+  //찾기 버튼 눌렀을때 출발지,목적지를 배열로 저장, AddressStore로 값을 넘김
+  function onSubmit(){
+    let address = [firstSearch,secondSearch]
+    
+  let data:any = [];
+
+    for(let i=0;i<address.length;i++){
+        naver.maps.Service.geocode({
+          query: address[i]
+      }, function(status, response) {
+          if (status !== naver.maps.Service.Status.OK) {
+              return alert('Something wrong!');
+          }
+
+          let result = response.v2, // 검색 결과의 컨테이너
+              items = result.addresses; // 검색 결과의 배열
+          data.push(items[0])
+          // do Something
+      });
+      
+    }
+  //console.log(data)
+
+  addressStore.dispatch({type:"ADD",text:data})
+  //console.log(address)
+  }
+
 
   return(
     <>
@@ -74,11 +105,12 @@ const SearchBar:React.FC = () => {
           firstAddress.map((item:any)=>{
             if(item.length !== 0){
               return(
-                <div key={item.maxX}dangerouslySetInnerHTML={{__html:item.title}}
+                <div key={item.maxX} dangerouslySetInnerHTML={{__html:item.title}}
                   onClick={()=>{
                     console.log(item.address)
                     setFirstAddress([])
                     setFirstSearch(item.address)
+                   // startStore.dispatch({type:"START",text:item.address})
                   }}
                 />
                
@@ -90,7 +122,7 @@ const SearchBar:React.FC = () => {
       </SearchList>
       ):(null)}
 
-
+      
 
 
       {/* //*목적지 입력 */}
@@ -106,14 +138,15 @@ const SearchBar:React.FC = () => {
           secondAddress.map((item:any)=>{
             if(item.length !== 0){
               return(
-                <div dangerouslySetInnerHTML={{__html:item.title}}
+                <div key={item.maxX} dangerouslySetInnerHTML={{__html:item.title}}
                   onClick={()=>{
                     console.log(item.address)
                     setSecondAddress([])
                     setSecondSearch(item.address)
+                    //endStore.dispatch({type:'END',text:item.address})
+                    
                   }}
                 />
-               
               )
             }
             
@@ -121,7 +154,7 @@ const SearchBar:React.FC = () => {
         }
       </SearchList>
       ):(null)}
-      <Button>찾기</Button>
+      <Button onClick={onSubmit}>찾기</Button>
     </>
   )
 }
