@@ -259,6 +259,7 @@ app.post('/linkData', async(req,res)=>{
   congestionData(selectdLink)
 })
 
+//api 에서 db 추출로 변경 해야함
 app.post('/mouseover', async(req,res)=>{
   // console.log(req.body.data)
   let activeLink = req.body.node
