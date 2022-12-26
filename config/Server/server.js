@@ -222,10 +222,10 @@ app.post("/activePath", async(req,res)=>{
       console.log("1",jsonArr)
     });
     console.log("2",jsonArr)
+    res.writeHead(200, { "Content-Type": "text/json;charset=utf-8" });
+    res.end(json);
   }
   console.log("3",jsonArr)
-  res.writeHead(200, { "Content-Type": "text/json;charset=utf-8" });
-  res.end(json);
 })
 
 app.post('/linkData', async(req,res)=>{
