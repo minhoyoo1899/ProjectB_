@@ -4,23 +4,17 @@ const axios = require("axios");
 const cors = require("cors");
 const mysql = require("mysql");
 const dotenv = require("dotenv"); // .env 설정 추가
+const convert = require('xml-js');
+const { response, json } = require("express");
+const { link, cpSync } = require("fs");
+const { resolve } = require("path");
 dotenv.config();
 
-//네이버 api 키
-// const id = "rw8kfxnmol"
-// const secret = "KLcIjNMP9IXvoxSEQmdcNjip3b5oj0agPyQmIQ30"
-
-// console.log(dotenv);
-// console.log(process.env);
-// console.log(process.env.naverMapApi);
-
-// console.log(htmlWebpackPlugin.options.env.naverMapApi);
-// console.log(htmlWebpackPlugin.options.env.naverMapSecret);
 
 const dbconfig = {
   host: "localhost",
   user: "root",
-  password: "password",
+  password: "61910923",
   port: "3306",
   database: "hi_five",
 };
@@ -66,16 +60,29 @@ app.get("/", async (req, res) => {
   }
 });
 
-app.get("/db", async (req, res) => {
-  conn.query("SELECT * FROM test_table;", (error, rows) => {
-    if (error) throw error;
-    // console.log(rows);
-    // console.log(typeof rows);
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "text/html; charset=utf-8");
-    res.end(`데이터 테스트 : ${rows}`);
-  });
-});
+// app.get("/db", async (req, res) => {
+//   conn.query("SELECT * FROM test_table;", (error, rows) => {
+//     if (error) throw error;
+//     // console.log(rows);
+//     // console.log(typeof rows);
+//     res.statusCode = 200;
+//     res.setHeader("Content-Type", "text/html; charset=utf-8");
+//     res.end(`데이터 테스트 : ${rows}`);
+//   });
+// });
+
+// app.get("/direction15", async (req, res) => {
+//   try {
+//     const result = await axios({
+//       method: "get",
+//       url: "https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=127.377579,36.349252&goal=127.408952,36.321161&waypoint=127.325118,36.300500",
+//       headers: header,
+//     });
+//     const resultMsg = result.data;
+//   } catch (err) {
+//     console.log(err);
+//   }
+// });
 
 
 
@@ -112,11 +119,12 @@ app.get(`/search/:name`,async(req,res)=>{
 })
 
 
-app.get("/event", async (req, res) => {
-  try {
+
+app.get("/event",async(req,res)=>{
+  try{
     let eventResult = await axios({
-      method: "get",
-      url: `https://openapi.its.go.kr:9443/eventInfo?apiKey=006a4eca1c784284a64eca250f68063c&type=all&eventType=all&minX=127.234227&maxX=127.570949&minY=36.192958 &maxY=36.488949&getType=json`,
+      method : "get",
+      url: `https://openapi.its.go.kr:9443/eventInfo?apiKey=006a4eca1c784284a64eca250f68063c&type=all&eventType=all&minX=127.234227&maxX=127.570949&minY=36.192958 &maxY=36.488949&getType=json`
     });
     const eventData = eventResult.data.body.items;
     res.send(eventData);
@@ -186,6 +194,112 @@ app.get("/deajeonNode", async (req, res) => {
   });
 });
 
+app.post("/activePath", async(req,res)=>{
+  const datas = req.body.way
+  // console.log(datas)
+  let count = 0
+  let pathArr = []
+  for(let i = 0; i<datas.length/2; i++){
+    pathArr.push([datas[count],datas[count+1]])
+    count= count+2
+  }
+  // console.log(pathArr)
+
+  let jsonArr = []
+  function linkData(arr) {
+
+    new Promise((resolve,reject)=>{
+        let data = arr.map((el,index)=>{
+          // console.log(el)
+        conn.query(
+          `SELECT LINK_ID from daejeon_link where F_NODE = ${pathArr[index][0]} AND T_NODE = ${pathArr[index][1]}`, 
+          (err, row, fields) => {
+            if (err) throw err;
+            jsonArr.push(row)
+            if(index === arr.length-1){
+              resolve(jsonArr)
+            }
+          });
+        })
+      })
+      .then((res)=>res)
+      .then ((data)=>{
+        res.send(data)
+      })
+  }
+  linkData(pathArr)
+})
+
+app.post('/linkData', async(req,res)=>{
+  // console.log(req.body.data)
+  let selectdLink = req.body.data
+  console.log(selectdLink)
+  let consgestionArr = []
+  function congestionData(arr) {
+    new Promise((resolve,reject)=>{
+        let data = arr.map((el,index)=>{
+          // console.log(el)
+        conn.query(
+          `SELECT congestion from daejeon_road where linkID = ${selectdLink[index]}`, 
+          (err, row, fields) => {
+            if (err) throw err;
+            // console.log(row)
+            consgestionArr.push(row)
+            if(consgestionArr.length === arr.length){
+              resolve(consgestionArr)
+            }
+          });
+        })
+      })
+      .then((res)=>res)
+      .then ((data)=>{
+        res.send(data)
+      })
+  }
+  congestionData(selectdLink)
+})
+
+//api 에서 db 추출로 변경 해야함
+app.post('/mouseover', async(req,res)=>{
+  // console.log(req.body.data)
+  let activeLink = req.body.node
+  console.log(activeLink)
+  try {
+    let activeLinkResult = await axios({
+      method: "get",
+      url: `http://openapitraffic.daejeon.go.kr/traffic/rest/getTrafficInfo.do?linkId=${activeLink}&ServiceKey=1fBa1MM3xBTQkcg0xPlEQqd4JEkxWAqfUlMr/8ak3zBXUPHau8gPpxRkoWLURTNOt/PPKYm5g9KrCGbVs1ohAw==&numOfRows=1&pageNo=1`,
+    });
+    const xml2json = convert.xml2json((activeLinkResult.data),{compact:true, spaces:4})
+    res.send(xml2json);
+  } catch (err) {
+    console.log(err);
+  }
+})
+
+// let activeLinkdata = await axios({
+//   method : "get",
+//   url: `http://openapitraffic.daejeon.go.kr/traffic/rest/getTrafficInfoAll.do?ServiceKey=1fBa1MM3xBTQkcg0xPlEQqd4JEkxWAqfUlMr/8ak3zBXUPHau8gPpxRkoWLURTNOt/PPKYm5g9KrCGbVs1ohAw==&numOfRows=5&pageNo=1`
+// });
+// // console.log(activeLinkdata.data)
+// const xml2json = convert.xml2json((activeLinkdata.data),{compact:true, spaces:4})
+// // console.log(xml2json)
+// res.send(xml2json)
+  // conn.query(
+  //   `SELECT congestion,linkLength, from daejeon_road where linkID = ${activeLink}`, 
+  //   (err, row, fields) => {
+  //     if (err) throw err;
+  //     // console.log(row)
+  //     consgestionArr.push(row)
+  //     if(consgestionArr.length === arr.length){
+  //       resolve(consgestionArr)
+  //     }
+  //   });
+  //     res.send(data)
+  // // activeLinkData(selectdLink)
+
+
+
+
 app.post("/navigation", (req, response) => {
   const start = req.body.start;
   const end = req.body.end;
@@ -217,7 +331,7 @@ app.post("/navigation", (req, response) => {
               );
             });
             // console.log(filter);
-            console.log(count);
+            // console.log(count);
             //notNode에 있는 node는 제외하고 탐색.
             if (route.length > 0 && filter.length === 0) {
               //시작지점이 아닌데 막다른길
