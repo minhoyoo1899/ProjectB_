@@ -77,18 +77,7 @@ app.get("/db", async (req, res) => {
   });
 });
 
-app.get("/direction15", async (req, res) => {
-  try {
-    const result = await axios({
-      method: "get",
-      url: "https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=127.377579,36.349252&goal=127.408952,36.321161&waypoint=127.325118,36.300500",
-      headers: header,
-    });
-    const resultMsg = result.data;
-  } catch (err) {
-    console.log(err);
-  }
-});
+
 
 //네이버 api 키
 // const id = "rw8kfxnmol"
@@ -102,63 +91,6 @@ app.get("/direction15", async (req, res) => {
 // }
 // 현재위치 좌표값 받아와서 지도에 마커표시
 // 파일 분리를 안해서 좀 지저분 합니다...
-app.get("/apiMap", async (req, res) => {
-  try {
-    res.send(
-      `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-      <meta charset="UTF-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Document</title>
-      <script type="text/javascript"
-      src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${encodeURI(
-        ymhApi
-      )}"></script>
-      </head>
-      <body>
-      <div id="map" style="width:100%; height:800px;"></div>
-      <script>
-      //기본옵션(실행시에 삭제)
-      var options = {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0
-      };
-      function success(pos) {
-      var crd = pos.coords;
-      console.log('현재위치');
-      console.log('위도 : ' + crd.latitude);
-      console.log('경도: ' + crd.longitude);
-      // console.log('오차범위 ' + crd.accuracy + ‘m’);
-      //지도 그릴 div
-      let map = new naver.maps.Map(document.getElementById('map'), {
-      center: new naver.maps.LatLng(crd.latitude, crd.longitude),
-      //확대값 옵션(실행시에 삭제)
-      zoom: 15
-      });
-      //마커 표시
-      let marker = new naver.maps.Marker({
-      position: new naver.maps.LatLng(crd.latitude, crd.longitude),
-      map: map
-      });
-      };
-      function error(err) {
-      console.warn('ERROR(' + err.code + '): ' + err.message);
-      };
-      navigator.geolocation.getCurrentPosition(success, error, options);
-      </script>
-      </body>
-      </html>
-      `
-    );
-  } catch (err) {
-    console.log(err);
-    console.log("apiMap err");
-  }
-});
 
 // 네이버 검색 api 사용
 app.get(`/search/:name`,async(req,res)=>{
@@ -195,20 +127,19 @@ app.get("/event", async (req, res) => {
 });
 
 
-app.get("/cctv", async(req,res)=> {
+app.get("/cctv", async (req, res) => {
   try {
-let cctvResult = await axios({
-  method : "get",
-  url: 'https://openapi.its.go.kr:9443/cctvInfo?apiKey=4537498ac13e4a3a9e10f66e3984c96a&type=ex&cctvType=2&minX=127.234227&maxX=127.570949&minY=36.192958&maxY=36.488949&getType=json',
+    let cctvResult = await axios({
+      method: "get",
+      url: "https://openapi.its.go.kr:9443/cctvInfo?apiKey=006a4eca1c784284a64eca250f68063c&type=ex&cctvType=2&minX=127.234227&maxX=127.570949&minY=36.192958&maxY=36.488949&getType=json",
+    });
+    const cctvMsg = cctvResult.data;
+    // console.log(cctvMsg)
+    res.send(cctvMsg);
+  } catch (err) {
+    console.log(err);
+  }
 });
-const cctvMsg = cctvResult.data
-// console.log(cctvMsg)
-res.send(cctvMsg)
-        
-}catch(err){
-  console.log(err)
-}
-}) 
 
 
 // 입력한 주소의 좌표등 기본값 요청
