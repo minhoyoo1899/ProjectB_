@@ -1,8 +1,31 @@
+import { useSelector } from "react-redux"
 import { createStore } from "redux"
+
 interface type{
   type:string,
+  startAdd:string,
+  text:any
 }
 
+const initalState = {
+  start:false,
+  end:false,
+}
+
+//출발지
+function startAdd(state = '',action:any){
+  if(action.type === "ADD"){
+    return state = action.text
+  }
+}
+let startAddStore = createStore(startAdd)
+
+function endAdd(state = '',action:any){
+  if(action.type === "ADD"){
+    return state = action.text
+  }
+}
+let endAddStore = createStore(endAdd)
 
 //*정보창 관련 리듀서
 // 1. state : 사이드 메뉴에 돌발,사고정보를 클릭했을때 가져올 값을 text속성에 저장함
@@ -47,14 +70,18 @@ function accidentState(state = true, action:type){
 let accidentStore = createStore(accidentState)
 
 
-
 //* 주소 좌표 저장
-function addressState(state = [], action:any){
-    console.log(action.text)
+const initialState = {
+  name: false,
+  price: false,
+};
+
+function addressState(state = '', action:any){
     return state = action.text;
+    
 }
 
 let addressStore = createStore(addressState)
 
 
-export {stateStore,accidentStore,eventViewStore,addressStore}
+export {stateStore,accidentStore,eventViewStore,addressStore,startAddStore,endAddStore}
