@@ -419,7 +419,7 @@ function Map() {
         let infowindow = new naver.maps.InfoWindow({
           content:
           `<div>
-              <div style="background-color:#35BABC;color:white; padding:10px">${test[i].roadName}</div>
+              <div style="font-weight:bold; background-color:#35BABC;color:white; padding:10px">${test[i].roadName} (${test[i].roadDrcType})</div>
               <div style='padding:10px; font-size:.8rem'>
                 <div style="margin-bottom:5px"><b>유형 : </b>${test[i].eventType}(${test[i].eventDetailType})</div>
                 <div style="margin-bottom:5px"><b>내용 : </b>${test[i].message}</div>
@@ -530,9 +530,13 @@ useEffect(()=>{
       let infowindow = new naver.maps.InfoWindow({
         content:
         `<div>
-            <div style="background-color:#35BABC;color:white; padding:10px">${test[i].roadName}</div>
-            <div>${test[i].eventType}(${test[i].eventDetailType})</dvi>
-        </div>`
+              <div style="font-weight:bold;background-color:#35BABC;color:white; padding:10px">${test[i].roadName} (${test[i].roadDrcType})</div>
+              <div style='padding:10px; font-size:.8rem'>
+                <div style="margin-bottom:5px"><b>유형 : </b>${test[i].eventType}(${test[i].eventDetailType})</div>
+                <div style="margin-bottom:5px"><b>내용 : </b>${test[i].message}</div>
+              </dvi>
+              
+          </div>`
       })
       naver.maps.Event.addListener(accidentMark,'click',(e)=>{
         if(infowindow.getMap()){
