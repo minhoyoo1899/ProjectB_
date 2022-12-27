@@ -189,7 +189,7 @@ const SearchBar:React.FC = () => {
         }
       </SearchList>
       ):(null)}
-      <Button onClick={onSubmit}>찾기</Button>
+      {/* <Button onClick={onSubmit}>찾기</Button> */}
     </>
   )
 }
@@ -243,7 +243,7 @@ const SearchList = styled.div`
 `
 
 const Button = styled.button`
-  widht:100px;
+  width:100%;
   height:40px;
   border:0;
   background-color:#0464ad;

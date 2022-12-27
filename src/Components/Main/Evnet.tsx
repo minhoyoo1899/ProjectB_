@@ -287,7 +287,7 @@ const Content = styled.div`
   width:100%;
   height:max-content;
   //min-height:200px;
-  max-height:230px;
+  max-height:300px;
   padding:4%;
   background-color:rgba(40,40,40,0.5);
   backdrop-filter:blur(10px);

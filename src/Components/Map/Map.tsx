@@ -5,7 +5,7 @@ import Side from '../Main/Side'
 import Bottom from '../Main/Bottom'
 import e, { response } from 'express'
 import Weather from '../Main/Weather'
-import { eventViewStore, accidentStore,stateStore } from '../store/stateStore'
+import { eventViewStore, accidentStore,stateStore,startAddStore,endAddStore } from '../store/stateStore'
 
 
   const test = 
@@ -457,55 +457,101 @@ function Map() {
   
 
   // 종인 작업 충돌 부분 수정
-  const navigation:any = []
 
-  useEffect(()=>{
-    fetch('http://127.0.0.1:8282/deajeonNode')
-    .then((res)=>res.json())
-    .then((res)=>{
-      res.map((item:any)=>{
-        let node = new naver.maps.Marker({
-          position: new naver.maps.LatLng(
-            item.node_Ycode,item.node_Xcode),
-          map : mapRef.current,
-          icon: {
-            url: "Img/cctv.png", 
-            scaledSize : new naver.maps.Size(8,8),
+  let searchData:any = {}
+  let pathLine:any = []
+  startAddStore.subscribe(()=>{
+    searchData.start = startAddStore.getState()
+  })
+
+  endAddStore.subscribe(()=>{
+    searchData.end = endAddStore.getState()
+    console.log(searchData)
+    if(searchData.start){
+        fetch('http://127.0.0.1:8282/nearNode',{
+        method: "POST",
+        headers: {
+          'Content-Type':'application/json'
+        },
+        body: JSON.stringify({
+          start: searchData.start,
+          end: searchData.end,
+        }),
+        }).then((res)=>
+          res.json()
+        ).then((res)=>{
+          // console.log(res)
+          fetch('http://127.0.0.1:8282/navigation',{
+            method: "POST",
+            headers: {
+              'Content-Type':'application/json'
+            },
+            body: JSON.stringify({
+              start: res[0],
+              end: res[1],
+            }),
+          })
+          .then((res)=>res.json())
+          .then((res)=>{
+            if(pathLine.length > 0){
+              pathLine.map((item:any)=>{
+                item.setMap(null)
+              })
+              pathLine = []
+            } // 이미 pathLine이 있다면 지우고 초기화
+            console.log(res)
+            // console.log(`이동거리:${res.length.toFixed(1)}m`);
+          let path = res.pathNode
+          let startPoly = new naver.maps.Polyline({
+            map: mapRef.current,
+            path: [
+              new naver.maps.LatLng(
+                Number(searchData.start.y),Number(searchData.start.x)),
+              new naver.maps.LatLng(
+                path[0].node_Ycode,path[0].node_Xcode)
+            ],
+            strokeColor: '#888888',
+            strokeWeight: 5,
+          }); // 시작지점 도보
+          let endPoly = new naver.maps.Polyline({
+            map: mapRef.current,
+            path: [
+              new naver.maps.LatLng(
+                Number(searchData.end.y),Number(searchData.end.x)),
+              new naver.maps.LatLng(
+                path[path.length-1].node_Ycode,path[path.length-1].node_Xcode)
+            ],
+            strokeColor: '#888888',
+            strokeWeight: 5,
+          }); // 도착지점 도보
+          pathLine.push(startPoly,endPoly)
+          for(let i=0; i<path.length-1;i++){
+            let color = ''
+            if(i%2 === 0){
+              color = 'red'
+            }else{
+              color = 'blue'
+            }
+            const polyline = new naver.maps.Polyline({
+              map: mapRef.current,
+              path: [
+                new naver.maps.LatLng(
+                  path[i].node_Ycode,path[i].node_Xcode),
+                new naver.maps.LatLng(
+                  path[i+1].node_Ycode,path[i+1].node_Xcode)
+              ],
+              strokeColor: color,
+              strokeWeight: 5,
+            });
+            pathLine.push(polyline)
           }
+          let center = path[Math.floor(path.length/2)]
+          mapRef.current.setCenter(new naver.maps.LatLng(center.node_Ycode,center.node_Xcode))
+          mapRef.current.setZoom(16)
+          })
         })
-        node.addListener('click',()=>{
-          navigation.push(item)
-          if(navigation.length === 2){
-            fetch('http://127.0.0.1:8282/navigation',{
-              method: "POST",
-              headers: {
-                'Content-Type':'application/json'
-              },
-              body: JSON.stringify({
-                start: navigation[0],
-                end: navigation[1],
-              }),
-            })
-            .then((res)=>res.json())
-            .then((res)=>{
-              console.log(res)
-              const polyline = new naver.maps.Polyline({
-                map: mapRef.current,
-                path: res.map((item:any)=>{
-                  return new naver.maps.LatLng(
-                    item.node_Ycode,item.node_Xcode)
-                }),
-                strokeColor: "#0000ff",
-                strokeWeight: 5,
-              });
-              navigation.pop()
-              navigation.pop()
-            })
-          }
-        })
-      })
-    })
-  },[])
+    }
+  })
 
 //*사고정보 마커 생성 --(돌발상황 마크 생성과 같은방식)
 useEffect(()=>{
@@ -568,7 +614,6 @@ useEffect(()=>{
     }
   }
 },[])
-
 
   //*돌발정보 마커 생성 -- 기존 api데이터 받아와서 작업한 내용
   // useEffect(()=>{
