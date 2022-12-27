@@ -14,7 +14,7 @@ dotenv.config();
 const dbconfig = {
   host: "localhost",
   user: "root",
-  password: "61910923",
+  password: "password",
   port: "3306",
   database: "hi_five",
 };
