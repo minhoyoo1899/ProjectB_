@@ -8,8 +8,11 @@ import { accidentStore, stateStore } from "../store/stateStore";
 import { eventViewStore } from "../store/stateStore";
 // 
 
-  const Bottom = (props:any, ref:any) => {
+
+  const Bottom = (props: any, ref: any) => {
     const {mapRef,cctvMarkRef} = ref
+    console.log(mapRef)
+  
       //리덕스 세팅
 
   //*돌발정보 마크의 옵션값 true,flase로 변경하는 리듀서에 액션값을 보냄 
@@ -33,8 +36,7 @@ import { eventViewStore } from "../store/stateStore";
 
   let clicked = true
   const [isActive,setIsActive] = useState<string>("")
-  // const [test, setTest]= useState<any>(ref.current)
-  // console.log(test)
+
 
   return(
     <Container>
@@ -57,7 +59,12 @@ import { eventViewStore } from "../store/stateStore";
           setIsActive("#fff")
         }
       }}><BsFillCameraVideoFill/>&nbsp;&nbsp;CCTV</Item>
-      <Item color="lightblue"><FaCarAlt/>&nbsp;&nbsp;도로흐름</Item>
+      <Item 
+      color="lightblue"
+      onClick={()=>{
+          props.change()
+      }}
+      ><FaCarAlt/>&nbsp;&nbsp;도로흐름</Item>
       <Item onClick={eventClick} color="#FFC314"><FaExclamationTriangle/>&nbsp;&nbsp;돌발상황</Item>
       <Item color="tomato" onClick={accidentClick}><FaCarCrash/>&nbsp;&nbsp;사고정보</Item>
     </Container>
