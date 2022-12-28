@@ -458,8 +458,12 @@ function Map() {
 
   // 종인 작업 충돌 부분 수정
 
+  const [stroke, setStroke] = useState<number>(5)
+
+  // 종인 작업 충돌 부분 수정
+  let eventCoord:any = []
   let searchData:any = {}
-  let pathLine:any = []
+
   startAddStore.subscribe(()=>{
     searchData.start = startAddStore.getState()
   })
@@ -468,88 +472,132 @@ function Map() {
     searchData.end = endAddStore.getState()
     console.log(searchData)
     if(searchData.start){
-        fetch('http://127.0.0.1:8282/nearNode',{
-        method: "POST",
-        headers: {
-          'Content-Type':'application/json'
-        },
-        body: JSON.stringify({
-          start: searchData.start,
-          end: searchData.end,
-        }),
-        }).then((res)=>
-          res.json()
-        ).then((res)=>{
-          // console.log(res)
-          fetch('http://127.0.0.1:8282/navigation',{
+      fetch('http://127.0.0.1:8282/nearNode',{
+      method: "POST",
+      headers: {
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify({
+        start: searchData.start,
+        end: searchData.end,
+      }),
+      }).then((res)=>
+        res.json()
+      ).then((res)=>{
+        // console.log(res)
+        fetch('http://127.0.0.1:8282/navigation',{
+          method: "POST",
+          headers: {
+            'Content-Type':'application/json'
+          },
+          body: JSON.stringify({
+            start: res[0],
+            end: res[1],
+          }),
+        })
+        .then((res)=>res.json())
+        .then((res)=>{
+          console.log(res);
+          let center = res.pathNode[Math.floor(res.pathNode.length/2)]
+          mapRef.current.setCenter(new naver.maps.LatLng(center.node_Ycode,center.node_Xcode))
+          mapRef.current.setZoom(16)
+          let activenode = res.pathNode
+          let activePath = res.link_path
+          fetch('http://127.0.0.1:8282/linkData',{
             method: "POST",
             headers: {
               'Content-Type':'application/json'
             },
             body: JSON.stringify({
-              start: res[0],
-              end: res[1],
+              data : res.link_path
             }),
           })
           .then((res)=>res.json())
-          .then((res)=>{
-            if(pathLine.length > 0){
-              pathLine.map((item:any)=>{
-                item.setMap(null)
-              })
-              pathLine = []
-            } // 이미 pathLine이 있다면 지우고 초기화
-            console.log(res)
-            // console.log(`이동거리:${res.length.toFixed(1)}m`);
-          let path = res.pathNode
-          let startPoly = new naver.maps.Polyline({
-            map: mapRef.current,
-            path: [
-              new naver.maps.LatLng(
-                Number(searchData.start.y),Number(searchData.start.x)),
-              new naver.maps.LatLng(
-                path[0].node_Ycode,path[0].node_Xcode)
-            ],
-            strokeColor: '#888888',
-            strokeWeight: 5,
-          }); // 시작지점 도보
-          let endPoly = new naver.maps.Polyline({
-            map: mapRef.current,
-            path: [
-              new naver.maps.LatLng(
-                Number(searchData.end.y),Number(searchData.end.x)),
-              new naver.maps.LatLng(
-                path[path.length-1].node_Ycode,path[path.length-1].node_Xcode)
-            ],
-            strokeColor: '#888888',
-            strokeWeight: 5,
-          }); // 도착지점 도보
-          pathLine.push(startPoly,endPoly)
-          for(let i=0; i<path.length-1;i++){
-            let color = ''
-            if(i%2 === 0){
-              color = 'red'
-            }else{
-              color = 'blue'
+          .then((congestion)=>{
+            let congestionArr = []
+            for(let i=0; i<congestion.length;i++){
+              if(congestion[i][0]){
+                congestionArr.push(congestion[i][0].congestion)
+              } else {
+                congestionArr.push(0)
+              }
             }
-            const polyline = new naver.maps.Polyline({
-              map: mapRef.current,
-              path: [
-                new naver.maps.LatLng(
-                  path[i].node_Ycode,path[i].node_Xcode),
-                new naver.maps.LatLng(
-                  path[i+1].node_Ycode,path[i+1].node_Xcode)
-              ],
-              strokeColor: color,
-              strokeWeight: 5,
-            });
-            pathLine.push(polyline)
-          }
-          let center = path[Math.floor(path.length/2)]
-          mapRef.current.setCenter(new naver.maps.LatLng(center.node_Ycode,center.node_Xcode))
-          mapRef.current.setZoom(16)
+            congestionArr.map((el,i)=>{
+              let color = ''
+              if(el === 0){
+                color = '#555'
+              }else if (el === 1){
+                color = "green"
+              }else if (el === 2){
+                color = "orange"
+              }else if (el === 3){
+                color = "red"
+              }
+              const polyline = new naver.maps.Polyline({
+                map: mapRef.current,
+                path: [
+                  new naver.maps.LatLng(
+                    activenode[i].node_Ycode,activenode[i].node_Xcode),
+                  new naver.maps.LatLng(
+                    activenode[i+1].node_Ycode,activenode[i+1].node_Xcode)
+                  ],
+                clickable:true,
+                strokeColor: color,
+                strokeWeight: 10,
+              });
+              //마우스오버 이벤트 
+              naver.maps.Event.addListener(polyline,"mouseover",(event)=>{
+                // console.log(event.coord.y,event.coord.x)
+                eventCoord.push(event.coord.y,event.coord.x)
+                // console.log(i,"over",activePath[i])
+                console.log(activePath)
+                fetch('http://127.0.0.1:8282/mouseover',{
+                  method: "POST",
+                  headers: {
+                    'Content-Type':'application/json'
+                  },
+                  body: JSON.stringify({
+                    node:activePath[i]
+                  }),
+                })
+                // console.log(overdLink)
+                .then((res)=>res.json())
+                .then((data)=>{
+                  console.log(data.response.body["TRAFFIC-LIST"]["TRAFFIC"])
+                  
+                  let overedPathInfo = data.response.body["TRAFFIC-LIST"]["TRAFFIC"]
+                  console.log(eventCoord)
+                  console.log(overedPathInfo.roadName._text)
+                  //마우스오버시 띄울 정보창 
+                  let roadInfoWindow = new naver.maps.InfoWindow({
+                    content: [
+                      '<div style="width:120px; height:80px; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:10px;"}}>',
+                      `<h3>${overedPathInfo.roadName._text}</h3>`,
+                      '</div>'
+                    ].join('') 
+                  })
+                  let roadInfoMarker = new naver.maps.Marker({
+                    position: new naver.maps.LatLng(eventCoord[eventCoord.length-2],eventCoord[eventCoord.length-1]),
+                    map : mapRef.current
+                  })
+                  roadInfoWindow.open(markRef.current,roadInfoMarker)
+                  roadInfoMarker.setMap(null)
+                  naver.maps.Event.addListener(mapRef.current,"click",(e)=>{
+                    if(e.domEvent.type === "click"){
+                      roadInfoWindow.close()
+                    }
+                  })
+                  if(roadInfoWindow.getMap()){
+                    roadInfoWindow.close()
+                  } else {
+                    roadInfoWindow.open(mapRef.current)
+                  }
+                })
+              })//마우스오버이벤트 
+            })
           })
         })
+      })
     }
   })
 
