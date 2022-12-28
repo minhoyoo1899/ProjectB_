@@ -121,7 +121,7 @@ const Home = styled.div`
 const WeatherBox = styled.div`
   width: 250px;
   height: 105px;
-  background-color: rgba(160,160,160,0.4);
+  background-color: rgba(30,30,30,0.4);
   display:flex;
   backdrop-filter: blur(10px);
   padding-left: 12px;
@@ -134,17 +134,18 @@ const TextBox = styled.div`
   width: 70%;
   height: 60%;
   color: #fff;
-  font-size: 14px;
   font-weight: bold;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   >div:nth-child(1){
+    font-size: 0.8rem;
     height: 50%;
     display: flex;
     flex-direction: column;
   }
   >div:nth-child(2){
+    font-size: 0.7rem;
     height: 50%;
     display: flex;
     flex-direction: column;
