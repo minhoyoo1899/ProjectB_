@@ -243,6 +243,7 @@ app.post("/navigation", (req, response) => {
       node_id: start.node_id,
       length: 0,
       path: [start.node_id],
+      link_path: [],
     },
   ];
   const completeNode = [];
@@ -254,7 +255,7 @@ app.post("/navigation", (req, response) => {
       arr.map((item, index) => {
         count++;
         conn.query(
-          `SELECT T_NODE,LENGTH from daejeon_link where F_NODE = ${item.node_id}`,
+          `SELECT T_NODE,LENGTH,LINK_ID from daejeon_link where F_NODE = ${item.node_id}`,
           (err, row, fields) => {
             if (err) throw err;
             let path = item.path;
@@ -270,9 +271,11 @@ app.post("/navigation", (req, response) => {
                 node_id: rowItem.T_NODE,
                 length: item.length + rowItem.LENGTH,
                 path: [...item.path],
+                link_path: [...item.link_path],
               };
               if (nodeIdArr.indexOf(obj.node_id) < 0) {
                 obj.path.push(obj.node_id);
+                obj.link_path.push(rowItem.LINK_ID);
                 nodeArr.push(obj);
                 nodeIdArr.push(obj.node_id);
                 // 존재하지않는 node_id라면 push
@@ -280,6 +283,7 @@ app.post("/navigation", (req, response) => {
                 let index = nodeIdArr.indexOf(obj.node_id);
                 if (nodeArr[index].length > obj.length) {
                   obj.path.push(obj.node_id);
+                  obj.link_path.push(rowItem.LINK_ID);
                   // nodeArr.push(obj);
                   // nodeIdArr.push(obj.node_id);
                   // 기존 값을 변경해야하는데 push를 해서 새로 만들어서 값이 많아지는 오류가 있었음.
