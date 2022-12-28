@@ -3,8 +3,7 @@ import { createStore } from "redux"
 
 interface type{
   type:string,
-  startAdd:string,
-  text:any
+  //startAdd:string,
 }
 
 const initalState = {
@@ -41,7 +40,7 @@ eventViewStore.dispatch({type:"ADD",text:""})
 
 //*돌발정보 리듀서
 // 1. state : 하단탭 눌렀을때 마크의 visible 속성을 true, flase로 변경할 값
-function state(state = true, action:type){
+function state(state = true, action:any){
   switch (action.type){
     case "TRUE":
       return state = true
