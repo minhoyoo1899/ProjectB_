@@ -1,6 +1,9 @@
 import styled from "styled-components"
 import {useState,useEffect} from "react"
 
+import { startAddStore,endAddStore } from "../store/stateStore";
+
+
 const SearchBar:React.FC = () => {
 
   //*출발지 목적지 검색하여 조회하는 검색창입니다.
@@ -36,7 +39,7 @@ const SearchBar:React.FC = () => {
 
   const handleOnKeyPress = (e:any,name:any,type:any) => {
     if (e.key === 'Enter') {
-      alert(name)
+      //alert(name)
       fetch(`http://localhost:8282/search/${name}`,{
       headers:{
         "Content-Type": "application/json",
@@ -57,7 +60,65 @@ const SearchBar:React.FC = () => {
       console.log(err)
     })
     }
+
   };
+
+  //찾기 버튼 눌렀을때 출발지,목적지를 배열로 저장, AddressStore로 값을 넘김
+   function onSubmit(){}
+  //   let address = [firstSearch,secondSearch]
+    
+  // let data:any = [];
+
+   
+      
+      
+  //   }
+       
+    
+  // //console.log(data)
+
+  // addressStore.dispatch({type:"ADD",text:data})
+  // //console.log(address)
+  // }
+  function naverSearch(add:any,mode:any){
+    let data:any = [];
+      naver.maps.Service.geocode({
+        query: add
+      }, function(status, response) {
+        if (status !== naver.maps.Service.Status.OK) {
+            return alert('Something wrong!');
+        }
+
+        var result = response.v2, // 검색 결과의 컨테이너
+            items = result.addresses; // 검색 결과의 배열
+        //data = result.addresses[0];
+       // console.log(result.addresses[0])
+        if(mode === "start"){
+          startAddStore.dispatch({type:"ADD",text:result.addresses[0]})
+        }else if(mode === "end"){
+          endAddStore.dispatch({type:"ADD",text:result.addresses[0]})
+        }
+        
+     });
+     //console.log(data)
+    return data;
+   
+  }
+
+
+  
+  let test;
+  startAddStore.subscribe(()=>{
+    //console.log(startAddStore.getState())
+    test = startAddStore.getState()
+    //console.log(test.x)
+  })
+  endAddStore.subscribe(()=>[
+    //console.log(endAddStore.getState())
+  ])
+
+  
+  
 
   return(
     <>
@@ -74,11 +135,15 @@ const SearchBar:React.FC = () => {
           firstAddress.map((item:any)=>{
             if(item.length !== 0){
               return(
-                <div key={item.maxX}dangerouslySetInnerHTML={{__html:item.title}}
+                <div style={{cursor:"pointer"}} key={item.maxX} dangerouslySetInnerHTML={{__html:item.title}}
                   onClick={()=>{
                     console.log(item.address)
                     setFirstAddress([])
                     setFirstSearch(item.address)
+
+                    //네이버 검색
+                    naverSearch(item.address,'start')
+                   // startStore.dispatch({type:"START",text:item.address})
                   }}
                 />
                
@@ -90,7 +155,7 @@ const SearchBar:React.FC = () => {
       </SearchList>
       ):(null)}
 
-
+      
 
 
       {/* //*목적지 입력 */}
@@ -106,14 +171,17 @@ const SearchBar:React.FC = () => {
           secondAddress.map((item:any)=>{
             if(item.length !== 0){
               return(
-                <div dangerouslySetInnerHTML={{__html:item.title}}
+                <div key={item.maxX} dangerouslySetInnerHTML={{__html:item.title}}
                   onClick={()=>{
                     console.log(item.address)
                     setSecondAddress([])
                     setSecondSearch(item.address)
+                    //네이버 검색
+                    naverSearch(item.address,'end')
+                    //endStore.dispatch({type:'END',text:item.address})
+                    
                   }}
                 />
-               
               )
             }
             
@@ -121,7 +189,7 @@ const SearchBar:React.FC = () => {
         }
       </SearchList>
       ):(null)}
-      <Button>찾기</Button>
+      {/* <Button onClick={onSubmit}>찾기</Button> */}
     </>
   )
 }
@@ -166,10 +234,16 @@ const SearchList = styled.div`
   gap:10px;
   font-size:.8em;
 
+  & > div{
+    :hover{
+      color:red;
+    }
+  }
+
 `
 
 const Button = styled.button`
-  widht:100px;
+  width:100%;
   height:40px;
   border:0;
   background-color:#0464ad;
