@@ -1,4 +1,4 @@
-import Minho from "./Components/Minho";import Main from "./Components/Main/Main";
+import Main from "./Components/Main/Main";
 
 
 
