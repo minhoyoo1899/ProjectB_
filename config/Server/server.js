@@ -6,9 +6,7 @@ const mysql = require("mysql");
 const dotenv = require("dotenv"); // .env 설정 추가
 const convert = require("xml-js");
 dotenv.config();
-//네이버 api 키
-// const id = "rw8kfxnmol"
-// const secret = "KLcIjNMP9IXvoxSEQmdcNjip3b5oj0agPyQmIQ30"
+
 // console.log(dotenv);
 // console.log(process.env);
 // console.log(process.env.naverMapApi);
